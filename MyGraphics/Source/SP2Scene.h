@@ -19,6 +19,13 @@ class SP2Scene : public Scene
         GEO_LIGHTBALL,
         GEO_SKYBOX,
 		GEO_TEXT,
+		GEO_FRONT,
+		GEO_BACK,
+		GEO_LEFT,
+		GEO_RIGHT,
+		GEO_TOP,
+		GEO_BOTTOM,
+		GEO_TEST,
         NUM_GEOMETRY,
     };
     enum UNIFORM_TYPE

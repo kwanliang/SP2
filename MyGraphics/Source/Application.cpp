@@ -69,7 +69,7 @@ void Application::Init()
 
 	//Create a window and create its OpenGL context
 	//const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	m_window = glfwCreateWindow(800, 600, "Computer Graphics", NULL, NULL);
+	m_window = glfwCreateWindow(1960, 1020, "Computer Graphics", NULL, NULL);
 
     //Resize objects according to window
     glfwSetWindowSizeCallback(m_window, resize_callback);
@@ -89,7 +89,9 @@ void Application::Init()
 	//glfwSetKeyCallback(m_window, key_callback);
 
 	glewExperimental = true; // Needed for core profile
+
 	//Initialize GLEW
+
 	GLenum err = glewInit();
 
 	//If GLEW hasn't initialized
