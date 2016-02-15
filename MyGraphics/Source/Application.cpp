@@ -68,8 +68,8 @@ void Application::Init()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //We don't want the old OpenGL 
 
 	//Create a window and create its OpenGL context
-	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	m_window = glfwCreateWindow(mode->width, mode->height, "Computer Graphics", glfwGetPrimaryMonitor(), NULL);
+	//const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	m_window = glfwCreateWindow(800, 600, "Computer Graphics", NULL, NULL);
 
     //Resize objects according to window
     glfwSetWindowSizeCallback(m_window, resize_callback);
