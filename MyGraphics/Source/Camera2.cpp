@@ -107,11 +107,14 @@ void Camera2::Update(double dt)
     }
 
     Application::MouseMovement(mouseXPos, mouseYPos);
+    UI::PlanetHitbox(mouseXPos, mouseYPos, 350, 450, 150, 250);
+    UI::PlanetHitbox(mouseXPos, mouseYPos, 200, 300, 400, 500);
+    UI::PlanetHitbox(mouseXPos, mouseYPos, 500, 600, 400, 500);
 
     float horizontalMouseMovement = 10 * dt * static_cast<float>((800 / 2) - mouseXPos);
     float verticalMouseMovement = 10 * dt * static_cast<float>((600 / 2) - mouseYPos);
 
-    if (verticalMouseMovement)
+    if (verticalMouseMovement && UI::UI_Planet == false)
     {
         Vector3 TESTview = ((target - position).Normalized()) * 10;
         Vector3 view = ((target - position).Normalized()) * 10;
@@ -127,7 +130,7 @@ void Camera2::Update(double dt)
         }
     }
 
-    if (horizontalMouseMovement)
+    if (horizontalMouseMovement && UI::UI_Planet == false)
     {
 		Vector3 view = ((target - position).Normalized()) * 10;
         // normalize view vector

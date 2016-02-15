@@ -2,6 +2,7 @@
 #define APPLICATION_H
 
 #include "timer.h"
+#include "UI.h"
 
 //Include GLEW
 #include <GL/glew.h>
@@ -24,7 +25,5 @@ private:
 	//Declare a window object
 	StopWatch m_timer;
 };
-
-
 
 #endif

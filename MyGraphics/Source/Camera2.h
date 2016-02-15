@@ -26,7 +26,6 @@ public:
     virtual void Update(double dt);
     virtual void Reset();
 };
-
 bool BoundaryCheck(const Vector3& CameraPosition);
 
 #endif

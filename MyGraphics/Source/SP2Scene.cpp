@@ -21,6 +21,8 @@ void SP2Scene::Init()
 {
     LSPEED = 100.f;
 
+    UI.UI_Planet = false;
+
     //Load vertex and fragment shaders
     m_programID = LoadShaders("Shader//Texture.vertexshader", "Shader//Text.fragmentshader");
 
@@ -94,11 +96,8 @@ void SP2Scene::Init()
 	meshList[GEO_BACK] = MeshBuilder::GenerateOBJ("back", "OBJ//back.obj");
 	meshList[GEO_BACK]->textureID = LoadTGA("Image//back.tga");
 
-
-
 	meshList[GEO_TOP] = MeshBuilder::GenerateOBJ("top", "OBJ//top.obj");
 	meshList[GEO_TOP]->textureID = LoadTGA("Image//top.tga");
-
 
 	meshList[GEO_BOTTOM] = MeshBuilder::GenerateOBJ("bottom", "OBJ//bottom.obj");
 	meshList[GEO_BOTTOM]->textureID = LoadTGA("Image//bottom.tga");
@@ -108,6 +107,9 @@ void SP2Scene::Init()
 	
 	meshList[GEO_RIGHT] = MeshBuilder::GenerateOBJ("right", "OBJ//right.obj");
 	meshList[GEO_RIGHT]->textureID = LoadTGA("Image//left.tga");
+
+    meshList[GEO_UI_PLANET_NAVIGATION] = MeshBuilder::GenerateQuad("planet navigation UI", Color(1, 0, 0));
+    meshList[GEO_PLANETS] = MeshBuilder::GenerateCircle("planets", Color(1, 1, 1), 36);
 
 
     light[0].type = Light::LIGHT_POINT;
@@ -183,7 +185,6 @@ void SP2Scene::RenderMesh(Mesh *mesh, bool enableLight) {
     {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
-
 }
 
 void SP2Scene::Update(double dt)
@@ -245,9 +246,21 @@ void SP2Scene::Render()
 
     RenderSkybox();
 
-    // blend
-	//glBlendFunc(1, 1);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    if (Application::IsKeyPressed('E')) {
+        UI.UI_Planet = true;
+    }
+
+    glBlendFunc(1, 1);
+
+    if (UI.UI_Planet == true) {
+        RenderUIOnScreen(meshList[GEO_PLANETS], 6, 6.6f, 4);
+        RenderUIOnScreen(meshList[GEO_PLANETS], 5, 8, 8);
+        RenderUIOnScreen(meshList[GEO_PLANETS], 5, 5, 3);
+        RenderUIOnScreen(meshList[GEO_PLANETS], 5, 11, 3);
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_NAVIGATION], 160, 0, 0);
+    }
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     RenderTextOnScreen(meshList[GEO_TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
 	RenderTextOnScreen(meshList[GEO_TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
@@ -299,8 +312,6 @@ void SP2Scene::RenderSkybox()
 	modelStack.PopMatrix();
 
 	modelStack.PopMatrix();
-
-
 }
 
 void SP2Scene::RenderText(Mesh* mesh, std::string text, Color color)
@@ -336,13 +347,10 @@ void SP2Scene::RenderText(Mesh* mesh, std::string text, Color color)
 void SP2Scene::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
     if (!mesh || mesh->textureID <= 0) //Proper error check
-    {
         return;
-    }
 
     glDisable(GL_DEPTH_TEST);
 
-    //Add these code just after glDisable(GL_DEPTH_TEST);
     Mtx44 ortho;
     ortho.SetToOrtho(0, 80, 0, 60, -10, 10); //size of screen UI
     projectionStack.PushMatrix();
@@ -364,7 +372,7 @@ void SP2Scene::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, flo
     for (unsigned i = 0; i < text.length(); ++i)
     {
         Mtx44 characterSpacing;
-        characterSpacing.SetToTranslation(i * 1.0f, 0, 0); //1.0f is the spacing of each character, you may change this value
+        characterSpacing.SetToTranslation(i * 0.8f, 0, 0); //1.0f is the spacing of each character, you may change this value
         Mtx44 MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top() * characterSpacing;
         glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 
@@ -372,13 +380,55 @@ void SP2Scene::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, flo
     }
     glBindTexture(GL_TEXTURE_2D, 0);
     glUniform1i(m_parameters[U_TEXT_ENABLED], 0);
-
-    //Add these code just before glEnable(GL_DEPTH_TEST);
     projectionStack.PopMatrix();
     viewStack.PopMatrix();
     modelStack.PopMatrix();
-
     glEnable(GL_DEPTH_TEST);
+}
+
+void SP2Scene::RenderUIOnScreen(Mesh* mesh, float size, float x, float y)
+{
+    Mtx44 ortho;
+    ortho.SetToOrtho(0, 80, 0, 60, -10, 10); //size of screen UI
+    projectionStack.PushMatrix();
+    projectionStack.LoadMatrix(ortho);
+    viewStack.PushMatrix();
+    viewStack.LoadIdentity(); //No need camera for ortho mode
+    modelStack.PushMatrix();
+    modelStack.LoadIdentity(); //Reset modelStack
+    modelStack.Scale(size, size, size);
+    modelStack.Translate(x, y, 0);
+    modelStack.Rotate(90, 1, 0, 0);
+
+    Mtx44 MVP, modelView, modelView_inverse_transpose;
+
+    MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
+    glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
+    modelView = viewStack.Top() * modelStack.Top();
+    glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]); 
+
+    if (mesh->textureID > 0)
+    {
+        glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 1);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, mesh->textureID);
+        glUniform1i(m_parameters[U_COLOR_TEXTURE], 0);
+    }
+    else
+    {
+        glUniform1i(m_parameters[U_COLOR_TEXTURE_ENABLED], 0);
+    }
+
+    mesh->Render(); //this line should only be called once 
+
+    if (mesh->textureID > 0)
+    {
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    modelStack.PopMatrix();
+    projectionStack.PopMatrix();
+    viewStack.PopMatrix();
 }
 
 

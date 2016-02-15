@@ -8,6 +8,7 @@
 #include "Mesh.h"
 #include "MatrixStack.h"
 #include "Light.h"
+#include "UI.h"
 
 class SP2Scene : public Scene
 {
@@ -17,7 +18,8 @@ class SP2Scene : public Scene
     {
         GEO_AXES = 0,
         GEO_LIGHTBALL,
-        GEO_SKYBOX,
+        GEO_UI_PLANET_NAVIGATION,
+        GEO_PLANETS,
 		GEO_TEXT,
 		GEO_FRONT,
 		GEO_BACK,
@@ -81,8 +83,11 @@ private:
     void RenderSkybox();
     void RenderText(Mesh* mesh, std::string text, Color color);
     void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
+    void RenderUIOnScreen(Mesh* mesh, float size, float x, float y);
 
     Camera2 camera;
+
+    UI UI;
 
     Mesh *meshList[NUM_GEOMETRY];
 

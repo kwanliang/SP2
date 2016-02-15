@@ -31,9 +31,16 @@ bool Application::IsKeyPressed(unsigned short key)
 
 void Application::MouseMovement(double& x, double& y) 
 {
-    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-    glfwGetCursorPos(m_window, &x, &y);
-    glfwSetCursorPos(m_window, 800 / 2, 600 / 2);
+    if (UI::UI_Planet == false) {
+        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        glfwGetCursorPos(m_window, &x, &y);
+        glfwSetCursorPos(m_window, 800 / 2, 600 / 2);
+    }
+    else {
+        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwGetCursorPos(m_window, &x, &y);
+    }
+    std::cout << x << " : " << y << std::endl;
 }
 
 Application::Application()
@@ -69,7 +76,7 @@ void Application::Init()
 
 	//Create a window and create its OpenGL context
 	//const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	m_window = glfwCreateWindow(1960, 1020, "Computer Graphics", NULL, NULL);
+	m_window = glfwCreateWindow(800, 600, "Computer Graphics", NULL, NULL);
 
     //Resize objects according to window
     glfwSetWindowSizeCallback(m_window, resize_callback);
@@ -107,8 +114,6 @@ void Application::Run()
 	//Main Loop
 	Scene *scene = new SP2Scene();
 	scene->Init();
-
-
 
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
 	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
