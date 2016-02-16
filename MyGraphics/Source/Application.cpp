@@ -44,6 +44,17 @@ void Mouse::MouseMovement(double& x, double& y)
     //std::cout << x << " : " << y << std::endl;
 }
 
+void Mouse::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        Mouse::Left_Clicked = true;
+    }
+    else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+        Mouse::Left_Clicked = false;
+    }
+}
+
 Application::Application()
 {
 }
@@ -81,6 +92,9 @@ void Application::Init()
 
     //Resize objects according to window
     glfwSetWindowSizeCallback(m_window, resize_callback);
+
+    //Mouse Clicks
+    glfwSetMouseButtonCallback(m_window, Mouse::MouseButtonCallback);
 
 	//If the window couldn't be created
 	if (!m_window)

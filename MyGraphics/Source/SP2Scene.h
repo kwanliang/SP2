@@ -93,7 +93,7 @@ public:
     std::string FPS;
 
     //Planet Nav Animation
-    bool UI_PlanetNav_Animation;
+    static bool UI_PlanetNav_Animation;
 
     float PlanetMove_1_Y;
 
@@ -130,7 +130,6 @@ private:
 	float moveDoor;
 	bool closeDoor;
 	float closingDoor;
-
 };
 
 #endif

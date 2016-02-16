@@ -1,5 +1,6 @@
 #include "UI.h"
 #include "Mouse.h"
+#include "SP2Scene.h"
 
 bool UI::UI_On = false;
 bool UI::UI_PlanatNav = false;
@@ -33,6 +34,12 @@ bool UI::PlanetUIHitbox(double& MousePositionX, double& MousePositionY, int MinX
         else if (PlanetUI_ID == 3 && Mouse::Left_Clicked == true)
         {
             std::cout << PlanetUI_ID << std::endl;
+        }
+        else if (PlanetUI_ID == 4 && Mouse::Left_Clicked == true)
+        {
+            UI::UI_PlanatNav = false;
+            UI::UI_On = false;
+            SP2Scene::UI_PlanetNav_Animation = false;
         }
         return true;
     }

@@ -9,6 +9,8 @@
 #include "LoadTGA.h"
 #include "LoadOBJ.h"
 
+bool SP2Scene::UI_PlanetNav_Animation = false;
+
 SP2Scene::SP2Scene()
 {
 	nearDoor = false;
@@ -23,8 +25,6 @@ SP2Scene::~SP2Scene()
 void SP2Scene::Init()
 {
     LSPEED = 100.f;
-
-    UI_PlanetNav_Animation = false;
 
     //Load vertex and fragment shaders
     m_programID = LoadShaders("Shader//Texture.vertexshader", "Shader//Text.fragmentshader");
@@ -276,16 +276,17 @@ void SP2Scene::Update(double dt)
 
 	if (nearDoor ==false)
 	{
-		std::cout << "HAHAAHAHAHAHAHAAHAHAHAHAHAHA" << std::endl;
+		//std::cout << "HAHAAHAHAHAHAHAAHAHAHAHAHAHA" << std::endl;
 	}
 	else
 	{
-		std::cout << "LOLOLOLOLOLOLOLOLOOLOLO" << std::endl;
+		//std::cout << "LOLOLOLOLOLOLOLOLOOLOLO" << std::endl;
 	}
 
     // Planet Animation
 
-    if (UI_PlanetNav_Animation == true) {
+    if (UI_PlanetNav_Animation == true) 
+    {
         if (PlanetMove_1_Y < 2) {
             PlanetMove_1_Y += (float)(10 * dt);
         }
@@ -303,10 +304,21 @@ void SP2Scene::Update(double dt)
             UI.UI_PlanetName = true;
         }
     }
+    else 
+    {
+        PlanetMove_1_Y = 0;
+
+        PlanetMove_2_X = 0;
+        PlanetMove_2_Y = 0;
+
+        PlanetMove_3_X = 0;
+        PlanetMove_3_Y = 0;
+
+        UI.UI_PlanetName = false;
+    }
 
     camera.Update(dt);
-	std::cout << nearDoor << std::endl;
-	
+	//std::cout << nearDoor << std::endl;
 }
 
 void SP2Scene::Render()
@@ -403,7 +415,6 @@ void SP2Scene::Render()
 	modelStack.Translate(-450, 0, -150);
 	modelStack.Rotate(-120, 0, 1, 0);
 	modelStack.Scale(60, 60, 60);
-
 	RenderMesh(meshList[GEO_COMPUTER2], false);
 	modelStack.PopMatrix();
 
