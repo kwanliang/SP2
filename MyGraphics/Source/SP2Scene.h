@@ -40,6 +40,8 @@ class SP2Scene : public Scene
 
 		GEO_CONTROLPANEL,
 
+		GEO_TABLE,
+
         NUM_GEOMETRY,
     };
     enum UNIFORM_TYPE
@@ -104,6 +106,12 @@ private:
     Mesh *meshList[NUM_GEOMETRY];
 
     Light light[1];
+
+	bool nearDoor;
+	float moveDoor;
+	bool closeDoor;
+	float closingDoor;
+
 };
 
 #endif

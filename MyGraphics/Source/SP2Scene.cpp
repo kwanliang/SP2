@@ -11,6 +11,9 @@
 
 SP2Scene::SP2Scene()
 {
+	nearDoor = false;
+	closeDoor = false;
+	moveDoor = 0;
 }
 
 SP2Scene::~SP2Scene()
@@ -130,6 +133,9 @@ void SP2Scene::Init()
 	meshList[GEO_CONTROLPANEL] = MeshBuilder::GenerateOBJ("controlpanel", "OBJ//controlpanel.obj");
 	meshList[GEO_CONTROLPANEL]->textureID = LoadTGA("Image//controlpanel.tga");
 
+	meshList[GEO_TABLE] = MeshBuilder::GenerateOBJ("controlpanel", "OBJ//table.obj");
+	meshList[GEO_TABLE]->textureID = LoadTGA("Image//table.tga");
+
     meshList[GEO_UI_PLANET_NAVIGATION] = MeshBuilder::GenerateQuad("planet navigation UI", Color(1, 0, 0));
     meshList[GEO_PLANETS] = MeshBuilder::GenerateCircle("planets", Color(1, 1, 1), 36);
 
@@ -226,8 +232,44 @@ void SP2Scene::Update(double dt)
     frames = 1.0 / DeltaTime;
     FPS = std::to_string(frames);
 
+	if ((camera.position.x <= 860 && camera.position.x >= 510) && (camera.position.z <= 670 && camera.position.z >= -670) && (nearDoor == false))
+	{
+		nearDoor = true;
+	}
+
+	if (nearDoor == true)
+	{
+		if (moveDoor <= 100)
+		{
+			moveDoor += (float)(60 * dt);
+			
+		}
+		if (moveDoor >= 100){
+
+			nearDoor = false;
+
+		}
+	}
+
+	if (nearDoor == false && moveDoor >= 0)
+	{
+			moveDoor -= (float)(60 * dt);
+
+		
+		
+	}
+
+	if (nearDoor ==false)
+	{
+		std::cout << "HAHAAHAHAHAHAHAAHAHAHAHAHAHA" << std::endl;
+	}
+	else
+	{
+		std::cout << "LOLOLOLOLOLOLOLOLOOLOLO" << std::endl;
+	}
+
     camera.Update(dt);
-	std::cout << camera.position.x << " " << camera.position.z << std::endl;
+	std::cout << nearDoor << std::endl;
 	
 }
 
@@ -288,10 +330,16 @@ void SP2Scene::Render()
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-
 	modelStack.Scale(60, 60, 60);
 	modelStack.Translate(-6, -6, 0);
 	RenderMesh(meshList[GEO_CONTROLPANEL], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(1700, -400, 0);
+	modelStack.Rotate(90, 0, 1, 0);
+	modelStack.Scale(200, 140, 200);
+	RenderMesh(meshList[GEO_TABLE], false);
 	modelStack.PopMatrix();
 
     if (Application::IsKeyPressed('E')) {
@@ -329,14 +377,14 @@ void SP2Scene::RenderSkybox()
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	modelStack.Translate(72, -45, 0);
+	modelStack.Translate(72, -45 + moveDoor, 0);
 	modelStack.Rotate(180, 0, 1, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
 	RenderMesh(meshList[GEO_BACK], false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	modelStack.Translate(0, -50, 0);
+	modelStack.Translate(-4, -50, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
 	RenderMesh(meshList[GEO_TOP], false);
 	modelStack.PopMatrix();
@@ -370,7 +418,7 @@ void SP2Scene::RenderSkybox()
 	modelStack.Scale(10, 8, 10);
 
 	modelStack.PushMatrix();
-	modelStack.Translate(-69, -45, 0);
+	modelStack.Translate(-69, -45 + moveDoor, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
 	RenderMesh(meshList[GEO_BARFRONT], false);
 	modelStack.PopMatrix();
