@@ -23,9 +23,10 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 	Test.SetRace(0);
 }
 
+
 bool BoundaryCheck(const Vector3& CameraPosition) {
-    Vector3 MaxPoint(370, 300, 300);
-	Vector3 MinPoint(-370, -300, -300);
+    Vector3 MaxPoint(2000, 300, 670);
+	Vector3 MinPoint(-500, -300, -670);
     if (CameraPosition.x > MinPoint.x && CameraPosition.x < MaxPoint.x &&
         CameraPosition.y > MinPoint.y && CameraPosition.y < MaxPoint.y &&
         CameraPosition.z > MinPoint.z && CameraPosition.z < MaxPoint.z)
@@ -33,7 +34,7 @@ bool BoundaryCheck(const Vector3& CameraPosition) {
         return true;
     }
     else {
-        return true;
+        return false;
     }
 }
 
@@ -54,6 +55,8 @@ void Camera2::Update(double dt)
 		Test.SetRace(2);
 	}
     static const float CAMERA_SPEED = 50.f;
+	static const float Walking_Speed = 800.f;
+
 
 	TestPosition = position;
     PlayerPosition = position;
@@ -161,6 +164,8 @@ void Camera2::Update(double dt)
     {
         Reset();
     }
+
+
 }
 
 void Camera2::Reset()

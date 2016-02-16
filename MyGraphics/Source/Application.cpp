@@ -40,7 +40,7 @@ void Application::MouseMovement(double& x, double& y)
         glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         glfwGetCursorPos(m_window, &x, &y);
     }
-    std::cout << x << " : " << y << std::endl;
+    //std::cout << x << " : " << y << std::endl;
 }
 
 Application::Application()
@@ -76,7 +76,7 @@ void Application::Init()
 
 	//Create a window and create its OpenGL context
 	//const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	m_window = glfwCreateWindow(800, 600, "Computer Graphics", NULL, NULL);
+	m_window = glfwCreateWindow(800,600, "Computer Graphics", NULL, NULL);
 
     //Resize objects according to window
     glfwSetWindowSizeCallback(m_window, resize_callback);

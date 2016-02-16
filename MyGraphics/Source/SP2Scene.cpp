@@ -90,23 +90,45 @@ void SP2Scene::Init()
     meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
     meshList[GEO_TEXT]->textureID = LoadTGA("Image//calibri.tga");
 
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHIP<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[GEO_FRONT] = MeshBuilder::GenerateOBJ("front", "OBJ//front.obj");
 	meshList[GEO_FRONT]->textureID = LoadTGA("Image//front.tga");
-
 	meshList[GEO_BACK] = MeshBuilder::GenerateOBJ("back", "OBJ//back.obj");
 	meshList[GEO_BACK]->textureID = LoadTGA("Image//back.tga");
-
 	meshList[GEO_TOP] = MeshBuilder::GenerateOBJ("top", "OBJ//top.obj");
 	meshList[GEO_TOP]->textureID = LoadTGA("Image//top.tga");
-
 	meshList[GEO_BOTTOM] = MeshBuilder::GenerateOBJ("bottom", "OBJ//bottom.obj");
 	meshList[GEO_BOTTOM]->textureID = LoadTGA("Image//bottom.tga");
-
 	meshList[GEO_LEFT] = MeshBuilder::GenerateOBJ("left", "OBJ//left.obj");
 	meshList[GEO_LEFT]->textureID = LoadTGA("Image//left.tga");
-	
 	meshList[GEO_RIGHT] = MeshBuilder::GenerateOBJ("right", "OBJ//right.obj");
 	meshList[GEO_RIGHT]->textureID = LoadTGA("Image//left.tga");
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHIP<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHOP<<<<<<<<<<<<<<<<<<<<<<<<<<
+	meshList[GEO_BARBOTTOM] = MeshBuilder::GenerateOBJ("bar_bottom", "OBJ//bottom.obj");
+	meshList[GEO_BARBOTTOM]->textureID = LoadTGA("Image//bottom.tga");
+	meshList[GEO_BARTOP] = MeshBuilder::GenerateOBJ("bar_top", "OBJ//top.obj");
+	meshList[GEO_BARTOP]->textureID = LoadTGA("Image//top.tga");
+	meshList[GEO_BARFRONT] = MeshBuilder::GenerateOBJ("bar_back", "OBJ//back.obj");
+	meshList[GEO_BARFRONT]->textureID = LoadTGA("Image//back.tga");
+	meshList[GEO_BARLEFT] = MeshBuilder::GenerateOBJ("bar_left", "OBJ//left.obj");
+	meshList[GEO_BARLEFT]->textureID = LoadTGA("Image//bar_right.tga");
+	meshList[GEO_BARRIGHT] = MeshBuilder::GenerateOBJ("bar_right", "OBJ//left.obj");
+	meshList[GEO_BARRIGHT]->textureID = LoadTGA("Image//bar_right.tga");
+	meshList[GEO_BARBACK] = MeshBuilder::GenerateOBJ("bar_back", "OBJ//back.obj");
+	meshList[GEO_BARBACK]->textureID = LoadTGA("Image//bar_back.tga");
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHOP<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<<<
+	meshList[GEO_COMPUTER1] = MeshBuilder::GenerateOBJ("computer", "OBJ//computer.obj");
+	meshList[GEO_COMPUTER1]->textureID = LoadTGA("Image//computer.tga");
+	meshList[GEO_COMPUTER2] = MeshBuilder::GenerateOBJ("computer2", "OBJ//computer.obj");
+	meshList[GEO_COMPUTER2]->textureID = LoadTGA("Image//computer2.tga");
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+	meshList[GEO_CONTROLPANEL] = MeshBuilder::GenerateOBJ("controlpanel", "OBJ//controlpanel.obj");
+	meshList[GEO_CONTROLPANEL]->textureID = LoadTGA("Image//controlpanel.tga");
 
     meshList[GEO_UI_PLANET_NAVIGATION] = MeshBuilder::GenerateQuad("planet navigation UI", Color(1, 0, 0));
     meshList[GEO_PLANETS] = MeshBuilder::GenerateCircle("planets", Color(1, 1, 1), 36);
@@ -205,6 +227,8 @@ void SP2Scene::Update(double dt)
     FPS = std::to_string(frames);
 
     camera.Update(dt);
+	std::cout << camera.position.x << " " << camera.position.z << std::endl;
+	
 }
 
 void SP2Scene::Render()
@@ -214,10 +238,12 @@ void SP2Scene::Render()
 
     //Set view matrix using camera settings
     viewStack.LoadIdentity();
+
     viewStack.LookAt(
         camera.position.x, camera.position.y, camera.position.z,
         camera.target.x, camera.target.y, camera.target.z,
         camera.up.x, camera.up.y, camera.up.z
+
         );
 
     modelStack.LoadIdentity();
@@ -246,8 +272,31 @@ void SP2Scene::Render()
 
     RenderSkybox();
 
+	modelStack.PushMatrix();
+	modelStack.Translate(-450, 0, 150);
+	modelStack.Rotate(-60, 0, 1, 0);
+	modelStack.Scale(60, 60, 60);
+	RenderMesh(meshList[GEO_COMPUTER1], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-450, 0, -150);
+	modelStack.Rotate(-120, 0, 1, 0);
+	modelStack.Scale(60, 60, 60);
+
+	RenderMesh(meshList[GEO_COMPUTER2], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+
+	modelStack.Scale(60, 60, 60);
+	modelStack.Translate(-6, -6, 0);
+	RenderMesh(meshList[GEO_CONTROLPANEL], false);
+	modelStack.PopMatrix();
+
     if (Application::IsKeyPressed('E')) {
         UI.UI_Planet = true;
+
     }
 
     glBlendFunc(1, 1);
@@ -269,8 +318,9 @@ void SP2Scene::Render()
 void SP2Scene::RenderSkybox()
 {
 	float skyboxsize = 20;
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHIP<<<<<<<<<<<<<<<<<<<<<<<<<<
 	modelStack.PushMatrix();
-	modelStack.Scale(8, 5, 5);
+	modelStack.Scale(10, 8, 10);
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-55, -45, 0);
@@ -279,7 +329,7 @@ void SP2Scene::RenderSkybox()
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	modelStack.Translate(55, -45, 0);
+	modelStack.Translate(72, -45, 0);
 	modelStack.Rotate(180, 0, 1, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
 	RenderMesh(meshList[GEO_BACK], false);
@@ -298,20 +348,70 @@ void SP2Scene::RenderSkybox()
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	modelStack.Translate(0, -45, 69);
+	modelStack.Translate(2.82, -45, 69);
 	modelStack.Rotate(90, 0, 1, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
 	RenderMesh(meshList[GEO_LEFT], false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	modelStack.Translate(0, -45, -69);
+	modelStack.Translate(2.82, -45, -69);
 	modelStack.Rotate(-90, 0, 1, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
 	RenderMesh(meshList[GEO_RIGHT], false);
 	modelStack.PopMatrix();
 
 	modelStack.PopMatrix();
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHIP<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHOP<<<<<<<<<<<<<<<<<<<<<<<<<<
+	modelStack.PushMatrix();
+	modelStack.Translate(1425, 0, 0);
+	modelStack.Scale(10, 8, 10);
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-69, -45, 0);
+	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
+	RenderMesh(meshList[GEO_BARFRONT], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(70, -45, 0);
+	modelStack.Rotate(180, 0, 1, 0);
+	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
+	RenderMesh(meshList[GEO_BARBACK], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-9.5, -50, 0);
+	modelStack.Scale(skyboxsize + 9, skyboxsize, skyboxsize);
+	RenderMesh(meshList[GEO_BARTOP], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-5.3, -49, 0);
+	modelStack.Scale(skyboxsize + 9, skyboxsize, skyboxsize);
+	RenderMesh(meshList[GEO_BARBOTTOM], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0, -45, 69);
+
+	modelStack.Rotate(90, 0, 1, 0);
+	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
+	RenderMesh(meshList[GEO_BARLEFT], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0, -45, -69);
+	modelStack.Rotate(-90, 0, 1, 0);
+	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
+	RenderMesh(meshList[GEO_BARRIGHT], false);
+	modelStack.PopMatrix();
+
+	modelStack.PopMatrix();
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHOP<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 }
 
 void SP2Scene::RenderText(Mesh* mesh, std::string text, Color color)
