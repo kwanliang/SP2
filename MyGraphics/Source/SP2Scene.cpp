@@ -24,7 +24,7 @@ void SP2Scene::Init()
 {
     LSPEED = 100.f;
 
-    UI.UI_Planet = false;
+    UI_PlanetNav_Animation = false;
 
     //Load vertex and fragment shaders
     m_programID = LoadShaders("Shader//Texture.vertexshader", "Shader//Text.fragmentshader");
@@ -93,6 +93,26 @@ void SP2Scene::Init()
     meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
     meshList[GEO_TEXT]->textureID = LoadTGA("Image//calibri.tga");
 
+    //<<<<<<<<<<<<<<<<<<<<<<<PLANET UI<<<<<<<<<<<<<<<<<<<<<<<<<<
+    meshList[GEO_UI_PLANET_NAVIGATION] = MeshBuilder::GenerateOBJ("UI planet plane", "OBJ//UI_Plane.obj");
+    meshList[GEO_UI_PLANET_NAVIGATION]->textureID = LoadTGA("Image//Space.tga");
+    meshList[GEO_UI_PLANET_SLIME] = MeshBuilder::GenerateOBJ("planet slime", "OBJ//Planet.obj");
+    meshList[GEO_UI_PLANET_SLIME]->textureID = LoadTGA("Image//Slime.tga");
+    meshList[GEO_UI_PLANET_ROBOT] = MeshBuilder::GenerateOBJ("planet slime", "OBJ//Planet.obj");
+    meshList[GEO_UI_PLANET_ROBOT]->textureID = LoadTGA("Image//Robot.tga");
+    meshList[GEO_UI_PLANET_DARK] = MeshBuilder::GenerateOBJ("planet slime", "OBJ//Planet.obj");
+    meshList[GEO_UI_PLANET_DARK]->textureID = LoadTGA("Image//Dark.tga");
+    meshList[GEO_UI_PLANET_SUN] = MeshBuilder::GenerateOBJ("planet slime", "OBJ//Planet.obj");
+    meshList[GEO_UI_PLANET_SUN]->textureID = LoadTGA("Image//Sun.tga");
+    //<<<<<<<<<<<<<<<<<<<<<<<PLANET UI<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+    //<<<<<<<<<<<<<<<<<<<<<<<<SHOP UI<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    meshList[GEO_UI_SHOP] = MeshBuilder::GenerateOBJ("UI shop plane", "OBJ//UI_Plane.obj");
+    meshList[GEO_UI_SHOP]->textureID = LoadTGA("Image//Shop.tga");
+    meshList[GEO_UI_SHOP_SELECT] = MeshBuilder::GenerateOBJ("UI shop select", "OBJ//Select.obj");
+    meshList[GEO_UI_SHOP_SELECT]->textureID = LoadTGA("Image//Select.tga");
+    //<<<<<<<<<<<<<<<<<<<<<<<<SHOP UI<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHIP<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[GEO_FRONT] = MeshBuilder::GenerateOBJ("front", "OBJ//front.obj");
 	meshList[GEO_FRONT]->textureID = LoadTGA("Image//front.tga");
@@ -133,12 +153,8 @@ void SP2Scene::Init()
 	meshList[GEO_CONTROLPANEL] = MeshBuilder::GenerateOBJ("controlpanel", "OBJ//controlpanel.obj");
 	meshList[GEO_CONTROLPANEL]->textureID = LoadTGA("Image//controlpanel.tga");
 
-	meshList[GEO_TABLE] = MeshBuilder::GenerateOBJ("controlpanel", "OBJ//table.obj");
-	meshList[GEO_TABLE]->textureID = LoadTGA("Image//table.tga");
-
-    meshList[GEO_UI_PLANET_NAVIGATION] = MeshBuilder::GenerateQuad("planet navigation UI", Color(1, 0, 0));
-    meshList[GEO_PLANETS] = MeshBuilder::GenerateCircle("planets", Color(1, 1, 1), 36);
-
+	//meshList[GEO_TABLE] = MeshBuilder::GenerateOBJ("controlpanel", "OBJ//table.obj");
+	//meshList[GEO_TABLE]->textureID = LoadTGA("Image//table.tga");
 
     light[0].type = Light::LIGHT_POINT;
     light[0].position.Set(0, 100, 0);
@@ -232,6 +248,8 @@ void SP2Scene::Update(double dt)
     frames = 1.0 / DeltaTime;
     FPS = std::to_string(frames);
 
+    // Charcter Door
+
 	if ((camera.position.x <= 860 && camera.position.x >= 510) && (camera.position.z <= 670 && camera.position.z >= -670) && (nearDoor == false))
 	{
 		nearDoor = true;
@@ -253,10 +271,7 @@ void SP2Scene::Update(double dt)
 
 	if (nearDoor == false && moveDoor >= 0)
 	{
-			moveDoor -= (float)(60 * dt);
-
-		
-		
+			moveDoor -= (float)(60 * dt);		
 	}
 
 	if (nearDoor ==false)
@@ -267,6 +282,27 @@ void SP2Scene::Update(double dt)
 	{
 		std::cout << "LOLOLOLOLOLOLOLOLOOLOLO" << std::endl;
 	}
+
+    // Planet Animation
+
+    if (UI_PlanetNav_Animation == true) {
+        if (PlanetMove_1_Y < 2) {
+            PlanetMove_1_Y += (float)(10 * dt);
+        }
+
+        if (PlanetMove_2_X > -2) {
+            PlanetMove_2_X -= (float)(10 * dt);
+            PlanetMove_2_Y -= (float)(10 * dt);
+        }
+
+        if (PlanetMove_3_X < 2) {
+            PlanetMove_3_X += (float)(10 * dt);
+            PlanetMove_3_Y -= (float)(10 * dt);
+        }
+        else {
+            UI.UI_PlanetName = true;
+        }
+    }
 
     camera.Update(dt);
 	std::cout << nearDoor << std::endl;
@@ -314,6 +350,48 @@ void SP2Scene::Render()
 
     RenderSkybox();
 
+    if (Application::IsKeyPressed('E') && UI.UI_On == false) {
+        UI.UI_PlanatNav = true;
+        UI.UI_On = true;
+    }
+
+    if (Application::IsKeyPressed('F') && UI.UI_On == false) {
+        UI.UI_Shop = true;
+        UI.UI_On = true;
+    }
+
+    //glBlendFunc(2, 2);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    if (UI.UI_PlanatNav == true)
+    {
+        UI_PlanetNav_Animation = true;
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_SLIME], 5, 8, 6 + PlanetMove_1_Y);
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_ROBOT], 5, 7 + PlanetMove_2_X, 5 + PlanetMove_2_Y);
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_DARK], 5, 9 + PlanetMove_3_X, 5 + PlanetMove_3_Y);
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_SUN], 6, 6.7f, 4);
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_NAVIGATION], 80, .5f, -.1f);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Back", Color(1, 1, 1), 2, 19, 2);
+        if (UI.UI_PlanetName == true)
+        {
+            RenderTextOnScreen(meshList[GEO_TEXT], "Planet Slime", Color(1, 1, 1), 2, 16, 19);
+            RenderTextOnScreen(meshList[GEO_TEXT], "Planet Robot", Color(1, 1, 1), 2, 24, 6);
+            RenderTextOnScreen(meshList[GEO_TEXT], "Planet Dark", Color(1, 1, 1), 2, 8, 6);
+        }
+    }
+
+    if (UI.UI_Shop == true)
+    {
+        RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 2, 3);
+        RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 5, 3);
+        RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 8, 3);
+        RenderUIOnScreen(meshList[GEO_UI_SHOP], 80, .5f, -.1f);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Ranged", Color(1, 1, 1), 2, 6.3f, 15.5f);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Melee", Color(1, 1, 1), 2, 18.8f, 15.5f);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Item", Color(1, 1, 1), 2, 31, 15.5f);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Back", Color(1, 1, 1), 2, 19, 6);
+    }
+
 	modelStack.PushMatrix();
 	modelStack.Translate(-450, 0, 150);
 	modelStack.Rotate(-60, 0, 1, 0);
@@ -335,29 +413,12 @@ void SP2Scene::Render()
 	RenderMesh(meshList[GEO_CONTROLPANEL], false);
 	modelStack.PopMatrix();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(1700, -400, 0);
-	modelStack.Rotate(90, 0, 1, 0);
-	modelStack.Scale(200, 140, 200);
-	RenderMesh(meshList[GEO_TABLE], false);
-	modelStack.PopMatrix();
-
-    if (Application::IsKeyPressed('E')) {
-        UI.UI_Planet = true;
-
-    }
-
-    glBlendFunc(1, 1);
-
-    if (UI.UI_Planet == true) {
-        RenderUIOnScreen(meshList[GEO_PLANETS], 6, 6.6f, 4);
-        RenderUIOnScreen(meshList[GEO_PLANETS], 5, 8, 8);
-        RenderUIOnScreen(meshList[GEO_PLANETS], 5, 5, 3);
-        RenderUIOnScreen(meshList[GEO_PLANETS], 5, 11, 3);
-        RenderUIOnScreen(meshList[GEO_UI_PLANET_NAVIGATION], 160, 0, 0);
-    }
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//modelStack.PushMatrix();
+	//modelStack.Translate(1700, -400, 0);
+	//modelStack.Rotate(90, 0, 1, 0);
+	//modelStack.Scale(200, 140, 200);
+	//RenderMesh(meshList[GEO_TABLE], false);
+	//modelStack.PopMatrix();
 
     RenderTextOnScreen(meshList[GEO_TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
 	RenderTextOnScreen(meshList[GEO_TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
@@ -546,14 +607,13 @@ void SP2Scene::RenderUIOnScreen(Mesh* mesh, float size, float x, float y)
     modelStack.LoadIdentity(); //Reset modelStack
     modelStack.Scale(size, size, size);
     modelStack.Translate(x, y, 0);
-    modelStack.Rotate(90, 1, 0, 0);
 
     Mtx44 MVP, modelView, modelView_inverse_transpose;
 
     MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
     glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
     modelView = viewStack.Top() * modelStack.Top();
-    glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]); 
+    glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
 
     if (mesh->textureID > 0)
     {

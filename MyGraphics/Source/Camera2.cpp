@@ -1,6 +1,7 @@
 #include "Camera2.h"
 #include "Application.h"
 #include "Mtx44.h"
+#include "Mouse.h"
 
 Camera2::Camera2()
 {
@@ -60,7 +61,7 @@ void Camera2::Update(double dt)
 	TestPosition = position;
     PlayerPosition = position;
 
-    if (Application::IsKeyPressed('W'))
+    if (Application::IsKeyPressed('W') && UI::UI_On == false)
     {
         Vector3 view = (target - position).Normalized();
         // Normalize view vector
@@ -75,7 +76,7 @@ void Camera2::Update(double dt)
 			target.z += view.z * dt * Test.Move_Speed;
         }
     }
-    if (Application::IsKeyPressed('A'))
+    if (Application::IsKeyPressed('A') && UI::UI_On == false)
     {
         Vector3 view = (target - position).Normalized();
         // Normalize view vector
@@ -91,7 +92,7 @@ void Camera2::Update(double dt)
 			target.z -= right.z * dt * Test.Move_Speed;
 		}
     }
-    if (Application::IsKeyPressed('S'))
+    if (Application::IsKeyPressed('S') && UI::UI_On == false)
     {
         Vector3 view = (target - position).Normalized();
         // Normalize view vector
@@ -106,7 +107,7 @@ void Camera2::Update(double dt)
 			target.z -= view.z * dt * Test.Move_Speed;
         }
     }
-    if (Application::IsKeyPressed('D'))
+    if (Application::IsKeyPressed('D') && UI::UI_On == false)
     {
         Vector3 view = (target - position).Normalized();
         // Normalize view vector
@@ -123,15 +124,27 @@ void Camera2::Update(double dt)
         }
     }
 
-    Application::MouseMovement(mouseXPos, mouseYPos);
-    UI::PlanetHitbox(mouseXPos, mouseYPos, 350, 450, 150, 250);
-    UI::PlanetHitbox(mouseXPos, mouseYPos, 200, 300, 400, 500);
-    UI::PlanetHitbox(mouseXPos, mouseYPos, 500, 600, 400, 500);
+    //Application::MouseMovement(mouseXPos, mouseYPos);
+    Mouse::MouseMovement(mouseXPos, mouseYPos);
+
+    if (UI::UI_PlanatNav == true) {
+        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 350, 450, 100, 200, 1);
+        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 200, 300, 350, 450, 2);
+        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 500, 600, 350, 450, 3);
+        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 370, 420, 550, 570, 4);
+    }
+
+    if (UI::UI_Shop == true) {
+        UI::ShopUIHitbox(mouseXPos, mouseYPos, 80, 230, 230, 360, 1);
+        UI::ShopUIHitbox(mouseXPos, mouseYPos, 320, 470, 230, 360, 2);
+        UI::ShopUIHitbox(mouseXPos, mouseYPos, 560, 710, 230, 360, 3);
+        UI::ShopUIHitbox(mouseXPos, mouseYPos, 370, 425, 470, 485, 4);
+    }
 
     float horizontalMouseMovement = 10 * dt * static_cast<float>((800 / 2) - mouseXPos);
     float verticalMouseMovement = 10 * dt * static_cast<float>((600 / 2) - mouseYPos);
 
-    if (verticalMouseMovement && UI::UI_Planet == false)
+    if (verticalMouseMovement && UI::UI_On == false)
     {
         Vector3 TESTview = ((target - position).Normalized()) * 10;
         Vector3 view = ((target - position).Normalized()) * 10;
@@ -147,7 +160,7 @@ void Camera2::Update(double dt)
         }
     }
 
-    if (horizontalMouseMovement && UI::UI_Planet == false)
+    if (horizontalMouseMovement && UI::UI_On == false)
     {
 		Vector3 view = ((target - position).Normalized()) * 10;
         // normalize view vector

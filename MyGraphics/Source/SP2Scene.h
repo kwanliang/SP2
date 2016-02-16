@@ -19,7 +19,15 @@ class SP2Scene : public Scene
         GEO_AXES = 0,
         GEO_LIGHTBALL,
         GEO_UI_PLANET_NAVIGATION,
-        GEO_PLANETS,
+        GEO_UI_PLANET_SLIME,
+        GEO_UI_PLANET_ROBOT,
+        GEO_UI_PLANET_DARK,
+        GEO_UI_PLANET_SUN,
+        GEO_UI_SHOP,
+        GEO_UI_SHOP_SELECT,
+        GEO_UI_SHOP_GUN,
+        GEO_UI_SHOP_MELEE,
+        GEO_UI_SHOP_ITEM,
 		GEO_TEXT,
 		GEO_FRONT,
 		GEO_BACK,
@@ -83,6 +91,17 @@ public:
     double DeltaTime;
     double frames;
     std::string FPS;
+
+    //Planet Nav Animation
+    bool UI_PlanetNav_Animation;
+
+    float PlanetMove_1_Y;
+
+    float PlanetMove_2_X;
+    float PlanetMove_2_Y;
+
+    float PlanetMove_3_X;
+    float PlanetMove_3_Y;
 
     virtual void Init();
     virtual void Update(double dt);

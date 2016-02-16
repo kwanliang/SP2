@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "SP2Scene.h"
+#include "Mouse.h"
 
 GLFWwindow* m_window;
 const unsigned char FPS = 60; // FPS of this game
@@ -29,9 +30,9 @@ bool Application::IsKeyPressed(unsigned short key)
     return ((GetAsyncKeyState(key) & 0x8001) != 0);
 }
 
-void Application::MouseMovement(double& x, double& y) 
+void Mouse::MouseMovement(double& x, double& y) 
 {
-    if (UI::UI_Planet == false) {
+    if (UI::UI_On == false) {
         glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         glfwGetCursorPos(m_window, &x, &y);
         glfwSetCursorPos(m_window, 800 / 2, 600 / 2);
