@@ -19,6 +19,8 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
     right.y = 0;
     right.Normalize();
     this->up = defaultUp = right.Cross(view).Normalized();
+
+	Test.SetRace(0);
 }
 
 bool BoundaryCheck(const Vector3& CameraPosition) {
@@ -37,8 +39,21 @@ bool BoundaryCheck(const Vector3& CameraPosition) {
 
 void Camera2::Update(double dt)
 {
+	if (Application::IsKeyPressed('Z'))
+	{
+		Test.SetRace(0);
+	}
+
+	if (Application::IsKeyPressed('X'))
+	{
+		Test.SetRace(1);
+	}
+
+	if (Application::IsKeyPressed('C'))
+	{
+		Test.SetRace(2);
+	}
     static const float CAMERA_SPEED = 50.f;
-	static const float Walking_Speed = 500.f;
 
 	TestPosition = position;
     PlayerPosition = position;
@@ -48,14 +63,14 @@ void Camera2::Update(double dt)
         Vector3 view = (target - position).Normalized();
         // Normalize view vector
 
-		TestPosition.x += view.x * dt * Walking_Speed;
-		TestPosition.z += view.z * dt * Walking_Speed;
+		TestPosition.x += view.x * dt * Test.Move_Speed;
+		TestPosition.z += view.z * dt * Test.Move_Speed;
 
         if (BoundaryCheck(TestPosition) == true) {
-			position.x += view.x * dt * Walking_Speed;
-			position.z += view.z * dt * Walking_Speed;
-			target.x += view.x * dt * Walking_Speed;
-			target.z += view.z * dt * Walking_Speed;
+			position.x += view.x * dt * Test.Move_Speed;
+			position.z += view.z * dt * Test.Move_Speed;
+			target.x += view.x * dt * Test.Move_Speed;
+			target.z += view.z * dt * Test.Move_Speed;
         }
     }
     if (Application::IsKeyPressed('A'))
@@ -64,14 +79,14 @@ void Camera2::Update(double dt)
         // Normalize view vector
         Vector3 right = view.Cross(up);
 
-		TestPosition.x -= right.x * dt * Walking_Speed;
-		TestPosition.z -= right.z * dt * Walking_Speed;
+		TestPosition.x -= right.x * dt * Test.Move_Speed;
+		TestPosition.z -= right.z * dt * Test.Move_Speed;
 
         if ((BoundaryCheck(TestPosition) == true)) {
-			position.x -= right.x * dt * Walking_Speed;
-			position.z -= right.z * dt * Walking_Speed;
-			target.x -= right.x * dt * Walking_Speed;
-			target.z -= right.z * dt * Walking_Speed;
+			position.x -= right.x * dt * Test.Move_Speed;
+			position.z -= right.z * dt * Test.Move_Speed;
+			target.x -= right.x * dt * Test.Move_Speed;
+			target.z -= right.z * dt * Test.Move_Speed;
 		}
     }
     if (Application::IsKeyPressed('S'))
@@ -79,14 +94,14 @@ void Camera2::Update(double dt)
         Vector3 view = (target - position).Normalized();
         // Normalize view vector
 
-		TestPosition.x -= view.x * dt * Walking_Speed;
-		TestPosition.z -= view.z * dt * Walking_Speed;
+		TestPosition.x -= view.x * dt * Test.Move_Speed;
+		TestPosition.z -= view.z * dt * Test.Move_Speed;
 
         if ((BoundaryCheck(TestPosition) == true)) {
-			position.x -= view.x * dt * Walking_Speed;
-			position.z -= view.z * dt * Walking_Speed;
-			target.x -= view.x * dt * Walking_Speed;
-			target.z -= view.z * dt * Walking_Speed;
+			position.x -= view.x * dt * Test.Move_Speed;
+			position.z -= view.z * dt * Test.Move_Speed;
+			target.x -= view.x * dt * Test.Move_Speed;
+			target.z -= view.z * dt * Test.Move_Speed;
         }
     }
     if (Application::IsKeyPressed('D'))
@@ -95,14 +110,14 @@ void Camera2::Update(double dt)
         // Normalize view vector
         Vector3 right = view.Cross(up);
 
-		TestPosition.x += right.x * dt * Walking_Speed;
-		TestPosition.z += right.z * dt * Walking_Speed;
+		TestPosition.x += right.x * dt * Test.Move_Speed;
+		TestPosition.z += right.z * dt * Test.Move_Speed;
 
         if ((BoundaryCheck(TestPosition) == true)) {
-			position.x += right.x * dt * Walking_Speed;
-			position.z += right.z * dt * Walking_Speed;
-			target.x += right.x * dt * Walking_Speed;
-			target.z += right.z * dt * Walking_Speed;
+			position.x += right.x * dt * Test.Move_Speed;
+			position.z += right.z * dt * Test.Move_Speed;
+			target.x += right.x * dt * Test.Move_Speed;
+			target.z += right.z * dt * Test.Move_Speed;
         }
     }
 

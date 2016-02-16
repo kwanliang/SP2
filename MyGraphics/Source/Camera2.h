@@ -2,6 +2,7 @@
 #define CAMERA_2_H
 
 #include "Camera.h"
+#include "Character.h"
 
 class Camera2 : public Camera
 {
@@ -16,6 +17,8 @@ public:
 
     Vector3 PlayerPosition;
 	Vector3 TestPosition;
+
+	Character Test;
 
     double mouseXPos;
     double mouseYPos;
