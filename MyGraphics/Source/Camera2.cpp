@@ -39,6 +39,9 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 }
 
 
+
+
+
 void Camera2::Update(double dt)
 {
 	if (Application::IsKeyPressed('Z'))
