@@ -23,6 +23,9 @@ public:
     Vector3 ControlPanel;
     Vector3 ControlPanelSize;
 
+	Vector3 table;
+	Vector3 tableSize;
+
     double mouseXPos;
     double mouseYPos;
 

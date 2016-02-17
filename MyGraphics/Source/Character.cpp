@@ -52,7 +52,7 @@ void Character::SetRace(int i)
 	{
 		MAX_HP = 20;
 		HP = 20;
-		Move_Speed = 300.0f;
+		Move_Speed = 1000.0f;
 		break;
 	}
 	case Race_Type::Robot:
