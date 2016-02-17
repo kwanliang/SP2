@@ -23,7 +23,6 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 	Test.SetRace(0);
 }
 
-
 bool BoundaryCheck(const Vector3& CameraPosition) {
     Vector3 MaxPoint(2000, 300, 670);
 	Vector3 MinPoint(-500, -300, -670);
@@ -55,8 +54,6 @@ void Camera2::Update(double dt)
 		Test.SetRace(2);
 	}
     static const float CAMERA_SPEED = 50.f;
-	static const float Walking_Speed = 800.f;
-
 
 	TestPosition = position;
     PlayerPosition = position;
@@ -69,12 +66,12 @@ void Camera2::Update(double dt)
 		TestPosition.x += view.x * dt * Test.Move_Speed;
 		TestPosition.z += view.z * dt * Test.Move_Speed;
 
-        if (BoundaryCheck(TestPosition) == true) {
+        //if (BoundaryCheck(TestPosition) == true) {
 			position.x += view.x * dt * Test.Move_Speed;
 			position.z += view.z * dt * Test.Move_Speed;
 			target.x += view.x * dt * Test.Move_Speed;
 			target.z += view.z * dt * Test.Move_Speed;
-        }
+      //  }
     }
     if (Application::IsKeyPressed('A'))
     {
@@ -85,12 +82,12 @@ void Camera2::Update(double dt)
 		TestPosition.x -= right.x * dt * Test.Move_Speed;
 		TestPosition.z -= right.z * dt * Test.Move_Speed;
 
-        if ((BoundaryCheck(TestPosition) == true)) {
+       // if ((BoundaryCheck(TestPosition) == true)) {
 			position.x -= right.x * dt * Test.Move_Speed;
 			position.z -= right.z * dt * Test.Move_Speed;
 			target.x -= right.x * dt * Test.Move_Speed;
 			target.z -= right.z * dt * Test.Move_Speed;
-		}
+		//}
     }
     if (Application::IsKeyPressed('S'))
     {
@@ -100,12 +97,12 @@ void Camera2::Update(double dt)
 		TestPosition.x -= view.x * dt * Test.Move_Speed;
 		TestPosition.z -= view.z * dt * Test.Move_Speed;
 
-        if ((BoundaryCheck(TestPosition) == true)) {
+       // if ((BoundaryCheck(TestPosition) == true)) {
 			position.x -= view.x * dt * Test.Move_Speed;
 			position.z -= view.z * dt * Test.Move_Speed;
 			target.x -= view.x * dt * Test.Move_Speed;
 			target.z -= view.z * dt * Test.Move_Speed;
-        }
+       // }
     }
     if (Application::IsKeyPressed('D'))
     {
@@ -116,12 +113,12 @@ void Camera2::Update(double dt)
 		TestPosition.x += right.x * dt * Test.Move_Speed;
 		TestPosition.z += right.z * dt * Test.Move_Speed;
 
-        if ((BoundaryCheck(TestPosition) == true)) {
+		//	if ((BoundaryCheck(TestPosition) == true)) {
 			position.x += right.x * dt * Test.Move_Speed;
 			position.z += right.z * dt * Test.Move_Speed;
 			target.x += right.x * dt * Test.Move_Speed;
 			target.z += right.z * dt * Test.Move_Speed;
-        }
+       // }
     }
 
     Application::MouseMovement(mouseXPos, mouseYPos);

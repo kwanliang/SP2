@@ -38,6 +38,14 @@ class SP2Scene : public Scene
 		GEO_COMPUTER1,
 		GEO_COMPUTER2,
 
+		PLANET_FRONT,
+		PLANET_BACK,
+		PLANET_LEFT,
+		PLANET_RIGHT,
+		PLANET_TOP,
+		PLANET_BOTTOM,
+		PLANET_GROUND,
+
 		GEO_CONTROLPANEL,
 
         NUM_GEOMETRY,
@@ -82,6 +90,8 @@ public:
     double frames;
     std::string FPS;
 
+	bool Planet3;
+
     virtual void Init();
     virtual void Update(double dt);
     virtual void Render();
@@ -93,6 +103,8 @@ private:
 
     void RenderMesh(Mesh* mesh, bool enableLight);
     void RenderSkybox();
+	void RenderShip();
+	void RenderPlanet_3();
     void RenderText(Mesh* mesh, std::string text, Color color);
     void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
     void RenderUIOnScreen(Mesh* mesh, float size, float x, float y);
