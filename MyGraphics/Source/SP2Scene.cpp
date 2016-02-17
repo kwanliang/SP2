@@ -362,10 +362,10 @@ void SP2Scene::Render()
 
     RenderSkybox();
 
-    if (Application::IsKeyPressed('E') && UI.UI_On == false) {
-        UI.UI_PlanatNav = true;
-        UI.UI_On = true;
-    }
+    //if (Application::IsKeyPressed('E') && UI.UI_On == false) {
+    //    UI.UI_PlanatNav = true;
+    //    UI.UI_On = true;
+    //}
 
     if (Application::IsKeyPressed('F') && UI.UI_On == false) {
         UI.UI_Shop = true;
