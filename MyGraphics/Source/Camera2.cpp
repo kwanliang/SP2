@@ -165,10 +165,16 @@ void Camera2::Update(double dt)
         Mtx44 rotation;
         rotation.SetToRotation(verticalMouseMovement, right.x, right.y, right.z);
         TESTview = rotation * view;
-        if (TESTview.y < 8.f && TESTview.y > -9.f) {
+        if (TESTview.y < 8.f && TESTview.y > -9.f) 
+        {
             view = rotation * view;
             up = rotation * up;
             target = position + view;
+            if (Application::IsKeyPressed('E') && Collision::ObjCheck(target, ControlPanel, ControlPanelSize) == true)
+            {
+                UI::UI_PlanatNav = true;
+                UI::UI_On = true;
+            }
         }
     }
 
@@ -180,8 +186,8 @@ void Camera2::Update(double dt)
         Mtx44 rotation;
         rotation.SetToRotation(horizontalMouseMovement, 0, 1, 0);
         view = rotation * view;
-        target = position + view;
         up = rotation * up;
+        target = position + view;
     }
 
     if (Application::IsKeyPressed('R'))
