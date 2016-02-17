@@ -8,6 +8,7 @@
 #include "Utility.h"
 #include "LoadTGA.h"
 #include "LoadOBJ.h"
+#include "Mouse.h"
 
 bool SP2Scene::UI_PlanetNav_Animation = false;
 
@@ -143,12 +144,16 @@ void SP2Scene::Init()
 	meshList[GEO_BARBACK]->textureID = LoadTGA("Image//bar_back.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHOP<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[GEO_COMPUTER1] = MeshBuilder::GenerateOBJ("computer", "OBJ//computer.obj");
 	meshList[GEO_COMPUTER1]->textureID = LoadTGA("Image//computer.tga");
 	meshList[GEO_COMPUTER2] = MeshBuilder::GenerateOBJ("computer2", "OBJ//computer.obj");
 	meshList[GEO_COMPUTER2]->textureID = LoadTGA("Image//computer2.tga");
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<
+
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    meshList[GEO_BULLET] = MeshBuilder::GenerateSphere("bullet", Color(1, 1, 1), 10, 20);
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	meshList[GEO_CONTROLPANEL] = MeshBuilder::GenerateOBJ("controlpanel", "OBJ//controlpanel.obj");
 	meshList[GEO_CONTROLPANEL]->textureID = LoadTGA("Image//controlpanel.tga");
@@ -318,14 +323,13 @@ void SP2Scene::Update(double dt)
     }
 
     camera.Update(dt);
-	//std::cout << nearDoor << std::endl;
 }
 
 void SP2Scene::Render()
 {
     // Render VBO here
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    
     //Set view matrix using camera settings
     viewStack.LoadIdentity();
 
@@ -361,11 +365,6 @@ void SP2Scene::Render()
     modelStack.PopMatrix();
 
     RenderSkybox();
-
-    //if (Application::IsKeyPressed('E') && UI.UI_On == false) {
-    //    UI.UI_PlanatNav = true;
-    //    UI.UI_On = true;
-    //}
 
     if (Application::IsKeyPressed('F') && UI.UI_On == false) {
         UI.UI_Shop = true;
@@ -431,8 +430,19 @@ void SP2Scene::Render()
 	//RenderMesh(meshList[GEO_TABLE], false);
 	//modelStack.PopMatrix();
 
+    if (camera.ProjectileShot == true) {
+        modelStack.PushMatrix();
+        modelStack.Translate(camera.ProjectilePosition.x, camera.ProjectilePosition.y, camera.ProjectilePosition.z);
+        modelStack.Scale(10, 10, 10);
+        RenderMesh(meshList[GEO_BULLET], false);
+        modelStack.PopMatrix();
+    }
+
     RenderTextOnScreen(meshList[GEO_TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
 	RenderTextOnScreen(meshList[GEO_TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
+    if (UI::UI_On == false) {
+        RenderTextOnScreen(meshList[GEO_TEXT], "+", Color(1, 0, 0), 3, 14, 10);
+    }
 }
 
 void SP2Scene::RenderSkybox()

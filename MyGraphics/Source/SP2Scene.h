@@ -9,6 +9,7 @@
 #include "MatrixStack.h"
 #include "Light.h"
 #include "UI.h"
+#include "Collision.h"
 
 class SP2Scene : public Scene
 {
@@ -49,6 +50,9 @@ class SP2Scene : public Scene
 		GEO_CONTROLPANEL,
 
 		GEO_TABLE,
+
+        GEO_GUN,
+        GEO_BULLET,
 
         NUM_GEOMETRY,
     };
@@ -119,6 +123,8 @@ private:
     void RenderUIOnScreen(Mesh* mesh, float size, float x, float y);
 
     Camera2 camera;
+
+    Collision collision;
 
     UI UI;
 
