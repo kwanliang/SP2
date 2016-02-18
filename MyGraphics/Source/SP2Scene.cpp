@@ -184,7 +184,7 @@ void SP2Scene::Init()
 	meshList[PLANET1_RIGHT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET1_RIGHT]->textureID = LoadTGA("Image//planet1//planet1_right.tga");
 	meshList[PLANET1_GROUND] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(20, 20));
-	meshList[PLANET1_GROUND]->textureID = LoadTGA("Image//planet1//planet1_right.tga");
+	//meshList[PLANET1_GROUND]->textureID = LoadTGA("Image//planet1//planet1_right.tga");
 	meshList[SLIME_TREE] = MeshBuilder::GenerateOBJ("Tree", "OBJ//slimetree.obj");
 	meshList[SLIME_TREE]->textureID = LoadTGA("Image//slimetree.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET1<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -203,7 +203,7 @@ void SP2Scene::Init()
 	meshList[PLANET2_RIGHT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET2_RIGHT]->textureID = LoadTGA("Image//planet2//planet2_right.tga");
 	meshList[PLANET2_GROUND] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(10, 10));
-	meshList[PLANET2_GROUND]->textureID = LoadTGA("Image//planet1//planet1_right.tga");
+	//meshList[PLANET2_GROUND]->textureID = LoadTGA("Image//planet1//planet1_right.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET2<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET3<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -504,11 +504,11 @@ void SP2Scene::Render()
         RenderImageOnScreen(meshList[GUN], 15, 3.5f, -.1f, -2, 20 + GunBounceBack, 190, 0);
     }
 
-    modelStack.PushMatrix();
-    modelStack.Translate(0, -400, 100);
-    modelStack.Scale(200, 200, 200);
-    RenderMesh(meshList[SLIME_BOSS], false);
-    modelStack.PopMatrix();
+    //modelStack.PushMatrix();
+    //modelStack.Translate(0, -400, 100);
+    //modelStack.Scale(200, 200, 200);
+    //RenderMesh(meshList[SLIME_BOSS], false);
+    //modelStack.PopMatrix();
 
     RenderTextOnScreen(meshList[TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
     RenderTextOnScreen(meshList[TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
