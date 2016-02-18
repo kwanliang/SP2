@@ -79,6 +79,8 @@ class SP2Scene : public Scene
 
         GUN,
         BULLET,
+        CHARACTER_HAND,
+
 		COIN,
 
         NUM_GEOMETRY,
@@ -137,6 +139,8 @@ public:
 
     float PlanetMove_3_X;
     float PlanetMove_3_Y;
+
+    float GunBounceBack;
 
     virtual void Init();
     virtual void Update(double dt);

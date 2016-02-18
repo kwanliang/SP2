@@ -228,9 +228,11 @@ void SP2Scene::Init()
 	meshList[PLANET3_GROUND]->textureID = LoadTGA("Image//planet3//Planet 3 Ground.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET3<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	meshList[BULLET] = MeshBuilder::GenerateSphere("bullet", Color(1, 1, 1), 10, 20);
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    meshList[GUN] = MeshBuilder::GenerateOBJ("gun", "OBJ//gun.obj");
+    meshList[GUN]->textureID = LoadTGA("Image//gun.tga");
+    meshList[BULLET] = MeshBuilder::GenerateSphere("bullet", Color(1, 1, 1), 10, 20);
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<ITEMS<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[COIN] = MeshBuilder::GenerateOBJ("Coins", "OBJ//Coin.obj");
@@ -403,43 +405,17 @@ void SP2Scene::Update(double dt)
 		UI.UI_PlanetName = false;
 	}
 
-    // Planet Animation
 
-    if (UI_PlanetNav_Animation == true) 
-    {
-        if (PlanetMove_1_Y < 2) {
-            PlanetMove_1_Y += (float)(10 * dt);
-        }
-
-        if (PlanetMove_2_X > -2) {
-            PlanetMove_2_X -= (float)(10 * dt);
-            PlanetMove_2_Y -= (float)(10 * dt);
-        }
-
-        if (PlanetMove_3_X < 2) {
-            PlanetMove_3_X += (float)(10 * dt);
-            PlanetMove_3_Y -= (float)(10 * dt);
-        }
-        else {
-            UI.UI_PlanetName = true;
-        }
+    // Gun Recoil
+    if (Mouse::Left_Clicked == true && GunBounceBack < 5 && UI.UI_On == false && camera.BulletTime > .5) {
+        GunBounceBack += (float)(100 * dt);
     }
-    else 
-    {
-        PlanetMove_1_Y = 0;
-
-        PlanetMove_2_X = 0;
-        PlanetMove_2_Y = 0;
-
-        PlanetMove_3_X = 0;
-        PlanetMove_3_Y = 0;
-
-        UI.UI_PlanetName = false;
+    else {
+        GunBounceBack = 0;
     }
+
 
     camera.Update(dt);
-
-	cout << camera.position << endl;
 }
 
 void SP2Scene::Render()
@@ -479,7 +455,6 @@ void SP2Scene::Render()
 
     if (Application::IsKeyPressed('F') && UI.UI_On == false) {
         UI.UI_Shop = true;
-
         UI.UI_On = true;
     }
 
@@ -519,10 +494,6 @@ void SP2Scene::Render()
     }
 
 
-	RenderTextOnScreen(meshList[TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
-	RenderTextOnScreen(meshList[TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
-
-
     if (camera.ProjectileShot == true) {
         modelStack.PushMatrix();
         modelStack.Translate(camera.ProjectilePosition.x, camera.ProjectilePosition.y, camera.ProjectilePosition.z);
@@ -532,8 +503,12 @@ void SP2Scene::Render()
     }
     if (UI::UI_On == false) {
         RenderTextOnScreen(meshList[TEXT], "+", Color(1, 0, 0), 3, 14, 10);
+        RenderUIOnScreen(meshList[CHARACTER_HAND], 25, .8f, -0, -3, 0 + GunBounceBack, -10, 0);
+        RenderUIOnScreen(meshList[GUN], 15, 3.5f, -.1f, -2, 20 + GunBounceBack, 190, 0);
     }
-
+    
+	RenderTextOnScreen(meshList[TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
+	RenderTextOnScreen(meshList[TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
 }
 
 void SP2Scene::RenderShip()
