@@ -67,7 +67,7 @@ void SP2Scene::Init()
 	glBindVertexArray(m_vertexArrayID);
 
 	Mtx44 projection;
-	projection.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000000.0f);
+	projection.SetToPerspective(45.0f, 4.0f / 3.0f, 0.1f, 10000.0f);
 	projectionStack.LoadMatrix(projection);
 
 	// Set background color to dark blue
@@ -160,6 +160,25 @@ void SP2Scene::Init()
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET1<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+	meshList[GEO_PLANET1_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
+	meshList[GEO_PLANET1_FRONT]->textureID = LoadTGA("Image//planet1//planet1_front.tga");
+	meshList[GEO_PLANET1_BACK] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
+	meshList[GEO_PLANET1_BACK]->textureID = LoadTGA("Image//planet1//planet1_back.tga");
+	meshList[GEO_PLANET1_TOP] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
+	meshList[GEO_PLANET1_TOP]->textureID = LoadTGA("Image//planet1//planet1_top.tga");
+	meshList[GEO_PLANET1_BOTTOM] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
+	meshList[GEO_PLANET1_BOTTOM]->textureID = LoadTGA("Image//planet1//planet1_bottom.tga");
+	meshList[GEO_PLANET1_LEFT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
+	meshList[GEO_PLANET1_LEFT]->textureID = LoadTGA("Image//planet1//planet1_left.tga");
+	meshList[GEO_PLANET1_RIGHT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
+	meshList[GEO_PLANET1_RIGHT]->textureID = LoadTGA("Image//planet1//planet1_right.tga");
+	meshList[GEO_SLIME_TREE] = MeshBuilder::GenerateOBJ("Tree", "OBJ//slimetree.obj");
+	meshList[GEO_SLIME_TREE]->textureID = LoadTGA("Image//slimetree.tga");
+
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET1<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET2<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	meshList[GEO_PLANET2_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
@@ -177,17 +196,8 @@ void SP2Scene::Init()
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET2<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-
-
-
-
-
-
-
-
-	meshList[GEO_UI_PLANET_NAVIGATION] = MeshBuilder::GenerateQuad("planet navigation UI", Color(1, 0, 0));
-	meshList[GEO_UI_PLANET_NAVIGATION] = MeshBuilder::GenerateCircle("planets", Color(1, 1, 1), 36);
-
+	meshList[GEO_UI_PLANET_NAVIGATION] = MeshBuilder::GenerateOBJ("UI planet plane", "OBJ//UI_Plane.obj");
+	meshList[GEO_UI_PLANET_NAVIGATION]->textureID = LoadTGA("Image//Space.tga");
 
 	light[0].type = Light::LIGHT_POINT;
 	light[0].position.Set(0, 100, 0);
@@ -306,8 +316,6 @@ void SP2Scene::Update(double dt)
 		moveDoor -= (float)(200 * dt);
 	}
 
-
-
 	// Planet Animation
 
 	if (UI_PlanetNav_Animation == true)
@@ -343,95 +351,15 @@ void SP2Scene::Update(double dt)
 	}
 
 
+
 	camera.Update(dt);
-	std::cout << camera.position << std::endl;
+	//std::cout << nearDoor << std::endl;
 }
 
 void SP2Scene::Render()
 {
-
 	// Render VBO here
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // Render VBO here
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //Set view matrix using camera settings
-    viewStack.LoadIdentity();
-
-    viewStack.LookAt(
-        camera.position.x, camera.position.y, camera.position.z,
-        camera.target.x, camera.target.y, camera.target.z,
-        camera.up.x, camera.up.y, camera.up.z
-
-        );
-
-    modelStack.LoadIdentity();
-
-    if (light[0].type == Light::LIGHT_DIRECTIONAL) {
-        Vector3 lightDir(light[0].position.x, light[0].position.y, light[0].position.z);
-        Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
-        glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightDirection_cameraspace.x);
-    }
-    else if (light[0].type == Light::LIGHT_POINT) {
-        Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
-        glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-    }
-    else if (light[0].type == Light::LIGHT_SPOT) {
-        Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
-        glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-        Vector3 spotDirection_cameraspace = viewStack.Top() * light[0].spotDirection;
-        glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, &spotDirection_cameraspace.x);
-    }
-
-    modelStack.PushMatrix();
-    modelStack.Translate(light[0].position.x, light[0].position.y, light[0].position.z);
-    modelStack.Scale(4, 4, 4);
-    RenderMesh(meshList[GEO_LIGHTBALL], false);
-    modelStack.PopMatrix();
-
-
-    //if (Application::IsKeyPressed('E') && UI.UI_On == false) {
-    //    UI.UI_PlanatNav = true;
-    //    UI.UI_On = true;
-    //}
-
-    if (Application::IsKeyPressed('F') && UI.UI_On == false) {
-        UI.UI_Shop = true;
-        UI.UI_On = true;
-    }
-
-    //glBlendFunc(2, 2);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    if (UI.UI_PlanatNav == true)
-    {
-        UI_PlanetNav_Animation = true;
-        RenderUIOnScreen(meshList[GEO_UI_PLANET_SLIME], 5, 8, 6 + PlanetMove_1_Y);
-        RenderUIOnScreen(meshList[GEO_UI_PLANET_ROBOT], 5, 7 + PlanetMove_2_X, 5 + PlanetMove_2_Y);
-        RenderUIOnScreen(meshList[GEO_UI_PLANET_DARK], 5, 9 + PlanetMove_3_X, 5 + PlanetMove_3_Y);
-        RenderUIOnScreen(meshList[GEO_UI_PLANET_SUN], 6, 6.7f, 4);
-        RenderUIOnScreen(meshList[GEO_UI_PLANET_NAVIGATION], 80, .5f, -.1f);
-        RenderTextOnScreen(meshList[GEO_TEXT], "Back", Color(1, 1, 1), 2, 19, 2);
-        if (UI.UI_PlanetName == true)
-        {
-            RenderTextOnScreen(meshList[GEO_TEXT], "Planet Slime", Color(1, 1, 1), 2, 16, 19);
-            RenderTextOnScreen(meshList[GEO_TEXT], "Planet Robot", Color(1, 1, 1), 2, 24, 6);
-            RenderTextOnScreen(meshList[GEO_TEXT], "Planet Dark", Color(1, 1, 1), 2, 8, 6);
-        }
-    }
-
-    if (UI.UI_Shop == true)
-    {
-        RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 2, 3);
-        RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 5, 3);
-        RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 8, 3);
-        RenderUIOnScreen(meshList[GEO_UI_SHOP], 80, .5f, -.1f);
-        RenderTextOnScreen(meshList[GEO_TEXT], "Ranged", Color(1, 1, 1), 2, 6.3f, 15.5f);
-        RenderTextOnScreen(meshList[GEO_TEXT], "Melee", Color(1, 1, 1), 2, 18.8f, 15.5f);
-        RenderTextOnScreen(meshList[GEO_TEXT], "Item", Color(1, 1, 1), 2, 31, 15.5f);
-        RenderTextOnScreen(meshList[GEO_TEXT], "Back", Color(1, 1, 1), 2, 19, 6);
-    }
-
 
 	//Set view matrix using camera settings
 	viewStack.LoadIdentity();
@@ -467,13 +395,9 @@ void SP2Scene::Render()
 	RenderMesh(meshList[GEO_LIGHTBALL], false);
 	modelStack.PopMatrix();
 
-	RenderShip();
+	RenderPlanet1();
 
-
-	if (Application::IsKeyPressed('E') && UI.UI_On == false) {
-		UI.UI_PlanatNav = true;
-		UI.UI_On = true;
-	}
+	
 
 	if (Application::IsKeyPressed('F') && UI.UI_On == false) {
 		UI.UI_Shop = true;
@@ -495,8 +419,8 @@ void SP2Scene::Render()
 		if (UI.UI_PlanetName == true)
 		{
 			RenderTextOnScreen(meshList[GEO_TEXT], "Planet Slime", Color(1, 1, 1), 2, 16, 19);
-			RenderTextOnScreen(meshList[GEO_TEXT], "Planet Snow", Color(1, 1, 1), 2, 24, 6);
-			RenderTextOnScreen(meshList[GEO_TEXT], "Planet Dark", Color(1, 1, 1), 2, 8, 6);
+			RenderTextOnScreen(meshList[GEO_TEXT], "Planet Dark", Color(1, 1, 1), 2, 24, 6);
+			RenderTextOnScreen(meshList[GEO_TEXT], "Planet Robot", Color(1, 1, 1), 2, 8, 6);
 		}
 	}
 
@@ -517,6 +441,7 @@ void SP2Scene::Render()
 
 	RenderTextOnScreen(meshList[GEO_TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
 	RenderTextOnScreen(meshList[GEO_TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
+	RenderTextOnScreen(meshList[GEO_TEXT], "+", Color(1, 0, 0), 3, 14, 10);
 }
 
 void SP2Scene::RenderShip()
@@ -646,9 +571,71 @@ void SP2Scene::RenderShip()
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHIP ITEMS<<<<<<<<<<<<<<<<<<<<<<<<<<
 }
 
+void SP2Scene::RenderPlanet1()
+{
+	float planet1_skybox = 5000;
+
+	modelStack.PushMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Rotate(-90, 0, 0, 1);
+	modelStack.Translate(0, 0, -2499);
+	modelStack.Rotate(90, 1, 0, 0);
+	modelStack.Scale(planet1_skybox, planet1_skybox, planet1_skybox);
+	RenderMesh(meshList[GEO_PLANET1_FRONT], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Rotate(90, 0, 0, 1);
+	modelStack.Translate(0, 0, 2499);
+	modelStack.Rotate(180, 0, 1, 0);
+	modelStack.Rotate(90, 1, 0, 0);
+	modelStack.Scale(planet1_skybox, planet1_skybox, planet1_skybox);
+	RenderMesh(meshList[GEO_PLANET1_BACK], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0, 2499, 0);
+	modelStack.Rotate(180, 0, 0, 1);
+	modelStack.Scale(planet1_skybox, planet1_skybox, planet1_skybox);
+	RenderMesh(meshList[GEO_PLANET1_TOP], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0, -2499, 0);
+	modelStack.Scale(planet1_skybox, planet1_skybox, planet1_skybox);
+	RenderMesh(meshList[GEO_PLANET1_BOTTOM], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Rotate(180, 1, 0, 0);
+	modelStack.Translate(2499, 0, 0);
+	modelStack.Rotate(180, 0, 1, 0);
+	modelStack.Rotate(90, 0, 0, 1);
+	modelStack.Scale(planet1_skybox, planet1_skybox, planet1_skybox);
+	modelStack.Rotate(180, 1, 0, 0);
+	RenderMesh(meshList[GEO_PLANET1_LEFT], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Rotate(180, 1, 0, 0);
+	modelStack.Translate(-2499, 0, 0);
+	modelStack.Rotate(180, 0, 1, 0);
+	modelStack.Rotate(90, 0, 0, 1);
+	modelStack.Scale(planet1_skybox, planet1_skybox, planet1_skybox);
+	RenderMesh(meshList[GEO_PLANET1_RIGHT], false);
+	modelStack.PopMatrix();
+
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Scale(300, 300, 300);
+	RenderMesh(meshList[GEO_SLIME_TREE], false);
+	modelStack.PopMatrix();
+}
+
 void SP2Scene::RenderPlanet2()
 {
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET2<<<<<<<<<<<<<<<<<<<<<<<<<<
 	float planet2_skybox = 1000;
 
 	modelStack.PushMatrix();
@@ -704,8 +691,9 @@ void SP2Scene::RenderPlanet2()
 	modelStack.PopMatrix();
 
 	modelStack.PopMatrix();
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET2<<<<<<<<<<<<<<<<<<<<<<<<<<
 }
+
+
 
 void SP2Scene::RenderText(Mesh* mesh, std::string text, Color color)
 {
