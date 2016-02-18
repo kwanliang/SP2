@@ -6,6 +6,7 @@
 
 Camera2::Camera2()
 {
+
 }
 
 Camera2::~Camera2()
@@ -41,10 +42,6 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
     BulletTime = 0;
     time.startTimer();
 }
-
-
-
-
 
 void Camera2::Update(double dt)
 {
@@ -99,7 +96,7 @@ void Camera2::Update(double dt)
         BulletTime = 0;
     }
 
-    std::cout << BulletTime << std::endl;
+    /*std::cout << BulletTime << std::endl;*/
     if (Collision::BoundaryCheck(ProjectilePosition) == true && BulletTime < .1 && UI::UI_On == false)
     {
         ProjectilePosition += ProjectileView * dt * 3000;
@@ -127,13 +124,13 @@ void Camera2::Update(double dt)
 			position.z += view.z * dt * Test.Move_Speed;
 			target.x += view.x * dt * Test.Move_Speed;
 			target.z += view.z * dt * Test.Move_Speed;
-        }
+		}
     }
-    if (Application::IsKeyPressed('A') && UI::UI_On == false)
-    {
-        Vector3 view = (target - position).Normalized();
-        // Normalize view vector
-        Vector3 right = view.Cross(up);
+	if (Application::IsKeyPressed('A') && UI::UI_On == false)
+	{
+		Vector3 view = (target - position).Normalized();
+		// Normalize view vector
+		Vector3 right = view.Cross(up);
 
 		TestPosition.x -= right.x * dt * Test.Move_Speed;
 		TestPosition.z -= right.z * dt * Test.Move_Speed;
@@ -162,7 +159,7 @@ void Camera2::Update(double dt)
 			position.z -= view.z * dt * Test.Move_Speed;
 			target.x -= view.x * dt * Test.Move_Speed;
 			target.z -= view.z * dt * Test.Move_Speed;
-        }
+		}
     }
     if (Application::IsKeyPressed('D') && UI::UI_On == false)
     {
@@ -180,7 +177,7 @@ void Camera2::Update(double dt)
 			position.z += right.z * dt * Test.Move_Speed;
 			target.x += right.x * dt * Test.Move_Speed;
 			target.z += right.z * dt * Test.Move_Speed;
-        }
+		}
     }
     
     //Mouse

@@ -17,58 +17,69 @@ class SP2Scene : public Scene
 
     enum GEOMETRY_TYPE
     {
-        GEO_AXES = 0,
-        GEO_LIGHTBALL,
-        GEO_UI_PLANET_NAVIGATION,
-        GEO_UI_PLANET_SLIME,
-        GEO_UI_PLANET_ROBOT,
-        GEO_UI_PLANET_DARK,
-        GEO_UI_PLANET_SUN,
-        GEO_UI_SHOP,
-        GEO_UI_SHOP_SELECT,
-        GEO_UI_SHOP_GUN,
-        GEO_UI_SHOP_MELEE,
-        GEO_UI_SHOP_ITEM,
-		GEO_TEXT,
-		GEO_FRONT,
-		GEO_BACK,
-		GEO_LEFT,
-		GEO_RIGHT,
-		GEO_TOP,
-		GEO_BOTTOM,
+		AXES = 0,
+		LIGHTBALL,
+		UI_PLANET_NAVIGATION,
+		UI_PLANET_SLIME,
+		UI_PLANET_ROBOT,
+		UI_PLANET_DARK,
+		UI_PLANET_SUN,
+		UI_SHOP,
+		UI_SHOP_SELECT,
+		UI_SHOP_GUN,
+		UI_SHOP_MELEE,
+		UI_SHOP_ITEM,
+		TEXT,
+		FRONT,
+		BACK,
+		LEFT,
+		RIGHT,
+		TOP,
+		BOTTOM,
 
-		GEO_BARFRONT,
-		GEO_BARBACK,
-		GEO_BARLEFT,
-		GEO_BARRIGHT,
-		GEO_BARTOP,
-		GEO_BARBOTTOM,
+		BARFRONT,
+		BARBACK,
+		BARLEFT,
+		BARRIGHT,
+		BARTOP,
+		BARBOTTOM,
 
-		GEO_COMPUTER1,
-		GEO_COMPUTER2,
+		COMPUTER1,
+		COMPUTER2,
 
-		GEO_CONTROLPANEL,
+		CONTROLPANEL,
 
-		GEO_PLANET1_FRONT,
-		GEO_PLANET1_BACK,
-		GEO_PLANET1_TOP,
-		GEO_PLANET1_BOTTOM,
-		GEO_PLANET1_LEFT,
-		GEO_PLANET1_RIGHT,
-		GEO_SLIME_TREE,
+		PLANET1_FRONT,
+		PLANET1_BACK,
+		PLANET1_TOP,
+		PLANET1_BOTTOM,
+		PLANET1_LEFT,
+		PLANET1_RIGHT,
+		PLANET1_GROUND,
+		SLIME_TREE,
 
 
-		GEO_PLANET2_FRONT,
-		GEO_PLANET2_BACK,
-		GEO_PLANET2_TOP,
-		GEO_PLANET2_BOTTOM,
-		GEO_PLANET2_LEFT,
-		GEO_PLANET2_RIGHT,
+		PLANET2_FRONT,
+		PLANET2_BACK,
+		PLANET2_TOP,
+		PLANET2_BOTTOM,
+		PLANET2_LEFT,
+		PLANET2_RIGHT,
+		PLANET2_GROUND,
 
-		GEO_TABLE,
+		PLANET3_FRONT,
+		PLANET3_BACK,
+		PLANET3_LEFT,
+		PLANET3_RIGHT,
+		PLANET3_TOP,
+		PLANET3_BOTTOM,
+		PLANET3_GROUND,
 
-        GEO_GUN,
-        GEO_BULLET,
+		TABLE,
+
+        GUN,
+        BULLET,
+		COIN,
 
         NUM_GEOMETRY,
     };
@@ -106,13 +117,17 @@ public:
 	SP2Scene();
 	~SP2Scene();
 
+	Character Character;
+	float Coin_Spin;
+
     float LSPEED;
 
     double DeltaTime;
     double frames;
     std::string FPS;
 
-    //Planet Nav Animation
+    
+	//Planet Nav Animation
     static bool UI_PlanetNav_Animation;
 
     float PlanetMove_1_Y;
@@ -133,13 +148,14 @@ private:
     unsigned m_parameters[U_TOTAL];
 
     void RenderMesh(Mesh* mesh, bool enableLight);
+
     void RenderPlanet1();
 	void RenderPlanet2();
 	void RenderPlanet3();
 	void RenderShip();
     void RenderText(Mesh* mesh, std::string text, Color color);
     void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
-    void RenderUIOnScreen(Mesh* mesh, float size, float x, float y);
+    void RenderUIOnScreen(Mesh* mesh, float size, float x, float y ,float z, float rotate);
 
     Camera2 camera;
 

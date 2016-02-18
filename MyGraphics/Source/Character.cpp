@@ -52,13 +52,13 @@ void Character::SetRace(int i)
 	{
 		MAX_HP = 20;
 		HP = 20;
-		Move_Speed = 1000.0f;
+		Move_Speed = 400.0f;
 		break;
 	}
 	case Race_Type::Robot:
 	{
-		MAX_HP = 30;
-		HP = 30;
+		MAX_HP = 40;
+		HP = 40;
 		Move_Speed = 200.0f;
 		break;
 	}
@@ -66,7 +66,7 @@ void Character::SetRace(int i)
 	{
 		MAX_HP = 10;
 		HP = 10;
-		Move_Speed = 400.0f;
+		Move_Speed = 800.0f;
 		break;
 	}
 	default: break;
@@ -210,6 +210,7 @@ bool Character::isDead(void)
 	if (HP <= 0)
 	{
 		HP = 0;
+		Coins -= (Coins / 100 * 20);
 		return true;
 	}
 	else

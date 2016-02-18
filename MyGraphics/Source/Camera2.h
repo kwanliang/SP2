@@ -34,7 +34,6 @@ public:
     bool ProjectileDirChange = true;
     bool ProjectileShot = false;
 
-
     double mouseXPos;
     double mouseYPos;
 
