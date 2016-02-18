@@ -17,16 +17,29 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
     Vector3 ControlPanel(-350, 0, 0);
     Vector3 ControlPanelSize(100, 100, 200);
 
+	Vector3 table(1650,0,0);
+	Vector3 tableSize(100, 100, 800);
+
     this->ControlPanel = ControlPanel;
     this->ControlPanelSize = ControlPanelSize;
+
+	this -> table = table;
+	this->tableSize = tableSize;
+
 
     this->position = defaultPosition = pos;
     this->target = defaultTarget = target;
     Vector3 view = (target - position).Normalized();
+
     Vector3 right = view.Cross(up);
     right.y = 0;
     right.Normalize();
     this->up = defaultUp = right.Cross(view).Normalized();
+
+	Test.SetRace(0);
+
+    BulletTime = 0;
+    time.startTimer();
 }
 
 void Camera2::Update(double dt)
@@ -50,6 +63,51 @@ void Camera2::Update(double dt)
 	TestPosition = position;
     PlayerPosition = position;
 
+    Vector3 Recoil(.1, .1, .1);
+
+    int random = rand() % 10 + 1;
+
+    if (ProjectileDirChange == true) 
+    {
+        ProjectilePosition = position;
+        if (random > 7) 
+        {
+            ProjectileView = ((target + Recoil) - position).Normalized();
+        }
+        else if (random > 5 && random < 8) 
+        {
+            ProjectileView = ((target - Recoil) - position).Normalized();
+        }
+        else 
+        {
+            ProjectileView = (target- position).Normalized();
+        }
+    }
+
+
+    //time.startTimer();
+
+    BulletTime += time.getElapsedTime();
+
+    if (Mouse::Left_Clicked && BulletTime > 1 && ProjectileDirChange == true && UI::UI_On == false)
+    {
+        ProjectileShot = true;
+        BulletTime = 0;
+    }
+
+    std::cout << BulletTime << std::endl;
+    if (Collision::BoundaryCheck(ProjectilePosition) == true && BulletTime < .1 && UI::UI_On == false)
+    {
+        ProjectilePosition += ProjectileView * dt * 3000;
+        ProjectileDirChange = false;
+    }
+    else
+    {
+        ProjectilePosition = position;
+        ProjectileShot = false;
+        ProjectileDirChange = true;
+    }
+
     if (Application::IsKeyPressed('W') && UI::UI_On == false)
     {
         Vector3 view = (target - position).Normalized();
@@ -58,7 +116,9 @@ void Camera2::Update(double dt)
 		TestPosition.x += view.x * dt * Test.Move_Speed;
 		TestPosition.z += view.z * dt * Test.Move_Speed;
 
-        if (Collision::BoundaryCheck(TestPosition) == true && Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false) {
+        if (Collision::BoundaryCheck(TestPosition) == true 
+			&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false 
+			&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
 			position.x += view.x * dt * Test.Move_Speed;
 			position.z += view.z * dt * Test.Move_Speed;
 			target.x += view.x * dt * Test.Move_Speed;
@@ -74,7 +134,9 @@ void Camera2::Update(double dt)
 		TestPosition.x -= right.x * dt * Test.Move_Speed;
 		TestPosition.z -= right.z * dt * Test.Move_Speed;
 
-		if (Collision::BoundaryCheck(TestPosition) == true && Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false) {
+        if (Collision::BoundaryCheck(TestPosition) == true 
+			&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
+			&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
 			position.x -= right.x * dt * Test.Move_Speed;
 			position.z -= right.z * dt * Test.Move_Speed;
 			target.x -= right.x * dt * Test.Move_Speed;
@@ -88,7 +150,10 @@ void Camera2::Update(double dt)
 
 		TestPosition.x -= view.x * dt * Test.Move_Speed;
 		TestPosition.z -= view.z * dt * Test.Move_Speed;
-		if (Collision::BoundaryCheck(TestPosition) == true && Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false) {
+
+        if (Collision::BoundaryCheck(TestPosition) == true 
+			&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
+			&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
 			position.x -= view.x * dt * Test.Move_Speed;
 			position.z -= view.z * dt * Test.Move_Speed;
 			target.x -= view.x * dt * Test.Move_Speed;
@@ -104,7 +169,9 @@ void Camera2::Update(double dt)
 		TestPosition.x += right.x * dt * Test.Move_Speed;
 		TestPosition.z += right.z * dt * Test.Move_Speed;
 
-        if (Collision::BoundaryCheck(TestPosition) == true && Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false) {
+        if (Collision::BoundaryCheck(TestPosition) == true 
+			&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
+			&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
 			position.x += right.x * dt * Test.Move_Speed;
 			position.z += right.z * dt * Test.Move_Speed;
 			target.x += right.x * dt * Test.Move_Speed;

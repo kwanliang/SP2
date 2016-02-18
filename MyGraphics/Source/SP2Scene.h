@@ -9,6 +9,7 @@
 #include "MatrixStack.h"
 #include "Light.h"
 #include "UI.h"
+#include "Collision.h"
 
 class SP2Scene : public Scene
 {
@@ -46,19 +47,37 @@ class SP2Scene : public Scene
 		GEO_COMPUTER1,
 		GEO_COMPUTER2,
 
-		COIN,
-
-		PLANET_FRONT,
-		PLANET_BACK,
-		PLANET_LEFT,
-		PLANET_RIGHT,
-		PLANET_TOP,
-		PLANET_BOTTOM,
-		PLANET_GROUND,
-
 		GEO_CONTROLPANEL,
 
+		GEO_PLANET1_FRONT,
+		GEO_PLANET1_BACK,
+		GEO_PLANET1_TOP,
+		GEO_PLANET1_BOTTOM,
+		GEO_PLANET1_LEFT,
+		GEO_PLANET1_RIGHT,
+		GEO_SLIME_TREE,
+
+
+		GEO_PLANET2_FRONT,
+		GEO_PLANET2_BACK,
+		GEO_PLANET2_TOP,
+		GEO_PLANET2_BOTTOM,
+		GEO_PLANET2_LEFT,
+		GEO_PLANET2_RIGHT,
+
+		PLANET3_FRONT,
+		PLANET3_BACK,
+		PLANET3_LEFT,
+		PLANET3_RIGHT,
+		PLANET3_TOP,
+		PLANET3_BOTTOM,
+		PLANET3_GROUND,
+
 		GEO_TABLE,
+
+        GEO_GUN,
+        GEO_BULLET,
+		COIN,
 
         NUM_GEOMETRY,
     };
@@ -128,14 +147,18 @@ private:
     unsigned m_parameters[U_TOTAL];
 
     void RenderMesh(Mesh* mesh, bool enableLight);
-    void RenderSkybox();
+
+    void RenderPlanet1();
+	void RenderPlanet2();
+	void RenderPlanet3();
 	void RenderShip();
-	void RenderPlanet_3();
     void RenderText(Mesh* mesh, std::string text, Color color);
     void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
     void RenderUIOnScreen(Mesh* mesh, float size, float x, float y ,float z, float rotate);
 
     Camera2 camera;
+
+    Collision collision;
 
     UI UI;
 
