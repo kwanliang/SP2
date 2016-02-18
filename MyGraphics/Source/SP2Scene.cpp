@@ -432,10 +432,11 @@ void SP2Scene::Render()
     RenderMesh(meshList[GEO_LIGHTBALL], false);
     modelStack.PopMatrix();
 
-    RenderShip();
+	RenderPlanet1();
 
     if (Application::IsKeyPressed('F') && UI.UI_On == false) {
         UI.UI_Shop = true;
+
         UI.UI_On = true;
     }
 
@@ -474,9 +475,7 @@ void SP2Scene::Render()
 
 
 
-	RenderTextOnScreen(meshList[GEO_TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
-	RenderTextOnScreen(meshList[GEO_TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
-	RenderTextOnScreen(meshList[GEO_TEXT], "+", Color(1, 0, 0), 3, 14, 10);
+
 
     if (camera.ProjectileShot == true) {
         modelStack.PushMatrix();
