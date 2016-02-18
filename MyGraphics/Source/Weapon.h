@@ -2,6 +2,9 @@
 #define WEAPON_H
 
 #include <string>
+
+#include "Vector3.h"
+
 using std::string;
 
 class Weapon

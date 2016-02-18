@@ -41,7 +41,6 @@ void Mouse::MouseMovement(double& x, double& y)
         glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         glfwGetCursorPos(m_window, &x, &y);
     }
-    //std::cout << x << " : " << y << std::endl;
 }
 
 void Mouse::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)

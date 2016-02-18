@@ -18,7 +18,7 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
     Vector3 ControlPanel(-350, 0, 0);
     Vector3 ControlPanelSize(100, 100, 200);
 
-	Vector3 table(1650,0,0);
+	Vector3 table(1650, 0, 0);
 	Vector3 tableSize(100, 100, 800);
 
     this->ControlPanel = ControlPanel;
@@ -62,7 +62,7 @@ void Camera2::Update(double dt)
 	TestPosition = position;
     PlayerPosition = position;
 
-    Vector3 Recoil(.1, .1, .1);
+    Vector3 Spread(.1, .1, .1);
 
     int random = rand() % 10 + 1;
 
@@ -71,11 +71,11 @@ void Camera2::Update(double dt)
         ProjectilePosition = position;
         if (random > 7) 
         {
-            ProjectileView = ((target + Recoil) - position).Normalized();
+            ProjectileView = ((target + Spread) - position).Normalized();
         }
         else if (random > 5 && random < 8) 
         {
-            ProjectileView = ((target - Recoil) - position).Normalized();
+            ProjectileView = ((target - Spread) - position).Normalized();
         }
         else 
         {
@@ -83,11 +83,9 @@ void Camera2::Update(double dt)
         }
     }
 
-    //time.startTimer();
-
     BulletTime += time.getElapsedTime();
 
-    if (Mouse::Left_Clicked && BulletTime > .5 && ProjectileDirChange == true && UI::UI_On == false)
+    if (Mouse::Left_Clicked == true && BulletTime > .5 && ProjectileDirChange == true && UI::UI_On == false)
     {
         ProjectileShot = true;
         BulletTime = 0;

@@ -42,14 +42,8 @@ bool Collision::BoundaryCheck(const Vector3& CameraPosition)
 
 bool Collision::ObjCheck(const Vector3& CameraPosition, Vector3& ObjPosition, Vector3& HitboxSize)
 { 
-    Vector3 MaxPoint(0, 0, 0);
-    MaxPoint.x = ObjPosition.x + HitboxSize.x;
-    MaxPoint.y = ObjPosition.y + HitboxSize.y;
-    MaxPoint.z = ObjPosition.z + HitboxSize.z;
-    Vector3 MinPoint(0, 0, 0);
-    MinPoint.x = ObjPosition.x - HitboxSize.x;
-    MinPoint.y = ObjPosition.y - HitboxSize.y;
-    MinPoint.z = ObjPosition.z - HitboxSize.z;
+    Vector3 MaxPoint = ObjPosition + HitboxSize;
+    Vector3 MinPoint = ObjPosition - HitboxSize;
 
     if (CameraPosition.x > MinPoint.x && CameraPosition.x < MaxPoint.x &&
         CameraPosition.y > MinPoint.y && CameraPosition.y < MaxPoint.y &&

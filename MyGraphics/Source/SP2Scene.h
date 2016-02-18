@@ -79,9 +79,15 @@ class SP2Scene : public Scene
 
         GUN,
         BULLET,
+        CHARACTER_BODY,
         CHARACTER_HAND,
 
 		COIN,
+
+        SLIME_BOSS,
+        SLIME_GREEN,
+        SLIME_PINK,
+        SLIME_BLUE,
 
         NUM_GEOMETRY,
     };
@@ -128,7 +134,8 @@ public:
     double frames;
     std::string FPS;
 
-    
+	bool Planet3;
+
 	//Planet Nav Animation
     static bool UI_PlanetNav_Animation;
 
@@ -159,7 +166,7 @@ private:
 	void RenderShip();
     void RenderText(Mesh* mesh, std::string text, Color color);
     void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
-    void RenderUIOnScreen(Mesh* mesh, float size, float x, float y ,float z, float rotate);
+    void RenderImageOnScreen(Mesh* mesh, float size, float x, float y, float z, float rotateX, float rotateY, float rotateZ);
 
     Camera2 camera;
 

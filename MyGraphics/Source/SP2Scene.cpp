@@ -10,13 +10,11 @@
 #include "LoadOBJ.h"
 #include "Mouse.h"
 
-
 #include <iostream>
 using std::cout;
 using std::endl;
 
 bool SP2Scene::UI_PlanetNav_Animation = false;
-
 
 SP2Scene::SP2Scene()
 {
@@ -113,22 +111,22 @@ void SP2Scene::Init()
 
 	//<<<<<<<<<<<<<<<<<<<<<<<PLANET UI<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[UI_PLANET_NAVIGATION] = MeshBuilder::GenerateOBJ("UI planet plane", "OBJ//UI_Plane.obj");
-	meshList[UI_PLANET_NAVIGATION]->textureID = LoadTGA("Image//Space.tga");
+	meshList[UI_PLANET_NAVIGATION]->textureID = LoadTGA("Image//UI//UI_Space.tga");
 	meshList[UI_PLANET_SLIME] = MeshBuilder::GenerateOBJ("planet slime", "OBJ//Planet.obj");
-	meshList[UI_PLANET_SLIME]->textureID = LoadTGA("Image//Slime.tga");
+	meshList[UI_PLANET_SLIME]->textureID = LoadTGA("Image//UI//UI_Slime.tga");
 	meshList[UI_PLANET_ROBOT] = MeshBuilder::GenerateOBJ("planet slime", "OBJ//Planet.obj");
-	meshList[UI_PLANET_ROBOT]->textureID = LoadTGA("Image//Robot.tga");
+	meshList[UI_PLANET_ROBOT]->textureID = LoadTGA("Image//UI//UI_Robot.tga");
 	meshList[UI_PLANET_DARK] = MeshBuilder::GenerateOBJ("planet slime", "OBJ//Planet.obj");
-	meshList[UI_PLANET_DARK]->textureID = LoadTGA("Image//Dark.tga");
+	meshList[UI_PLANET_DARK]->textureID = LoadTGA("Image//UI//UI_Dark.tga");
 	meshList[UI_PLANET_SUN] = MeshBuilder::GenerateOBJ("planet slime", "OBJ//Planet.obj");
-	meshList[UI_PLANET_SUN]->textureID = LoadTGA("Image//Sun.tga");
+	meshList[UI_PLANET_SUN]->textureID = LoadTGA("Image//UI//UI_Sun.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<PLANET UI<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<SHOP UI<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[UI_SHOP] = MeshBuilder::GenerateOBJ("UI shop plane", "OBJ//UI_Plane.obj");
-	meshList[UI_SHOP]->textureID = LoadTGA("Image//Shop.tga");
+	meshList[UI_SHOP]->textureID = LoadTGA("Image//UI//UI_Shop.tga");
 	meshList[UI_SHOP_SELECT] = MeshBuilder::GenerateOBJ("UI shop select", "OBJ//Select.obj");
-	meshList[UI_SHOP_SELECT]->textureID = LoadTGA("Image//Select.tga");
+	meshList[UI_SHOP_SELECT]->textureID = LoadTGA("Image//UI//UI_Select.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<SHOP UI<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHIP<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -170,9 +168,6 @@ void SP2Scene::Init()
 	meshList[COMPUTER2]->textureID = LoadTGA("Image//ship//computer2.tga");
 	meshList[CONTROLPANEL] = MeshBuilder::GenerateOBJ("controlpanel", "OBJ//controlpanel.obj");
 	meshList[CONTROLPANEL]->textureID = LoadTGA("Image//ship//controlpanel.tga");
-
-	meshList[UI_PLANET_NAVIGATION] = MeshBuilder::GenerateOBJ("UI planet plane", "OBJ//UI_Plane.obj");
-	meshList[UI_PLANET_NAVIGATION]->textureID = LoadTGA("Image//Space.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET1<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -189,7 +184,7 @@ void SP2Scene::Init()
 	meshList[PLANET1_RIGHT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET1_RIGHT]->textureID = LoadTGA("Image//planet1//planet1_right.tga");
 	meshList[PLANET1_GROUND] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(20, 20));
-	meshList[PLANET1_GROUND]->textureID = LoadTGA("Image//planet1//planet1_ground.tga");
+	meshList[PLANET1_GROUND]->textureID = LoadTGA("Image//planet1//planet1_right.tga");
 	meshList[SLIME_TREE] = MeshBuilder::GenerateOBJ("Tree", "OBJ//slimetree.obj");
 	meshList[SLIME_TREE]->textureID = LoadTGA("Image//slimetree.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET1<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -208,7 +203,7 @@ void SP2Scene::Init()
 	meshList[PLANET2_RIGHT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET2_RIGHT]->textureID = LoadTGA("Image//planet2//planet2_right.tga");
 	meshList[PLANET2_GROUND] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(10, 10));
-	meshList[PLANET2_GROUND]->textureID = LoadTGA("Image//planet2//planet2_ground.tga");
+	meshList[PLANET2_GROUND]->textureID = LoadTGA("Image//planet1//planet1_right.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET2<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET3<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -233,6 +228,12 @@ void SP2Scene::Init()
     meshList[GUN]->textureID = LoadTGA("Image//gun.tga");
     meshList[BULLET] = MeshBuilder::GenerateSphere("bullet", Color(1, 1, 1), 10, 20);
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<Body<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //meshList[CHARACTER_BODY] = MeshBuilder::GenerateCube("character", Color(1, 1, 1));
+    meshList[CHARACTER_HAND] = MeshBuilder::GenerateOBJ("hand", "OBJ//hand.obj");
+    meshList[CHARACTER_HAND]->textureID = LoadTGA("Image//hand.tga");
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<Body<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<ITEMS<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[COIN] = MeshBuilder::GenerateOBJ("Coins", "OBJ//Coin.obj");
@@ -325,7 +326,6 @@ void SP2Scene::Update(double dt)
 	if (Application::IsKeyPressed('4'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
 
-
 	Coin_Spin += (float)(120 * dt);
 	if (Coin_Spin >= 360)
 	{
@@ -405,7 +405,6 @@ void SP2Scene::Update(double dt)
 		UI.UI_PlanetName = false;
 	}
 
-
     // Gun Recoil
     if (Mouse::Left_Clicked == true && GunBounceBack < 5 && UI.UI_On == false && camera.BulletTime > .5) {
         GunBounceBack += (float)(100 * dt);
@@ -414,7 +413,6 @@ void SP2Scene::Update(double dt)
         GunBounceBack = 0;
     }
 
-
     camera.Update(dt);
 }
 
@@ -422,7 +420,7 @@ void SP2Scene::Render()
 {
     // Render VBO here
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
     //Set view matrix using camera settings
     viewStack.LoadIdentity();
 
@@ -464,35 +462,34 @@ void SP2Scene::Render()
     if (UI.UI_PlanatNav == true)
     {
         UI_PlanetNav_Animation = true;
-        RenderUIOnScreen(meshList[UI_PLANET_SLIME], 5, 8, 6 + PlanetMove_1_Y ,0 ,0);
-        RenderUIOnScreen(meshList[UI_PLANET_ROBOT], 5, 7 + PlanetMove_2_X, 5 + PlanetMove_2_Y ,0 ,0);
-        RenderUIOnScreen(meshList[UI_PLANET_DARK], 5, 9 + PlanetMove_3_X, 5 + PlanetMove_3_Y ,0 ,0);
-        RenderUIOnScreen(meshList[UI_PLANET_SUN], 6, 6.7f, 4 ,0 ,0);
-        RenderUIOnScreen(meshList[UI_PLANET_NAVIGATION], 80, .5f, -.1f ,0 ,0);
+        RenderImageOnScreen(meshList[UI_PLANET_SLIME], 5, 8, 6 + PlanetMove_1_Y, 0, 0, 0, 0);
+        RenderImageOnScreen(meshList[UI_PLANET_ROBOT], 5, 7 + PlanetMove_2_X, 5 + PlanetMove_2_Y, 0, 0, 0, 0);
+        RenderImageOnScreen(meshList[UI_PLANET_DARK], 5, 9 + PlanetMove_3_X, 5 + PlanetMove_3_Y, 0, 0, 0, 0);
+        RenderImageOnScreen(meshList[UI_PLANET_SUN], 6, 6.7f, 4, 0, 0, 0, 0);
+        RenderImageOnScreen(meshList[UI_PLANET_NAVIGATION], 80, .5f, -.1f, 0, 0, 0, 0);
         RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 2);
         if (UI.UI_PlanetName == true)
         {
             RenderTextOnScreen(meshList[TEXT], "Planet Slime", Color(1, 1, 1), 2, 16, 19);
-            RenderTextOnScreen(meshList[TEXT], "Planet Robot", Color(1, 1, 1), 2,24, 6);
+            RenderTextOnScreen(meshList[TEXT], "Planet Robot", Color(1, 1, 1), 2, 24, 6);
             RenderTextOnScreen(meshList[TEXT], "Planet Dark", Color(1, 1, 1), 2, 8, 6);
         }
     }
 
     if (UI.UI_Shop == true)
     {
-        RenderUIOnScreen(meshList[UI_SHOP_SELECT], 8, 2, 3 ,0 ,0);
-        RenderUIOnScreen(meshList[UI_SHOP_SELECT], 8, 5, 3 ,0 ,0);
-        RenderUIOnScreen(meshList[UI_SHOP_SELECT], 8, 8, 3 ,0 ,0);
-        RenderUIOnScreen(meshList[UI_SHOP], 80, .5f, -.1f ,0 ,0);
+        RenderImageOnScreen(meshList[UI_SHOP_SELECT], 8, 2, 3, 0, 0, 0, 0);
+        RenderImageOnScreen(meshList[UI_SHOP_SELECT], 8, 5, 3, 0, 0, 0, 0);
+        RenderImageOnScreen(meshList[UI_SHOP_SELECT], 8, 8, 3, 0, 0, 0, 0);
+        RenderImageOnScreen(meshList[UI_SHOP], 80, .5f, -.1f, 0, 0, 0, 0);
         RenderTextOnScreen(meshList[TEXT], "Ranged", Color(1, 1, 1), 2, 6.3f, 15.5f);
         RenderTextOnScreen(meshList[TEXT], "Melee", Color(1, 1, 1), 2, 18.8f, 15.5f);
         RenderTextOnScreen(meshList[TEXT], "Item", Color(1, 1, 1), 2, 31, 15.5f);
         RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 6);
 
-		RenderUIOnScreen(meshList[COIN], 4, 10, 13 ,1 , Coin_Spin);
-		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 1, 1), 4, 12, 14);
+        RenderImageOnScreen(meshList[COIN], 4, 10, 13, 1, 0, Coin_Spin, 0);
+        RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 1, 1), 4, 12, 14);
     }
-
 
     if (camera.ProjectileShot == true) {
         modelStack.PushMatrix();
@@ -502,13 +499,19 @@ void SP2Scene::Render()
         modelStack.PopMatrix();
     }
     if (UI::UI_On == false) {
-        RenderTextOnScreen(meshList[TEXT], "+", Color(1, 0, 0), 3, 14, 10);
-        RenderUIOnScreen(meshList[CHARACTER_HAND], 25, .8f, -0, -3, 0 + GunBounceBack, -10, 0);
-        RenderUIOnScreen(meshList[GUN], 15, 3.5f, -.1f, -2, 20 + GunBounceBack, 190, 0);
+        RenderTextOnScreen(meshList[TEXT], "+", Color(1, 0, 0), 3, 13.7f, 10);
+        RenderImageOnScreen(meshList[CHARACTER_HAND], 25, .8f, -0, -3, 0 + GunBounceBack, -10, 0);
+        RenderImageOnScreen(meshList[GUN], 15, 3.5f, -.1f, -2, 20 + GunBounceBack, 190, 0);
     }
-    
-	RenderTextOnScreen(meshList[TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
-	RenderTextOnScreen(meshList[TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
+
+    modelStack.PushMatrix();
+    modelStack.Translate(0, -400, 100);
+    modelStack.Scale(200, 200, 200);
+    RenderMesh(meshList[SLIME_BOSS], false);
+    modelStack.PopMatrix();
+
+    RenderTextOnScreen(meshList[TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
+    RenderTextOnScreen(meshList[TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
 }
 
 void SP2Scene::RenderShip()
@@ -883,10 +886,10 @@ void SP2Scene::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, flo
 	glEnable(GL_DEPTH_TEST);
 }
 
-void SP2Scene::RenderUIOnScreen(Mesh* mesh, float size, float x, float y , float z, float rotate)
+void SP2Scene::RenderImageOnScreen(Mesh* mesh, float size, float x, float y , float z, float rotateX, float rotateY, float rotateZ)
 {
     Mtx44 ortho;
-    ortho.SetToOrtho(0, 80, 0, 60, -10, 10); //size of screen UI
+    ortho.SetToOrtho(0, 80, 0, 60, -50, 50); //size of screen UI
     projectionStack.PushMatrix();
     projectionStack.LoadMatrix(ortho);
     viewStack.PushMatrix();
@@ -894,9 +897,10 @@ void SP2Scene::RenderUIOnScreen(Mesh* mesh, float size, float x, float y , float
     modelStack.PushMatrix();
     modelStack.LoadIdentity(); //Reset modelStack
     modelStack.Scale(size, size, size);
-
     modelStack.Translate(x, y, z);
-	modelStack.Rotate(rotate, 0, 1, 0);
+	modelStack.Rotate(rotateX, 1, 0, 0);
+    modelStack.Rotate(rotateY, 0, 1, 0);
+    modelStack.Rotate(rotateZ, 0, 0, 1);
 
 	Mtx44 MVP, modelView, modelView_inverse_transpose;
 

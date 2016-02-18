@@ -27,12 +27,12 @@ public:
     Vector3 ControlPanel;
     Vector3 ControlPanelSize;
 
-
 	Vector3 table;
 	Vector3 tableSize;
 
     bool ProjectileDirChange = true;
     bool ProjectileShot = false;
+    bool GunRecoil = false;
 
     double mouseXPos;
     double mouseYPos;
