@@ -8,6 +8,7 @@
 #include "Utility.h"
 #include "LoadTGA.h"
 #include "LoadOBJ.h"
+#include "Mouse.h"
 
 bool SP2Scene::UI_PlanetNav_Animation = false;
 
@@ -149,8 +150,8 @@ void SP2Scene::Init()
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHOP<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[GEO_COMPUTER1] = MeshBuilder::GenerateOBJ("computer", "OBJ//computer.obj");
 	meshList[GEO_COMPUTER1]->textureID = LoadTGA("Image//ship//computer.tga");
 	meshList[GEO_COMPUTER2] = MeshBuilder::GenerateOBJ("computer2", "OBJ//computer.obj");
@@ -158,7 +159,11 @@ void SP2Scene::Init()
 	meshList[GEO_CONTROLPANEL] = MeshBuilder::GenerateOBJ("controlpanel", "OBJ//controlpanel.obj");
 	meshList[GEO_CONTROLPANEL]->textureID = LoadTGA("Image//ship//controlpanel.tga");
 
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    meshList[GEO_BULLET] = MeshBuilder::GenerateSphere("bullet", Color(1, 1, 1), 10, 20);
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET1<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -350,91 +355,121 @@ void SP2Scene::Update(double dt)
 		UI.UI_PlanetName = false;
 	}
 
+    // Planet Animation
 
+    if (UI_PlanetNav_Animation == true) 
+    {
+        if (PlanetMove_1_Y < 2) {
+            PlanetMove_1_Y += (float)(10 * dt);
+        }
 
-	camera.Update(dt);
-	//std::cout << nearDoor << std::endl;
+        if (PlanetMove_2_X > -2) {
+            PlanetMove_2_X -= (float)(10 * dt);
+            PlanetMove_2_Y -= (float)(10 * dt);
+        }
+
+        if (PlanetMove_3_X < 2) {
+            PlanetMove_3_X += (float)(10 * dt);
+            PlanetMove_3_Y -= (float)(10 * dt);
+        }
+        else {
+            UI.UI_PlanetName = true;
+        }
+    }
+    else 
+    {
+        PlanetMove_1_Y = 0;
+
+        PlanetMove_2_X = 0;
+        PlanetMove_2_Y = 0;
+
+        PlanetMove_3_X = 0;
+        PlanetMove_3_Y = 0;
+
+        UI.UI_PlanetName = false;
+    }
+
+    camera.Update(dt);
 }
 
 void SP2Scene::Render()
 {
-	// Render VBO here
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//Set view matrix using camera settings
-	viewStack.LoadIdentity();
+    // Render VBO here
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    //Set view matrix using camera settings
+    viewStack.LoadIdentity();
 
-	viewStack.LookAt(
-		camera.position.x, camera.position.y, camera.position.z,
-		camera.target.x, camera.target.y, camera.target.z,
-		camera.up.x, camera.up.y, camera.up.z
+    viewStack.LookAt(
+        camera.position.x, camera.position.y, camera.position.z,
+        camera.target.x, camera.target.y, camera.target.z,
+        camera.up.x, camera.up.y, camera.up.z
 
-		);
+        );
 
-	modelStack.LoadIdentity();
+    modelStack.LoadIdentity();
 
-	if (light[0].type == Light::LIGHT_DIRECTIONAL) {
-		Vector3 lightDir(light[0].position.x, light[0].position.y, light[0].position.z);
-		Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightDirection_cameraspace.x);
-	}
-	else if (light[0].type == Light::LIGHT_POINT) {
-		Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-	}
-	else if (light[0].type == Light::LIGHT_SPOT) {
-		Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
-		glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
-		Vector3 spotDirection_cameraspace = viewStack.Top() * light[0].spotDirection;
-		glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, &spotDirection_cameraspace.x);
-	}
+    if (light[0].type == Light::LIGHT_DIRECTIONAL) {
+        Vector3 lightDir(light[0].position.x, light[0].position.y, light[0].position.z);
+        Vector3 lightDirection_cameraspace = viewStack.Top() * lightDir;
+        glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightDirection_cameraspace.x);
+    }
+    else if (light[0].type == Light::LIGHT_POINT) {
+        Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
+        glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
+    }
+    else if (light[0].type == Light::LIGHT_SPOT) {
+        Position lightPosition_cameraspace = viewStack.Top() * light[0].position;
+        glUniform3fv(m_parameters[U_LIGHT0_POSITION], 1, &lightPosition_cameraspace.x);
+        Vector3 spotDirection_cameraspace = viewStack.Top() * light[0].spotDirection;
+        glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, &spotDirection_cameraspace.x);
+    }
 
-	modelStack.PushMatrix();
-	modelStack.Translate(light[0].position.x, light[0].position.y, light[0].position.z);
-	modelStack.Scale(4, 4, 4);
-	RenderMesh(meshList[GEO_LIGHTBALL], false);
-	modelStack.PopMatrix();
+    modelStack.PushMatrix();
+    modelStack.Translate(light[0].position.x, light[0].position.y, light[0].position.z);
+    modelStack.Scale(4, 4, 4);
+    RenderMesh(meshList[GEO_LIGHTBALL], false);
+    modelStack.PopMatrix();
 
-	RenderPlanet1();
+    RenderShip();
 
-	
+    if (Application::IsKeyPressed('F') && UI.UI_On == false) {
+        UI.UI_Shop = true;
+        UI.UI_On = true;
+    }
 
-	if (Application::IsKeyPressed('F') && UI.UI_On == false) {
-		UI.UI_Shop = true;
-		UI.UI_On = true;
-	}
+    //glBlendFunc(2, 2);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//glBlendFunc(2, 2);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    if (UI.UI_PlanatNav == true)
+    {
+        UI_PlanetNav_Animation = true;
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_SLIME], 5, 8, 6 + PlanetMove_1_Y);
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_ROBOT], 5, 7 + PlanetMove_2_X, 5 + PlanetMove_2_Y);
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_DARK], 5, 9 + PlanetMove_3_X, 5 + PlanetMove_3_Y);
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_SUN], 6, 6.7f, 4);
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_NAVIGATION], 80, .5f, -.1f);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Back", Color(1, 1, 1), 2, 19, 2);
+        if (UI.UI_PlanetName == true)
+        {
+            RenderTextOnScreen(meshList[GEO_TEXT], "Planet Slime", Color(1, 1, 1), 2, 16, 19);
+            RenderTextOnScreen(meshList[GEO_TEXT], "Planet Robot", Color(1, 1, 1), 2, 24, 6);
+            RenderTextOnScreen(meshList[GEO_TEXT], "Planet Dark", Color(1, 1, 1), 2, 8, 6);
+        }
+    }
 
-	if (UI.UI_PlanatNav == true)
-	{
-		UI_PlanetNav_Animation = true;
-		RenderUIOnScreen(meshList[GEO_UI_PLANET_SLIME], 5, 8, 6 + PlanetMove_1_Y);
-		RenderUIOnScreen(meshList[GEO_UI_PLANET_ROBOT], 5, 7 + PlanetMove_2_X, 5 + PlanetMove_2_Y);
-		RenderUIOnScreen(meshList[GEO_UI_PLANET_DARK], 5, 9 + PlanetMove_3_X, 5 + PlanetMove_3_Y);
-		RenderUIOnScreen(meshList[GEO_UI_PLANET_SUN], 6, 6.7f, 4);
-		RenderUIOnScreen(meshList[GEO_UI_PLANET_NAVIGATION], 80, .5f, -.1f);
-		RenderTextOnScreen(meshList[GEO_TEXT], "Back", Color(1, 1, 1), 2, 19, 2);
-		if (UI.UI_PlanetName == true)
-		{
-			RenderTextOnScreen(meshList[GEO_TEXT], "Planet Slime", Color(1, 1, 1), 2, 16, 19);
-			RenderTextOnScreen(meshList[GEO_TEXT], "Planet Dark", Color(1, 1, 1), 2, 24, 6);
-			RenderTextOnScreen(meshList[GEO_TEXT], "Planet Robot", Color(1, 1, 1), 2, 8, 6);
-		}
-	}
-
-	if (UI.UI_Shop == true)
-	{
-		RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 2, 3);
-		RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 5, 3);
-		RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 8, 3);
-		RenderUIOnScreen(meshList[GEO_UI_SHOP], 80, .5f, -.1f);
-		RenderTextOnScreen(meshList[GEO_TEXT], "Ranged", Color(1, 1, 1), 2, 6.3f, 15.5f);
-		RenderTextOnScreen(meshList[GEO_TEXT], "Melee", Color(1, 1, 1), 2, 18.8f, 15.5f);
-		RenderTextOnScreen(meshList[GEO_TEXT], "Item", Color(1, 1, 1), 2, 31, 15.5f);
-		RenderTextOnScreen(meshList[GEO_TEXT], "Back", Color(1, 1, 1), 2, 19, 6);
-	}
+    if (UI.UI_Shop == true)
+    {
+        RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 2, 3);
+        RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 5, 3);
+        RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 8, 3);
+        RenderUIOnScreen(meshList[GEO_UI_SHOP], 80, .5f, -.1f);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Ranged", Color(1, 1, 1), 2, 6.3f, 15.5f);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Melee", Color(1, 1, 1), 2, 18.8f, 15.5f);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Item", Color(1, 1, 1), 2, 31, 15.5f);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Back", Color(1, 1, 1), 2, 19, 6);
+    }
 
 
 
@@ -442,6 +477,21 @@ void SP2Scene::Render()
 	RenderTextOnScreen(meshList[GEO_TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
 	RenderTextOnScreen(meshList[GEO_TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
 	RenderTextOnScreen(meshList[GEO_TEXT], "+", Color(1, 0, 0), 3, 14, 10);
+
+    if (camera.ProjectileShot == true) {
+        modelStack.PushMatrix();
+        modelStack.Translate(camera.ProjectilePosition.x, camera.ProjectilePosition.y, camera.ProjectilePosition.z);
+        modelStack.Scale(10, 10, 10);
+        RenderMesh(meshList[GEO_BULLET], false);
+        modelStack.PopMatrix();
+    }
+
+    RenderTextOnScreen(meshList[GEO_TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
+	RenderTextOnScreen(meshList[GEO_TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
+    if (UI::UI_On == false) {
+        RenderTextOnScreen(meshList[GEO_TEXT], "+", Color(1, 0, 0), 3, 14, 10);
+    }
+
 }
 
 void SP2Scene::RenderShip()

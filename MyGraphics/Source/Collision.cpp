@@ -12,7 +12,7 @@ bool Collision::BoundaryCheck(const Vector3& CameraPosition)
     }
     else 
     {
-        return true;
+        return false;
     }
 }
 
