@@ -20,6 +20,9 @@ public:
 
 	Character Test;
 
+    Vector3 ControlPanel;
+    Vector3 ControlPanelSize;
+
     double mouseXPos;
     double mouseYPos;
 
@@ -29,6 +32,5 @@ public:
     virtual void Update(double dt);
     virtual void Reset();
 };
-bool BoundaryCheck(const Vector3& CameraPosition);
 
 #endif

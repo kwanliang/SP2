@@ -83,6 +83,8 @@
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Character.cpp" />
+    <ClCompile Include="Source\Collision.cpp" />
+    <ClCompile Include="Source\Mouse.cpp" />
     <ClCompile Include="Source\SP2Scene.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Camera2.cpp" />
@@ -99,6 +101,8 @@
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Character.h" />
+    <ClInclude Include="Source\Collision.h" />
+    <ClInclude Include="Source\Mouse.h" />
     <ClInclude Include="Source\Race.h" />
     <ClInclude Include="Source\SP2Scene.h" />
     <ClInclude Include="Source\Camera.h" />

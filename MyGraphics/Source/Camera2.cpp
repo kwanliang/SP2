@@ -1,6 +1,8 @@
 #include "Camera2.h"
 #include "Application.h"
 #include "Mtx44.h"
+#include "Mouse.h"
+#include "Collision.h"
 
 Camera2::Camera2()
 {
@@ -12,6 +14,12 @@ Camera2::~Camera2()
 
 void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 {
+    Vector3 ControlPanel(-350, 0, 0);
+    Vector3 ControlPanelSize(100, 100, 200);
+
+    this->ControlPanel = ControlPanel;
+    this->ControlPanelSize = ControlPanelSize;
+
     this->position = defaultPosition = pos;
     this->target = defaultTarget = target;
     Vector3 view = (target - position).Normalized();
@@ -19,22 +27,6 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
     right.y = 0;
     right.Normalize();
     this->up = defaultUp = right.Cross(view).Normalized();
-
-	Test.SetRace(0);
-}
-
-bool BoundaryCheck(const Vector3& CameraPosition) {
-    Vector3 MaxPoint(2000, 300, 670);
-	Vector3 MinPoint(-500, -300, -670);
-    if (CameraPosition.x > MinPoint.x && CameraPosition.x < MaxPoint.x &&
-        CameraPosition.y > MinPoint.y && CameraPosition.y < MaxPoint.y &&
-        CameraPosition.z > MinPoint.z && CameraPosition.z < MaxPoint.z)
-    {
-        return true;
-    }
-    else {
-        return false;
-    }
 }
 
 void Camera2::Update(double dt)
@@ -58,7 +50,7 @@ void Camera2::Update(double dt)
 	TestPosition = position;
     PlayerPosition = position;
 
-    if (Application::IsKeyPressed('W'))
+    if (Application::IsKeyPressed('W') && UI::UI_On == false)
     {
         Vector3 view = (target - position).Normalized();
         // Normalize view vector
@@ -66,45 +58,44 @@ void Camera2::Update(double dt)
 		TestPosition.x += view.x * dt * Test.Move_Speed;
 		TestPosition.z += view.z * dt * Test.Move_Speed;
 
-        //if (BoundaryCheck(TestPosition) == true) {
+        if (Collision::BoundaryCheck(TestPosition) == true && Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false) {
 			position.x += view.x * dt * Test.Move_Speed;
 			position.z += view.z * dt * Test.Move_Speed;
 			target.x += view.x * dt * Test.Move_Speed;
 			target.z += view.z * dt * Test.Move_Speed;
-      //  }
+		}
     }
-    if (Application::IsKeyPressed('A'))
-    {
-        Vector3 view = (target - position).Normalized();
-        // Normalize view vector
-        Vector3 right = view.Cross(up);
+	if (Application::IsKeyPressed('A') && UI::UI_On == false)
+	{
+		Vector3 view = (target - position).Normalized();
+		// Normalize view vector
+		Vector3 right = view.Cross(up);
 
 		TestPosition.x -= right.x * dt * Test.Move_Speed;
 		TestPosition.z -= right.z * dt * Test.Move_Speed;
 
-       // if ((BoundaryCheck(TestPosition) == true)) {
+		if (Collision::BoundaryCheck(TestPosition) == true && Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false) {
 			position.x -= right.x * dt * Test.Move_Speed;
 			position.z -= right.z * dt * Test.Move_Speed;
 			target.x -= right.x * dt * Test.Move_Speed;
 			target.z -= right.z * dt * Test.Move_Speed;
-		//}
+		}
     }
-    if (Application::IsKeyPressed('S'))
+    if (Application::IsKeyPressed('S') && UI::UI_On == false)
     {
         Vector3 view = (target - position).Normalized();
         // Normalize view vector
 
 		TestPosition.x -= view.x * dt * Test.Move_Speed;
 		TestPosition.z -= view.z * dt * Test.Move_Speed;
-
-       // if ((BoundaryCheck(TestPosition) == true)) {
+		if (Collision::BoundaryCheck(TestPosition) == true && Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false) {
 			position.x -= view.x * dt * Test.Move_Speed;
 			position.z -= view.z * dt * Test.Move_Speed;
 			target.x -= view.x * dt * Test.Move_Speed;
 			target.z -= view.z * dt * Test.Move_Speed;
-       // }
+		}
     }
-    if (Application::IsKeyPressed('D'))
+    if (Application::IsKeyPressed('D') && UI::UI_On == false)
     {
         Vector3 view = (target - position).Normalized();
         // Normalize view vector
@@ -113,23 +104,35 @@ void Camera2::Update(double dt)
 		TestPosition.x += right.x * dt * Test.Move_Speed;
 		TestPosition.z += right.z * dt * Test.Move_Speed;
 
-		//	if ((BoundaryCheck(TestPosition) == true)) {
+        if (Collision::BoundaryCheck(TestPosition) == true && Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false) {
 			position.x += right.x * dt * Test.Move_Speed;
 			position.z += right.z * dt * Test.Move_Speed;
 			target.x += right.x * dt * Test.Move_Speed;
 			target.z += right.z * dt * Test.Move_Speed;
-       // }
+		}
+    }
+    
+    //Mouse
+    Mouse::MouseMovement(mouseXPos, mouseYPos);
+
+    if (UI::UI_PlanatNav == true) {
+        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 350, 450, 100, 200, 1);
+        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 200, 300, 350, 450, 2);
+        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 500, 600, 350, 450, 3);
+        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 370, 420, 550, 570, 4);
     }
 
-    Application::MouseMovement(mouseXPos, mouseYPos);
-    UI::PlanetHitbox(mouseXPos, mouseYPos, 350, 450, 150, 250);
-    UI::PlanetHitbox(mouseXPos, mouseYPos, 200, 300, 400, 500);
-    UI::PlanetHitbox(mouseXPos, mouseYPos, 500, 600, 400, 500);
+    if (UI::UI_Shop == true) {
+        UI::ShopUIHitbox(mouseXPos, mouseYPos, 80, 230, 230, 360, 1);
+        UI::ShopUIHitbox(mouseXPos, mouseYPos, 320, 470, 230, 360, 2);
+        UI::ShopUIHitbox(mouseXPos, mouseYPos, 560, 710, 230, 360, 3);
+        UI::ShopUIHitbox(mouseXPos, mouseYPos, 370, 425, 470, 485, 4);
+    }
 
     float horizontalMouseMovement = 10 * dt * static_cast<float>((800 / 2) - mouseXPos);
     float verticalMouseMovement = 10 * dt * static_cast<float>((600 / 2) - mouseYPos);
 
-    if (verticalMouseMovement && UI::UI_Planet == false)
+    if (verticalMouseMovement && UI::UI_On == false)
     {
         Vector3 TESTview = ((target - position).Normalized()) * 10;
         Vector3 view = ((target - position).Normalized()) * 10;
@@ -138,14 +141,20 @@ void Camera2::Update(double dt)
         Mtx44 rotation;
         rotation.SetToRotation(verticalMouseMovement, right.x, right.y, right.z);
         TESTview = rotation * view;
-        if (TESTview.y < 8.f && TESTview.y > -9.f) {
+        if (TESTview.y < 8.f && TESTview.y > -9.f) 
+        {
             view = rotation * view;
             up = rotation * up;
             target = position + view;
+            if (Application::IsKeyPressed('E') && Collision::ObjCheck(target, ControlPanel, ControlPanelSize) == true)
+            {
+                UI::UI_PlanatNav = true;
+                UI::UI_On = true;
+            }
         }
     }
 
-    if (horizontalMouseMovement && UI::UI_Planet == false)
+    if (horizontalMouseMovement && UI::UI_On == false)
     {
 		Vector3 view = ((target - position).Normalized()) * 10;
         // normalize view vector
@@ -153,16 +162,14 @@ void Camera2::Update(double dt)
         Mtx44 rotation;
         rotation.SetToRotation(horizontalMouseMovement, 0, 1, 0);
         view = rotation * view;
-        target = position + view;
         up = rotation * up;
+        target = position + view;
     }
 
     if (Application::IsKeyPressed('R'))
     {
         Reset();
     }
-
-
 }
 
 void Camera2::Reset()

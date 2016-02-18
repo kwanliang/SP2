@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "SP2Scene.h"
+#include "Mouse.h"
 
 GLFWwindow* m_window;
 const unsigned char FPS = 60; // FPS of this game
@@ -29,9 +30,9 @@ bool Application::IsKeyPressed(unsigned short key)
     return ((GetAsyncKeyState(key) & 0x8001) != 0);
 }
 
-void Application::MouseMovement(double& x, double& y) 
+void Mouse::MouseMovement(double& x, double& y) 
 {
-    if (UI::UI_Planet == false) {
+    if (UI::UI_On == false) {
         glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         glfwGetCursorPos(m_window, &x, &y);
         glfwSetCursorPos(m_window, 800 / 2, 600 / 2);
@@ -41,6 +42,17 @@ void Application::MouseMovement(double& x, double& y)
         glfwGetCursorPos(m_window, &x, &y);
     }
     //std::cout << x << " : " << y << std::endl;
+}
+
+void Mouse::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        Mouse::Left_Clicked = true;
+    }
+    else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+        Mouse::Left_Clicked = false;
+    }
 }
 
 Application::Application()
@@ -80,6 +92,9 @@ void Application::Init()
 
     //Resize objects according to window
     glfwSetWindowSizeCallback(m_window, resize_callback);
+
+    //Mouse Clicks
+    glfwSetMouseButtonCallback(m_window, Mouse::MouseButtonCallback);
 
 	//If the window couldn't be created
 	if (!m_window)

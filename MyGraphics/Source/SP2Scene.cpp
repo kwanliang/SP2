@@ -9,12 +9,19 @@
 #include "LoadTGA.h"
 #include "LoadOBJ.h"
 
+
 #include <iostream>
 using std::cout;
 using std::endl;
 
+bool SP2Scene::UI_PlanetNav_Animation = false;
+
+
 SP2Scene::SP2Scene()
 {
+	nearDoor = false;
+	closeDoor = false;
+	moveDoor = 0;
 }
 
 SP2Scene::~SP2Scene()
@@ -25,9 +32,12 @@ void SP2Scene::Init()
 {
     LSPEED = 100.f;
 
-    UI.UI_Planet = false;
-
 	Planet3 = false;
+	
+	Character.SetRace(3);
+	Character.AddCoin(1000);
+
+	Coin_Spin = 0.f;
 
     //Load vertex and fragment shaders
     m_programID = LoadShaders("Shader//Texture.vertexshader", "Shader//Text.fragmentshader");
@@ -96,6 +106,26 @@ void SP2Scene::Init()
     meshList[GEO_TEXT] = MeshBuilder::GenerateText("text", 16, 16);
     meshList[GEO_TEXT]->textureID = LoadTGA("Image//calibri.tga");
 
+    //<<<<<<<<<<<<<<<<<<<<<<<PLANET UI<<<<<<<<<<<<<<<<<<<<<<<<<<
+    meshList[GEO_UI_PLANET_NAVIGATION] = MeshBuilder::GenerateOBJ("UI planet plane", "OBJ//UI_Plane.obj");
+    meshList[GEO_UI_PLANET_NAVIGATION]->textureID = LoadTGA("Image//Space.tga");
+    meshList[GEO_UI_PLANET_SLIME] = MeshBuilder::GenerateOBJ("planet 1 slime", "OBJ//Planet.obj");
+    meshList[GEO_UI_PLANET_SLIME]->textureID = LoadTGA("Image//Slime.tga");
+    meshList[GEO_UI_PLANET_ROBOT] = MeshBuilder::GenerateOBJ("planet 2 robot", "OBJ//Planet.obj");
+    meshList[GEO_UI_PLANET_ROBOT]->textureID = LoadTGA("Image//Robot.tga");
+    meshList[GEO_UI_PLANET_DARK] = MeshBuilder::GenerateOBJ("planet 3 dark", "OBJ//Planet.obj");
+    meshList[GEO_UI_PLANET_DARK]->textureID = LoadTGA("Image//Dark.tga");
+    meshList[GEO_UI_PLANET_SUN] = MeshBuilder::GenerateOBJ("Sun", "OBJ//Planet.obj");
+    meshList[GEO_UI_PLANET_SUN]->textureID = LoadTGA("Image//Sun.tga");
+    //<<<<<<<<<<<<<<<<<<<<<<<PLANET UI<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+    //<<<<<<<<<<<<<<<<<<<<<<<<SHOP UI<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    meshList[GEO_UI_SHOP] = MeshBuilder::GenerateOBJ("UI shop plane", "OBJ//UI_Plane.obj");
+    meshList[GEO_UI_SHOP]->textureID = LoadTGA("Image//Shop.tga");
+    meshList[GEO_UI_SHOP_SELECT] = MeshBuilder::GenerateOBJ("UI shop select", "OBJ//Select.obj");
+    meshList[GEO_UI_SHOP_SELECT]->textureID = LoadTGA("Image//Select.tga");
+    //<<<<<<<<<<<<<<<<<<<<<<<<SHOP UI<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHIP<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[GEO_FRONT] = MeshBuilder::GenerateOBJ("front", "OBJ//front.obj");
 	meshList[GEO_FRONT]->textureID = LoadTGA("Image//front.tga");
@@ -137,29 +167,32 @@ void SP2Scene::Init()
 	meshList[GEO_CONTROLPANEL]->textureID = LoadTGA("Image//controlpanel.tga");
 
     meshList[GEO_UI_PLANET_NAVIGATION] = MeshBuilder::GenerateQuad("planet navigation UI", Color(1, 0, 0) , 1);
-    meshList[GEO_PLANETS] = MeshBuilder::GenerateCircle("planets", Color(1, 1, 1), 36);
+	meshList[GEO_UI_PLANET_NAVIGATION] = MeshBuilder::GenerateCircle("planets", Color(1, 1, 1), 36);
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[PLANET_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET_FRONT]->textureID = LoadTGA("Image//Planet 3 Front.tga");
-
 	meshList[PLANET_BACK] = MeshBuilder::GenerateQuad("back", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET_BACK]->textureID = LoadTGA("Image//Planet 3 Back.tga");
-
 	meshList[PLANET_RIGHT] = MeshBuilder::GenerateQuad("left", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET_RIGHT]->textureID = LoadTGA("Image//Planet 3 Left.tga");
-
 	meshList[PLANET_LEFT] = MeshBuilder::GenerateQuad("right", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET_LEFT]->textureID = LoadTGA("Image//Planet 3 Right.tga");
-
 	meshList[PLANET_TOP] = MeshBuilder::GenerateQuad("top", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET_TOP]->textureID = LoadTGA("Image//Planet 3 Top.tga");
-
 	meshList[PLANET_BOTTOM] = MeshBuilder::GenerateQuad("bottom", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET_BOTTOM]->textureID = LoadTGA("Image//Planet 3 Bottom.tga");
-
 	meshList[PLANET_GROUND] = MeshBuilder::GenerateQuad("Ground Mesh", Color(1, 1, 1), TexCoord(20, 20));
 	meshList[PLANET_GROUND]->textureID = LoadTGA("Image//Planet 3 Ground.tga");
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<ITEMS<<<<<<<<<<<<<<<<<<<<<<<<<<
+	meshList[COIN] = MeshBuilder::GenerateOBJ("Coins", "OBJ//Coin.obj");
+	meshList[COIN]->textureID = LoadTGA("Image//SadPepeCoin.tga");
+
+
+	//meshList[GEO_TABLE] = MeshBuilder::GenerateOBJ("controlpanel", "OBJ//table.obj");
+	//meshList[GEO_TABLE]->textureID = LoadTGA("Image//table.tga");
 
     light[0].type = Light::LIGHT_SPOT;
     light[0].position.Set(0, 0, 0);
@@ -247,6 +280,13 @@ void SP2Scene::Update(double dt)
     if (Application::IsKeyPressed('4'))
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
 
+
+	Coin_Spin += (float)(120 * dt);
+	if (Coin_Spin >= 360)
+	{
+		Coin_Spin = 0;
+	}
+
 	if (Planet3 == true)
 	{
 		Vector3 view = (camera.target - camera.position).Normalized();
@@ -258,8 +298,80 @@ void SP2Scene::Update(double dt)
     frames = 1.0 / dt;
     FPS = std::to_string(frames);
 
+    // Charcter Door
+
+	if ((camera.position.x <= 860 && camera.position.x >= 510) && (camera.position.z <= 670 && camera.position.z >= -670) && (nearDoor == false))
+	{
+		nearDoor = true;
+	}
+
+	if (nearDoor == true)
+	{
+		if (moveDoor <= 100)
+		{
+			moveDoor += (float)(60 * dt);
+			
+		}
+		if (moveDoor >= 100){
+
+			nearDoor = false;
+
+		}
+	}
+
+	if (nearDoor == false && moveDoor >= 0)
+	{
+			moveDoor -= (float)(60 * dt);		
+	}
+
+	if (nearDoor ==false)
+	{
+		//std::cout << "HAHAAHAHAHAHAHAAHAHAHAHAHAHA" << std::endl;
+	}
+	else
+	{
+		//std::cout << "LOLOLOLOLOLOLOLOLOOLOLO" << std::endl;
+	}
+
+    // Planet Animation
+
+    if (UI_PlanetNav_Animation == true) 
+    {
+        if (PlanetMove_1_Y < 2) {
+            PlanetMove_1_Y += (float)(10 * dt);
+        }
+
+        if (PlanetMove_2_X > -2) {
+            PlanetMove_2_X -= (float)(10 * dt);
+            PlanetMove_2_Y -= (float)(10 * dt);
+        }
+
+        if (PlanetMove_3_X < 2) {
+            PlanetMove_3_X += (float)(10 * dt);
+            PlanetMove_3_Y -= (float)(10 * dt);
+        }
+        else {
+            UI.UI_PlanetName = true;
+        }
+    }
+    else 
+    {
+        PlanetMove_1_Y = 0;
+
+        PlanetMove_2_X = 0;
+        PlanetMove_2_Y = 0;
+
+        PlanetMove_3_X = 0;
+        PlanetMove_3_Y = 0;
+
+        UI.UI_PlanetName = false;
+    }
+
     camera.Update(dt);
+
 	//std::cout << camera.position.x << " " << camera.position.z << std::endl;
+
+	//std::cout << nearDoor << std::endl;
 }
 
 void SP2Scene::Render()
@@ -300,26 +412,81 @@ void SP2Scene::Render()
     //RenderMesh(meshList[GEO_LIGHTBALL], false);
     //modelStack.PopMatrix();
 
-	//RenderShip();
+	RenderShip();
 
-	RenderPlanet_3();
+	//RenderPlanet_3();
 
-    if (Application::IsKeyPressed('E')) {
-        UI.UI_Planet = true;
-
+    //if (Application::IsKeyPressed('E') && UI.UI_On == false) {
+    //    UI.UI_PlanatNav = true;
+    //    UI.UI_On = true;
+    //}
+	
+    if (Application::IsKeyPressed('F') && UI.UI_On == false) {
+        UI.UI_Shop = true;
+        UI.UI_On = true;
     }
 
-    glBlendFunc(1, 1);
+    //glBlendFunc(2, 2);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    if (UI.UI_Planet == true) {
-        RenderUIOnScreen(meshList[GEO_PLANETS], 6, 6.6f, 4);
-        RenderUIOnScreen(meshList[GEO_PLANETS], 5, 8, 8);
-        RenderUIOnScreen(meshList[GEO_PLANETS], 5, 5, 3);
-        RenderUIOnScreen(meshList[GEO_PLANETS], 5, 11, 3);
-        RenderUIOnScreen(meshList[GEO_UI_PLANET_NAVIGATION], 160, 0, 0);
+    if (UI.UI_PlanatNav == true)
+    {
+        UI_PlanetNav_Animation = true;
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_SLIME], 5, 8, 6 + PlanetMove_1_Y ,0 ,0);
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_ROBOT], 5, 7 + PlanetMove_2_X, 5 + PlanetMove_2_Y ,0 ,0);
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_DARK], 5, 9 + PlanetMove_3_X, 5 + PlanetMove_3_Y ,0 ,0);
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_SUN], 6, 6.7f, 4 ,0 ,0);
+        RenderUIOnScreen(meshList[GEO_UI_PLANET_NAVIGATION], 80, .5f, -.1f ,0 ,0);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Back", Color(1, 1, 1), 2, 19, 2);
+        if (UI.UI_PlanetName == true)
+        {
+            RenderTextOnScreen(meshList[GEO_TEXT], "Planet Slime", Color(1, 1, 1), 2, 16, 19);
+            RenderTextOnScreen(meshList[GEO_TEXT], "Planet Robot", Color(1, 1, 1), 2,24, 6);
+            RenderTextOnScreen(meshList[GEO_TEXT], "Planet Dark", Color(1, 1, 1), 2, 8, 6);
+        }
     }
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    if (UI.UI_Shop == true)
+    {
+        RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 2, 3 ,0 ,0);
+        RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 5, 3 ,0 ,0);
+        RenderUIOnScreen(meshList[GEO_UI_SHOP_SELECT], 8, 8, 3 ,0 ,0);
+        RenderUIOnScreen(meshList[GEO_UI_SHOP], 80, .5f, -.1f ,0 ,0);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Ranged", Color(1, 1, 1), 2, 6.3f, 15.5f);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Melee", Color(1, 1, 1), 2, 18.8f, 15.5f);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Item", Color(1, 1, 1), 2, 31, 15.5f);
+        RenderTextOnScreen(meshList[GEO_TEXT], "Back", Color(1, 1, 1), 2, 19, 6);
+
+		RenderUIOnScreen(meshList[COIN], 4, 10, 13 ,1 , Coin_Spin);
+		RenderTextOnScreen(meshList[GEO_TEXT], std::to_string(Character.Coins), Color(1, 1, 1), 4, 12, 14);
+    }
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-450, 0, 150);
+	modelStack.Rotate(-60, 0, 1, 0);
+	modelStack.Scale(60, 60, 60);
+	RenderMesh(meshList[GEO_COMPUTER1], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-450, 0, -150);
+	modelStack.Rotate(-120, 0, 1, 0);
+	modelStack.Scale(60, 60, 60);
+	RenderMesh(meshList[GEO_COMPUTER2], false);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Scale(60, 60, 60);
+	modelStack.Translate(-6, -6, 0);
+	RenderMesh(meshList[GEO_CONTROLPANEL], false);
+	modelStack.PopMatrix();
+
+	//modelStack.PushMatrix();
+	//modelStack.Translate(1700, -400, 0);
+	//modelStack.Rotate(90, 0, 1, 0);
+	//modelStack.Scale(200, 140, 200);
+	//RenderMesh(meshList[GEO_TABLE], false);
+	//modelStack.PopMatrix();
 
     RenderTextOnScreen(meshList[GEO_TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
 	RenderTextOnScreen(meshList[GEO_TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
@@ -344,14 +511,14 @@ void SP2Scene::RenderShip()
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	modelStack.Translate(72, -45, 0);
+	modelStack.Translate(72, -45 + moveDoor, 0);
 	modelStack.Rotate(180, 0, 1, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
 	RenderMesh(meshList[GEO_BACK], false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
-	modelStack.Translate(0, -50, 0);
+	modelStack.Translate(-4, -50, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
 	RenderMesh(meshList[GEO_TOP], false);
 	modelStack.PopMatrix();
@@ -385,7 +552,7 @@ void SP2Scene::RenderShip()
 	modelStack.Scale(10, 8, 10);
 
 	modelStack.PushMatrix();
-	modelStack.Translate(-69, -45, 0);
+	modelStack.Translate(-69, -45 + moveDoor, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
 	RenderMesh(meshList[GEO_BARFRONT], false);
 	modelStack.PopMatrix();
@@ -578,7 +745,7 @@ void SP2Scene::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, flo
     glEnable(GL_DEPTH_TEST);
 }
 
-void SP2Scene::RenderUIOnScreen(Mesh* mesh, float size, float x, float y)
+void SP2Scene::RenderUIOnScreen(Mesh* mesh, float size, float x, float y , float z, float rotate)
 {
     Mtx44 ortho;
     ortho.SetToOrtho(0, 80, 0, 60, -10, 10); //size of screen UI
@@ -589,15 +756,16 @@ void SP2Scene::RenderUIOnScreen(Mesh* mesh, float size, float x, float y)
     modelStack.PushMatrix();
     modelStack.LoadIdentity(); //Reset modelStack
     modelStack.Scale(size, size, size);
-    modelStack.Translate(x, y, 0);
-    modelStack.Rotate(90, 1, 0, 0);
+
+    modelStack.Translate(x, y, z);
+	modelStack.Rotate(rotate, 0, 1, 0);
 
     Mtx44 MVP, modelView, modelView_inverse_transpose;
 
     MVP = projectionStack.Top() * viewStack.Top() * modelStack.Top();
     glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
     modelView = viewStack.Top() * modelStack.Top();
-    glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]); 
+    glUniformMatrix4fv(m_parameters[U_MODELVIEW], 1, GL_FALSE, &modelView.a[0]);
 
     if (mesh->textureID > 0)
     {
@@ -622,7 +790,6 @@ void SP2Scene::RenderUIOnScreen(Mesh* mesh, float size, float x, float y)
     projectionStack.PopMatrix();
     viewStack.PopMatrix();
 }
-
 
 void SP2Scene::Exit()
 {

@@ -16,10 +16,18 @@ class SP2Scene : public Scene
 
     enum GEOMETRY_TYPE
     {
-        GEO_AXES = 0,
-        GEO_LIGHTBALL,
-        GEO_UI_PLANET_NAVIGATION,
-        GEO_PLANETS,
+		GEO_AXES = 0,
+		GEO_LIGHTBALL,
+		GEO_UI_PLANET_NAVIGATION,
+		GEO_UI_PLANET_SLIME,
+		GEO_UI_PLANET_ROBOT,
+		GEO_UI_PLANET_DARK,
+		GEO_UI_PLANET_SUN,
+		GEO_UI_SHOP,
+		GEO_UI_SHOP_SELECT,
+		GEO_UI_SHOP_GUN,
+		GEO_UI_SHOP_MELEE,
+		GEO_UI_SHOP_ITEM,
 		GEO_TEXT,
 		GEO_FRONT,
 		GEO_BACK,
@@ -38,6 +46,8 @@ class SP2Scene : public Scene
 		GEO_COMPUTER1,
 		GEO_COMPUTER2,
 
+		COIN,
+
 		PLANET_FRONT,
 		PLANET_BACK,
 		PLANET_LEFT,
@@ -47,6 +57,8 @@ class SP2Scene : public Scene
 		PLANET_GROUND,
 
 		GEO_CONTROLPANEL,
+
+		GEO_TABLE,
 
         NUM_GEOMETRY,
     };
@@ -84,6 +96,9 @@ public:
 	SP2Scene();
 	~SP2Scene();
 
+	Character Character;
+	float Coin_Spin;
+
     float LSPEED;
 
     double DeltaTime;
@@ -91,6 +106,17 @@ public:
     std::string FPS;
 
 	bool Planet3;
+    
+	//Planet Nav Animation
+    static bool UI_PlanetNav_Animation;
+
+    float PlanetMove_1_Y;
+
+    float PlanetMove_2_X;
+    float PlanetMove_2_Y;
+
+    float PlanetMove_3_X;
+    float PlanetMove_3_Y;
 
     virtual void Init();
     virtual void Update(double dt);
@@ -107,7 +133,7 @@ private:
 	void RenderPlanet_3();
     void RenderText(Mesh* mesh, std::string text, Color color);
     void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
-    void RenderUIOnScreen(Mesh* mesh, float size, float x, float y);
+    void RenderUIOnScreen(Mesh* mesh, float size, float x, float y ,float z, float rotate);
 
     Camera2 camera;
 
@@ -116,6 +142,11 @@ private:
     Mesh *meshList[NUM_GEOMETRY];
 
     Light light[1];
+
+	bool nearDoor;
+	float moveDoor;
+	bool closeDoor;
+	float closingDoor;
 };
 
 #endif
