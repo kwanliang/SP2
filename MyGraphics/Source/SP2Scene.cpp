@@ -132,43 +132,43 @@ void SP2Scene::Init()
 	//<<<<<<<<<<<<<<<<<<<<<<<<SHOP UI<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHIP<<<<<<<<<<<<<<<<<<<<<<<<<<
-	meshList[FRONT] = MeshBuilder::GenerateOBJ("front", "OBJ//front.obj");
-	meshList[FRONT]->textureID = LoadTGA("Image//ship//front.tga");
-	meshList[BACK] = MeshBuilder::GenerateOBJ("back", "OBJ//back.obj");
-	meshList[BACK]->textureID = LoadTGA("Image//ship//back.tga");
-	meshList[TOP] = MeshBuilder::GenerateOBJ("top", "OBJ//top.obj");
-	meshList[TOP]->textureID = LoadTGA("Image//ship//top.tga");
-	meshList[BOTTOM] = MeshBuilder::GenerateOBJ("bottom", "OBJ//bottom.obj");
-	meshList[BOTTOM]->textureID = LoadTGA("Image//ship//bottom.tga");
-	meshList[LEFT] = MeshBuilder::GenerateOBJ("left", "OBJ//left.obj");
-	meshList[LEFT]->textureID = LoadTGA("Image//ship//left.tga");
-	meshList[RIGHT] = MeshBuilder::GenerateOBJ("right", "OBJ//right.obj");
-	meshList[RIGHT]->textureID = LoadTGA("Image//ship//left.tga");
+	meshList[SHIPFRONT] = MeshBuilder::GenerateOBJ("front", "OBJ//ship//ship_front.obj");
+	meshList[SHIPFRONT]->textureID = LoadTGA("Image//ship//ship_front.tga");
+	meshList[SHIPBACK] = MeshBuilder::GenerateOBJ("back", "OBJ//ship//ship_back.obj");
+	meshList[SHIPBACK]->textureID = LoadTGA("Image//ship//ship_back.tga");
+	meshList[SHIPTOP] = MeshBuilder::GenerateOBJ("top", "OBJ//ship//ship_top.obj");
+	meshList[SHIPTOP]->textureID = LoadTGA("Image//ship//ship_top.tga");
+	meshList[SHIPBOTTOM] = MeshBuilder::GenerateOBJ("bottom", "OBJ//ship//ship_bottom.obj");
+	meshList[SHIPBOTTOM]->textureID = LoadTGA("Image//ship//ship_bottom.tga");
+	meshList[SHIPLEFT] = MeshBuilder::GenerateOBJ("left", "OBJ//ship//ship_left.obj");
+	meshList[SHIPLEFT]->textureID = LoadTGA("Image//ship//ship_left.tga");
+	meshList[SHIPRIGHT] = MeshBuilder::GenerateOBJ("right", "OBJ//ship//ship_right.obj");
+	meshList[SHIPRIGHT]->textureID = LoadTGA("Image//ship//ship_left.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHIP<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHOP<<<<<<<<<<<<<<<<<<<<<<<<<<
-	meshList[BARBOTTOM] = MeshBuilder::GenerateOBJ("bar_bottom", "OBJ//bottom.obj");
-	meshList[BARBOTTOM]->textureID = LoadTGA("Image//ship//bottom.tga");
-	meshList[BARTOP] = MeshBuilder::GenerateOBJ("bar_top", "OBJ//top.obj");
-	meshList[BARTOP]->textureID = LoadTGA("Image//ship//top.tga");
-	meshList[BARFRONT] = MeshBuilder::GenerateOBJ("bar_back", "OBJ//back.obj");
-	meshList[BARFRONT]->textureID = LoadTGA("Image//ship//back.tga");
-	meshList[BARLEFT] = MeshBuilder::GenerateOBJ("bar_left", "OBJ//left.obj");
+	meshList[BARBOTTOM] = MeshBuilder::GenerateOBJ("bar_bottom", "OBJ//ship//ship_bottom.obj");
+	meshList[BARBOTTOM]->textureID = LoadTGA("Image//ship//ship_bottom.tga");
+	meshList[BARTOP] = MeshBuilder::GenerateOBJ("bar_top", "OBJ//ship//ship_top.obj");
+	meshList[BARTOP]->textureID = LoadTGA("Image//ship//ship_top.tga");
+	meshList[BARFRONT] = MeshBuilder::GenerateOBJ("bar_back", "OBJ//ship//ship_back.obj");
+	meshList[BARFRONT]->textureID = LoadTGA("Image//ship//ship_back.tga");
+	meshList[BARLEFT] = MeshBuilder::GenerateOBJ("bar_left", "OBJ//ship//ship_left.obj");
 	meshList[BARLEFT]->textureID = LoadTGA("Image//ship//bar_right.tga");
-	meshList[BARRIGHT] = MeshBuilder::GenerateOBJ("bar_right", "OBJ//left.obj");
+	meshList[BARRIGHT] = MeshBuilder::GenerateOBJ("bar_right", "OBJ//ship//ship_left.obj");
 	meshList[BARRIGHT]->textureID = LoadTGA("Image//ship//bar_right.tga");
-	meshList[BARBACK] = MeshBuilder::GenerateOBJ("bar_back", "OBJ//back.obj");
+	meshList[BARBACK] = MeshBuilder::GenerateOBJ("bar_back", "OBJ//ship//ship_back.obj");
 	meshList[BARBACK]->textureID = LoadTGA("Image//ship//bar_back.tga");
-	meshList[TABLE] = MeshBuilder::GenerateOBJ("table", "OBJ//table.obj");
+	meshList[TABLE] = MeshBuilder::GenerateOBJ("table", "OBJ//ship//table.obj");
 	meshList[TABLE]->textureID = LoadTGA("Image//ship//table.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHOP<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<
-	meshList[COMPUTER1] = MeshBuilder::GenerateOBJ("computer", "OBJ//computer.obj");
+	meshList[COMPUTER1] = MeshBuilder::GenerateOBJ("computer", "OBJ//ship//computer.obj");
 	meshList[COMPUTER1]->textureID = LoadTGA("Image//ship//computer.tga");
-	meshList[COMPUTER2] = MeshBuilder::GenerateOBJ("computer2", "OBJ//computer.obj");
+	meshList[COMPUTER2] = MeshBuilder::GenerateOBJ("computer2", "OBJ//ship//computer.obj");
 	meshList[COMPUTER2]->textureID = LoadTGA("Image//ship//computer2.tga");
-	meshList[CONTROLPANEL] = MeshBuilder::GenerateOBJ("controlpanel", "OBJ//controlpanel.obj");
+	meshList[CONTROLPANEL] = MeshBuilder::GenerateOBJ("controlpanel", "OBJ//ship//controlpanel.obj");
 	meshList[CONTROLPANEL]->textureID = LoadTGA("Image//ship//controlpanel.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -187,8 +187,8 @@ void SP2Scene::Init()
 	meshList[PLANET1_RIGHT]->textureID = LoadTGA("Image//planet1//planet1_right.tga");
 	meshList[PLANET1_GROUND] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(20, 20));
 	meshList[PLANET1_GROUND]->textureID = LoadTGA("Image//planet1//planet1_ground.tga");
-	meshList[SLIME_TREE] = MeshBuilder::GenerateOBJ("Tree", "OBJ//slimetree.obj");
-	meshList[SLIME_TREE]->textureID = LoadTGA("Image//slimetree.tga");
+	meshList[SLIME_TREE] = MeshBuilder::GenerateOBJ("Tree", "OBJ//planet1//slimetree.obj");
+	meshList[SLIME_TREE]->textureID = LoadTGA("Image//planet1//slimetree.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET1<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET2<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -223,6 +223,14 @@ void SP2Scene::Init()
 	meshList[PLANET3_BOTTOM]->textureID = LoadTGA("Image//planet3//Planet 3 Bottom.tga");
 	meshList[PLANET3_GROUND] = MeshBuilder::GenerateQuad("Ground Mesh", Color(1, 1, 1), TexCoord(20, 20));
 	meshList[PLANET3_GROUND]->textureID = LoadTGA("Image//planet3//Planet 3 Ground.tga");
+	meshList[PLANET3_MONSTER1] = MeshBuilder::GenerateOBJ("planet3_monster", "OBJ//planet3//planet3_monster1.obj");
+	meshList[PLANET3_MONSTER1]->textureID = LoadTGA("Image//planet3//planet3_monster//planet3_monster1.tga");
+	meshList[PLANET3_MONSTER2] = MeshBuilder::GenerateOBJ("planet3_monster", "OBJ//planet3//planet3_monster2.obj");
+	meshList[PLANET3_MONSTER2]->textureID = LoadTGA("Image//planet3//planet3_monster//planet3_monster2.tga");
+	meshList[PLANET3_DARKMOUNTAIN] = MeshBuilder::GenerateOBJ("darkmountain", "OBJ//planet3//darkmountain.obj");
+	meshList[PLANET3_DARKMOUNTAIN]->textureID = LoadTGA("Image//planet3//darkmountain.tga");
+	meshList[PLANET3_DARKTREE] = MeshBuilder::GenerateOBJ("darkmountain", "OBJ//planet3//darktree.obj");
+	meshList[PLANET3_DARKTREE]->textureID = LoadTGA("Image//planet3//darktree.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET3<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -236,18 +244,18 @@ void SP2Scene::Init()
     meshList[SWORD]->textureID = LoadTGA("Image//sword.tga");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<SWORD<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    meshList[CHARACTER_BODY] = MeshBuilder::GenerateCube("character", Color(1, 1, 1));
-    meshList[CHARACTER_HAND] = MeshBuilder::GenerateOBJ("hand", "OBJ//hand.obj");
-    meshList[CHARACTER_HAND]->textureID = LoadTGA("Image//hand.tga");
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<Body<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    ////<<<<<<<<<<<<<<<<<<<<<<<<<<<BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //meshList[CHARACTER_BODY] = MeshBuilder::GenerateCube("character", Color(1, 1, 1));
+    //meshList[CHARACTER_HAND] = MeshBuilder::GenerateOBJ("hand", "OBJ//hand.obj");
+    //meshList[CHARACTER_HAND]->textureID = LoadTGA("Image//hand.tga");
+    ////<<<<<<<<<<<<<<<<<<<<<<<<<<<Body<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<ITEMS<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[COIN] = MeshBuilder::GenerateOBJ("Coins", "OBJ//Coin.obj");
 	meshList[COIN]->textureID = LoadTGA("Image//items//SadPepeCoin.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<ITEMS<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    light[0].type = Light::LIGHT_POINT;
+    light[0].type = Light::LIGHT_SPOT;
     light[0].position.Set(0, 0, 0);
     light[0].color.Set(1, 1, 1);
     light[0].power = 100.f;
@@ -524,7 +532,7 @@ void SP2Scene::Render()
 
     if (UI::UI_On == false && SharedData::GetInstance()->Gun == true) {
         RenderTextOnScreen(meshList[TEXT], "+", Color(1, 0, 0), 3, 13.7f, 10);
-        RenderImageOnScreen(meshList[CHARACTER_HAND], 25, .8f, -0, -3, 0 + GunBounceBack, -10, 0);
+        //RenderImageOnScreen(meshList[CHARACTER_HAND], 25, .8f, -0, -3, 0 + GunBounceBack, -10, 0);
         RenderImageOnScreen(meshList[GUN], 15, 3.5f, -.1f, -2, 20 + GunBounceBack, 190, 0);
     }
     else if (UI::UI_On == false && SharedData::GetInstance()->Sword == true) {
@@ -556,40 +564,40 @@ void SP2Scene::RenderShip()
 	modelStack.PushMatrix();
 	modelStack.Translate(-55, -45, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
-	RenderMesh(meshList[FRONT], false);
+	RenderMesh(meshList[SHIPFRONT], false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(72, -45 + moveDoor, 0);
 	modelStack.Rotate(180, 0, 1, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
-	RenderMesh(meshList[BACK], false);
+	RenderMesh(meshList[SHIPBACK], false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(-4, -50, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
-	RenderMesh(meshList[TOP], false);
+	RenderMesh(meshList[SHIPTOP], false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0, -49, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
-	RenderMesh(meshList[BOTTOM], false);
+	RenderMesh(meshList[SHIPBOTTOM], false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(2.82, -45, 69);
 	modelStack.Rotate(90, 0, 1, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
-	RenderMesh(meshList[LEFT], false);
+	RenderMesh(meshList[SHIPLEFT], false);
 	modelStack.PopMatrix();
 
 	modelStack.PushMatrix();
 	modelStack.Translate(2.82, -45, -69);
 	modelStack.Rotate(-90, 0, 1, 0);
 	modelStack.Scale(skyboxsize, skyboxsize, skyboxsize);
-	RenderMesh(meshList[RIGHT], false);
+	RenderMesh(meshList[SHIPRIGHT], false);
 	modelStack.PopMatrix();
 
 	modelStack.PopMatrix();
@@ -781,7 +789,7 @@ void SP2Scene::RenderPlanet2()
 	modelStack.PushMatrix();
 	modelStack.Translate(0, -50, 0);
 	modelStack.Rotate(-180, 0, 1, 0);
-	modelStack.Scale(1000.0, 1000.0, 1000.0);
+	modelStack.Scale(2000.0, 2000.0, 2000.0);
 	RenderMesh(meshList[PLANET2_GROUND], false);
 	modelStack.PopMatrix();
 }
@@ -837,9 +845,95 @@ void SP2Scene::RenderPlanet3()
 	modelStack.PushMatrix();
 	modelStack.Translate(0, -50, 0);
 	modelStack.Rotate(-180, 0, 1, 0);
-	modelStack.Scale(1000.0, 1000.0, 1000.0);
+	modelStack.Scale(2000.0, 2000.0, 2000.0);
 	RenderMesh(meshList[PLANET3_GROUND], true);
 	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0, -50, 0);
+	RenderMesh(meshList[PLANET3_MONSTER1], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(100, -50, 0);
+	RenderMesh(meshList[PLANET3_MONSTER2], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(1890, -100, 0);
+	modelStack.Rotate(-90, 0, 1, 0);
+	modelStack.Scale(53, 50, 50);
+	RenderMesh(meshList[PLANET3_DARKMOUNTAIN], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-1890, -100, 0);
+	modelStack.Rotate(90, 0, 1, 0);
+	modelStack.Scale(53, 50, 50);
+	RenderMesh(meshList[PLANET3_DARKMOUNTAIN], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-1350, -5, -1300);
+	modelStack.Scale(155, 158, 155);
+	RenderMesh(meshList[PLANET3_DARKTREE], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-900, -5, -1300);
+	modelStack.Scale(155, 158, 155);
+	RenderMesh(meshList[PLANET3_DARKTREE], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-450, -5, -1300);
+	modelStack.Scale(155, 158, 155);
+	RenderMesh(meshList[PLANET3_DARKTREE], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0, -5, -1300);
+	modelStack.Scale(155, 158, 155);
+	RenderMesh(meshList[PLANET3_DARKTREE], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(450, -5, -1300);
+	modelStack.Scale(155, 158, 155);
+	RenderMesh(meshList[PLANET3_DARKTREE], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-1350, -5, 650);
+	modelStack.Scale(155, 158, 155);
+	RenderMesh(meshList[PLANET3_DARKTREE], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-900, -5, 650);
+	modelStack.Scale(155, 158, 155);
+	RenderMesh(meshList[PLANET3_DARKTREE], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(-450, -5, 650);
+	modelStack.Scale(155, 158, 155);
+	RenderMesh(meshList[PLANET3_DARKTREE], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(0, -5, 650);
+	modelStack.Scale(155, 158, 155);
+	RenderMesh(meshList[PLANET3_DARKTREE], true);
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
+	modelStack.Translate(450, -5, 650);
+	modelStack.Scale(155, 158, 155);
+	RenderMesh(meshList[PLANET3_DARKTREE], true);
+	modelStack.PopMatrix();
+
+
 }
 
 void SP2Scene::RenderText(Mesh* mesh, std::string text, Color color)

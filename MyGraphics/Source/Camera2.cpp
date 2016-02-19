@@ -66,14 +66,50 @@ void Camera2::Update(double dt)
 		TestPosition.x += view.x * dt * Test.Move_Speed;
 		TestPosition.z += view.z * dt * Test.Move_Speed;
 
-        if (Collision::BoundaryCheck(TestPosition) == true 
-			&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false 
-			&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
-			position.x += view.x * dt * Test.Move_Speed;
-			position.z += view.z * dt * Test.Move_Speed;
-			target.x += view.x * dt * Test.Move_Speed;
-			target.z += view.z * dt * Test.Move_Speed;
-        }
+		if (SharedData::GetInstance()->renderShip == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true
+				&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
+				&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
+				position.x += view.x * dt * Test.Move_Speed;
+				position.z += view.z * dt * Test.Move_Speed;
+				target.x += view.x * dt * Test.Move_Speed;
+				target.z += view.z * dt * Test.Move_Speed;
+			}
+		}
+
+		if (SharedData::GetInstance()->renderPlanet1 == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true)
+			{
+				position.x += view.x * dt * Test.Move_Speed;
+				position.z += view.z * dt * Test.Move_Speed;
+				target.x += view.x * dt * Test.Move_Speed;
+				target.z += view.z * dt * Test.Move_Speed;
+			}
+		}
+
+		if (SharedData::GetInstance()->renderPlanet2 == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true)
+			{
+				position.x += view.x * dt * Test.Move_Speed;
+				position.z += view.z * dt * Test.Move_Speed;
+				target.x += view.x * dt * Test.Move_Speed;
+				target.z += view.z * dt * Test.Move_Speed;
+			}
+		}
+
+		if (SharedData::GetInstance()->renderPlanet3 == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true)
+			{
+				position.x += view.x * dt * Test.Move_Speed;
+				position.z += view.z * dt * Test.Move_Speed;
+				target.x += view.x * dt * Test.Move_Speed;
+				target.z += view.z * dt * Test.Move_Speed;
+			}
+		}
     }
 	if (Application::IsKeyPressed('A') && UI::UI_On == false)
 	{
@@ -84,13 +120,49 @@ void Camera2::Update(double dt)
 		TestPosition.x -= right.x * dt * Test.Move_Speed;
 		TestPosition.z -= right.z * dt * Test.Move_Speed;
 
-        if (Collision::BoundaryCheck(TestPosition) == true 
-			&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
-			&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
-			position.x -= right.x * dt * Test.Move_Speed;
-			position.z -= right.z * dt * Test.Move_Speed;
-			target.x -= right.x * dt * Test.Move_Speed;
-			target.z -= right.z * dt * Test.Move_Speed;
+		if (SharedData::GetInstance()->renderShip == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true
+				&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
+				&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
+				position.x -= right.x * dt * Test.Move_Speed;
+				position.z -= right.z * dt * Test.Move_Speed;
+				target.x -= right.x * dt * Test.Move_Speed;
+				target.z -= right.z * dt * Test.Move_Speed;
+			}
+		}
+
+		if (SharedData::GetInstance()->renderPlanet1 == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true)
+			{
+				position.x -= right.x * dt * Test.Move_Speed;
+				position.z -= right.z * dt * Test.Move_Speed;
+				target.x -= right.x * dt * Test.Move_Speed;
+				target.z -= right.z * dt * Test.Move_Speed;
+			}
+		}
+
+		if (SharedData::GetInstance()->renderPlanet2 == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true)
+			{
+				position.x -= right.x * dt * Test.Move_Speed;
+				position.z -= right.z * dt * Test.Move_Speed;
+				target.x -= right.x * dt * Test.Move_Speed;
+				target.z -= right.z * dt * Test.Move_Speed;
+			}
+		}
+
+		if (SharedData::GetInstance()->renderPlanet3 == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true)
+			{
+				position.x -= right.x * dt * Test.Move_Speed;
+				position.z -= right.z * dt * Test.Move_Speed;
+				target.x -= right.x * dt * Test.Move_Speed;
+				target.z -= right.z * dt * Test.Move_Speed;
+			}
 		}
     }
     if (Application::IsKeyPressed('S') && UI::UI_On == false)
@@ -101,14 +173,50 @@ void Camera2::Update(double dt)
 		TestPosition.x -= view.x * dt * Test.Move_Speed;
 		TestPosition.z -= view.z * dt * Test.Move_Speed;
 
-        if (Collision::BoundaryCheck(TestPosition) == true 
-			&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
-			&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
-			position.x -= view.x * dt * Test.Move_Speed;
-			position.z -= view.z * dt * Test.Move_Speed;
-			target.x -= view.x * dt * Test.Move_Speed;
-			target.z -= view.z * dt * Test.Move_Speed;
-        }
+		if (SharedData::GetInstance()->renderShip == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true
+				&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
+				&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
+				position.x -= view.x * dt * Test.Move_Speed;
+				position.z -= view.z * dt * Test.Move_Speed;
+				target.x -= view.x * dt * Test.Move_Speed;
+				target.z -= view.z * dt * Test.Move_Speed;
+			}
+		}
+
+		if (SharedData::GetInstance()->renderPlanet1 == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true)
+			{
+				position.x -= view.x * dt * Test.Move_Speed;
+				position.z -= view.z * dt * Test.Move_Speed;
+				target.x -= view.x * dt * Test.Move_Speed;
+				target.z -= view.z * dt * Test.Move_Speed;
+			}
+		}
+
+		if (SharedData::GetInstance()->renderPlanet2 == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true)
+			{
+				position.x -= view.x * dt * Test.Move_Speed;
+				position.z -= view.z * dt * Test.Move_Speed;
+				target.x -= view.x * dt * Test.Move_Speed;
+				target.z -= view.z * dt * Test.Move_Speed;
+			}
+		}
+
+		if (SharedData::GetInstance()->renderPlanet3 == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true)
+			{
+				position.x -= view.x * dt * Test.Move_Speed;
+				position.z -= view.z * dt * Test.Move_Speed;
+				target.x -= view.x * dt * Test.Move_Speed;
+				target.z -= view.z * dt * Test.Move_Speed;
+			}
+		}
     }
     if (Application::IsKeyPressed('D') && UI::UI_On == false)
     {
@@ -118,15 +226,51 @@ void Camera2::Update(double dt)
 
 		TestPosition.x += right.x * dt * Test.Move_Speed;
 		TestPosition.z += right.z * dt * Test.Move_Speed;
+		if (SharedData::GetInstance()->renderShip == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true
+				&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
+				&& Collision::ObjCheck(TestPosition, table, tableSize) == false) 
+			{
+				position.x += right.x * dt * Test.Move_Speed;
+				position.z += right.z * dt * Test.Move_Speed;
+				target.x += right.x * dt * Test.Move_Speed;
+				target.z += right.z * dt * Test.Move_Speed;
+			}
+		}
 
-        if (Collision::BoundaryCheck(TestPosition) == true 
-			&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
-			&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
-			position.x += right.x * dt * Test.Move_Speed;
-			position.z += right.z * dt * Test.Move_Speed;
-			target.x += right.x * dt * Test.Move_Speed;
-			target.z += right.z * dt * Test.Move_Speed;
-        }
+		if (SharedData::GetInstance()->renderPlanet1 == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true)
+			{
+				position.x += right.x * dt * Test.Move_Speed;
+				position.z += right.z * dt * Test.Move_Speed;
+				target.x += right.x * dt * Test.Move_Speed;
+				target.z += right.z * dt * Test.Move_Speed;
+			}
+		}
+
+		if (SharedData::GetInstance()->renderPlanet2 == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true)
+			{
+				position.x += right.x * dt * Test.Move_Speed;
+				position.z += right.z * dt * Test.Move_Speed;
+				target.x += right.x * dt * Test.Move_Speed;
+				target.z += right.z * dt * Test.Move_Speed;
+			}
+		}
+
+		if (SharedData::GetInstance()->renderPlanet3 == true)
+		{
+			if (Collision::BoundaryCheck(TestPosition) == true)
+			{
+				position.x += right.x * dt * Test.Move_Speed;
+				position.z += right.z * dt * Test.Move_Speed;
+				target.x += right.x * dt * Test.Move_Speed;
+				target.z += right.z * dt * Test.Move_Speed; 
+			}
+		}
     }
 
     //Mouse

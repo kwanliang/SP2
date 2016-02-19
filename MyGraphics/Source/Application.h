@@ -3,6 +3,7 @@
 
 #include "timer.h"
 #include "UI.h"
+#include "SharedData.h"
 
 
 //Include GLEW
