@@ -23,19 +23,40 @@ bool UI::PlanetUIHitbox(double& MousePositionX, double& MousePositionY, int MinX
     if (MousePositionX >= MinX && MousePositionX <= MaxX &&
         MousePositionY >= MinY && MousePositionY <= MaxY)
     {
-        if (PlanetUI_ID == 1 && Mouse::Left_Clicked == true)
+        if (PlanetUI_ID == 1 && SharedData::GetInstance()->Left_Clicked == true)
         {
+            SharedData::GetInstance()->renderShip = false;
+            SharedData::GetInstance()->renderPlanet1 = true;
+            SharedData::GetInstance()->renderPlanet2 = false;
+            SharedData::GetInstance()->renderPlanet3 = false;
+            UI::UI_PlanatNav = false;
+            UI::UI_On = false;
+            SP2Scene::UI_PlanetNav_Animation = false;
             std::cout << PlanetUI_ID << std::endl;
         }
-        else if (PlanetUI_ID == 2 && Mouse::Left_Clicked == true)
+        else if (PlanetUI_ID == 2 && SharedData::GetInstance()->Left_Clicked == true)
         {
+            SharedData::GetInstance()->renderShip = false;
+            SharedData::GetInstance()->renderPlanet1 = false;
+            SharedData::GetInstance()->renderPlanet2 = true;
+            SharedData::GetInstance()->renderPlanet3 = false;
+            UI::UI_PlanatNav = false;
+            UI::UI_On = false;
+            SP2Scene::UI_PlanetNav_Animation = false;
             std::cout << PlanetUI_ID << std::endl;
         }
-        else if (PlanetUI_ID == 3 && Mouse::Left_Clicked == true)
+        else if (PlanetUI_ID == 3 && SharedData::GetInstance()->Left_Clicked == true)
         {
+            SharedData::GetInstance()->renderShip = false;
+            SharedData::GetInstance()->renderPlanet1 = false;
+            SharedData::GetInstance()->renderPlanet2 = false;
+            SharedData::GetInstance()->renderPlanet3 = true;
+            UI::UI_PlanatNav = false;
+            UI::UI_On = false;
+            SP2Scene::UI_PlanetNav_Animation = false;
             std::cout << PlanetUI_ID << std::endl;
         }
-        else if (PlanetUI_ID == 4 && Mouse::Left_Clicked == true)
+        else if (PlanetUI_ID == 4 && SharedData::GetInstance()->Left_Clicked == true)
         {
             UI::UI_PlanatNav = false;
             UI::UI_On = false;
@@ -53,19 +74,19 @@ bool UI::ShopUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, 
 {
     if (MousePositionX >= MinX && MousePositionX <= MaxX &&
         MousePositionY >= MinY && MousePositionY <= MaxY) {
-        if (ShopUI_ID == 1 && Mouse::Left_Clicked == true) {
+        if (ShopUI_ID == 1 && SharedData::GetInstance()->Left_Clicked == true) {
             UI::UI_Shop = false;
             UI::UI_ShopGun = true;
         }
-        if (ShopUI_ID == 2 && Mouse::Left_Clicked == true) {
+        if (ShopUI_ID == 2 && SharedData::GetInstance()->Left_Clicked == true) {
             UI::UI_Shop = false;
             UI::UI_ShopMelee = true;
         }
-        if (ShopUI_ID == 3 && Mouse::Left_Clicked == true) {
+        if (ShopUI_ID == 3 && SharedData::GetInstance()->Left_Clicked == true) {
             UI::UI_Shop = false;
             UI::UI_ShopItem = true;
         }
-        if (ShopUI_ID == 4 && Mouse::Left_Clicked == true) {
+        if (ShopUI_ID == 4 && SharedData::GetInstance()->Left_Clicked == true) {
             UI::UI_Shop = false;
             UI::UI_On = false;
         }
@@ -80,7 +101,7 @@ bool UI::ShopGunUIHitbox(double& MousePositionX, double& MousePositionY, int Min
 {
     if (MousePositionX >= MinX && MousePositionX <= MaxX &&
         MousePositionY >= MinY && MousePositionY <= MaxY) {
-        if (ShopGunUI_ID && Mouse::Left_Clicked == true) {
+        if (ShopGunUI_ID && SharedData::GetInstance()->Left_Clicked == true) {
             std::cout << ShopGunUI_ID << std::endl;
         }
         return true;
@@ -94,7 +115,7 @@ bool ShopMeleeUIHitbox(double& MousePositionX, double& MousePositionY, int MinX,
 {
     if (MousePositionX >= MinX && MousePositionX <= MaxX &&
         MousePositionY >= MinY && MousePositionY <= MaxY) {
-        if (ShopMeleeUI_ID && Mouse::Left_Clicked == true) {
+        if (ShopMeleeUI_ID && SharedData::GetInstance()->Left_Clicked == true) {
             std::cout << ShopMeleeUI_ID << std::endl;
         }
         return true;
@@ -108,7 +129,7 @@ bool UI::ShopItemUIHitbox(double& MousePositionX, double& MousePositionY, int Mi
 {
     if (MousePositionX >= MinX && MousePositionX <= MaxX &&
         MousePositionY >= MinY && MousePositionY <= MaxY) {
-        if (ShopItemUI_ID && Mouse::Left_Clicked == true) {
+        if (ShopItemUI_ID && SharedData::GetInstance()->Left_Clicked == true) {
             std::cout << ShopItemUI_ID << std::endl;
         }
         return true;

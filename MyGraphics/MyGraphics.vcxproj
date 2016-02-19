@@ -82,9 +82,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
+    <ClCompile Include="Source\Boss1.cpp" />
     <ClCompile Include="Source\Character.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
-    <ClCompile Include="Source\Mouse.cpp" />
+    <ClCompile Include="Source\Enemy.cpp" />
+    <ClCompile Include="Source\Projectile.cpp" />
     <ClCompile Include="Source\SP2Scene.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Camera2.cpp" />
@@ -96,13 +98,17 @@
     <ClCompile Include="Source\shader.cpp" />
     <ClCompile Include="Source\UI.cpp" />
     <ClCompile Include="Source\Utility.cpp" />
+    <ClCompile Include="Source\Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SharedData.h" />
     <ClInclude Include="Source\Application.h" />
+    <ClInclude Include="Source\Boss1.h" />
     <ClInclude Include="Source\Character.h" />
     <ClInclude Include="Source\Collision.h" />
+    <ClInclude Include="Source\Enemy.h" />
+    <ClInclude Include="Source\Keyboard.h" />
     <ClInclude Include="Source\Mouse.h" />
+    <ClInclude Include="Source\Projectile.h" />
     <ClInclude Include="Source\Race.h" />
     <ClInclude Include="Source\SharedData.h" />
     <ClInclude Include="Source\SP2Scene.h" />

@@ -18,10 +18,12 @@ bool SP2Scene::UI_PlanetNav_Animation = false;
 
 SP2Scene::SP2Scene()
 {
-	SharedData::GetInstance()->renderShip = false;
+	SharedData::GetInstance()->renderShip = true;
 	SharedData::GetInstance()->renderPlanet1 = false;
 	SharedData::GetInstance()->renderPlanet2 = false;
 	SharedData::GetInstance()->renderPlanet3 = false;
+
+    SharedData::GetInstance()->Gun = true;
 }
 
 SP2Scene::~SP2Scene()
@@ -32,7 +34,6 @@ void SP2Scene::Init()
 {
     LSPEED = 100.f;
 
-	
 	Character.SetRace(3);
 	Character.AddCoin(1000);
 
@@ -91,6 +92,7 @@ void SP2Scene::Init()
 
 	//Initialize camera settings
 	camera.Init(Vector3(0, 0, -200), Vector3(0, 0, 0), Vector3(0, 1, 0));
+    projectile.Init(camera.position);
 
 	// Get a handle for our "colorTexture" uniform
 	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
@@ -184,7 +186,7 @@ void SP2Scene::Init()
 	meshList[PLANET1_RIGHT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET1_RIGHT]->textureID = LoadTGA("Image//planet1//planet1_right.tga");
 	meshList[PLANET1_GROUND] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(20, 20));
-	//meshList[PLANET1_GROUND]->textureID = LoadTGA("Image//planet1//planet1_right.tga");
+	meshList[PLANET1_GROUND]->textureID = LoadTGA("Image//planet1//planet1_ground.tga");
 	meshList[SLIME_TREE] = MeshBuilder::GenerateOBJ("Tree", "OBJ//slimetree.obj");
 	meshList[SLIME_TREE]->textureID = LoadTGA("Image//slimetree.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET1<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -203,7 +205,7 @@ void SP2Scene::Init()
 	meshList[PLANET2_RIGHT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET2_RIGHT]->textureID = LoadTGA("Image//planet2//planet2_right.tga");
 	meshList[PLANET2_GROUND] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(10, 10));
-	//meshList[PLANET2_GROUND]->textureID = LoadTGA("Image//planet1//planet1_right.tga");
+	meshList[PLANET2_GROUND]->textureID = LoadTGA("Image//planet2//planet2_ground.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET2<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET3<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -229,8 +231,13 @@ void SP2Scene::Init()
     meshList[BULLET] = MeshBuilder::GenerateSphere("bullet", Color(1, 1, 1), 10, 20);
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<Body<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    //meshList[CHARACTER_BODY] = MeshBuilder::GenerateCube("character", Color(1, 1, 1));
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<SWORD<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    meshList[SWORD] = MeshBuilder::GenerateOBJ("sword", "OBJ//sword.obj");
+    meshList[SWORD]->textureID = LoadTGA("Image//sword.tga");
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<SWORD<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    meshList[CHARACTER_BODY] = MeshBuilder::GenerateCube("character", Color(1, 1, 1));
     meshList[CHARACTER_HAND] = MeshBuilder::GenerateOBJ("hand", "OBJ//hand.obj");
     meshList[CHARACTER_HAND]->textureID = LoadTGA("Image//hand.tga");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<Body<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -339,12 +346,13 @@ void SP2Scene::Update(double dt)
 		light[0].spotDirection.Set(-view.x, -view.y, -view.z);
 	}
 
-
 	// Show FPS
 
 	DeltaTime = dt;
 	frames = 1.0 / DeltaTime;
 	FPS = std::to_string(frames);
+
+
 
 	// Charcter Door
 
@@ -406,7 +414,7 @@ void SP2Scene::Update(double dt)
 	}
 
     // Gun Recoil
-    if (Mouse::Left_Clicked == true && GunBounceBack < 5 && UI.UI_On == false && camera.BulletTime > .5) {
+    if (SharedData::GetInstance()->Left_Clicked == true && GunBounceBack < 5 && UI.UI_On == false && projectile.BulletTime > .5) {
         GunBounceBack += (float)(100 * dt);
     }
     else {
@@ -414,6 +422,7 @@ void SP2Scene::Update(double dt)
     }
 
     camera.Update(dt);
+    projectile.Update(dt);
 }
 
 void SP2Scene::Render()
@@ -448,12 +457,17 @@ void SP2Scene::Render()
         glUniform3fv(m_parameters[U_LIGHT0_SPOTDIRECTION], 1, &spotDirection_cameraspace.x);
     }
 
-
-    RenderShip();
-
-    if (Application::IsKeyPressed('F') && UI.UI_On == false) {
-        UI.UI_Shop = true;
-        UI.UI_On = true;
+    if (SharedData::GetInstance()->renderShip == true) {
+        RenderShip();
+    }
+    else if (SharedData::GetInstance()->renderPlanet1 == true) {
+        RenderPlanet1();
+    }
+    else if (SharedData::GetInstance()->renderPlanet2 == true) {
+        RenderPlanet2();
+    }
+    else if (SharedData::GetInstance()->renderPlanet3 == true) {
+        RenderPlanet3();
     }
 
     //glBlendFunc(2, 2);
@@ -491,17 +505,31 @@ void SP2Scene::Render()
         RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 1, 1), 4, 12, 14);
     }
 
-    if (camera.ProjectileShot == true) {
+    if (projectile.ProjectileShot == true) {
         modelStack.PushMatrix();
-        modelStack.Translate(camera.ProjectilePosition.x, camera.ProjectilePosition.y, camera.ProjectilePosition.z);
+        modelStack.Translate(projectile.ProjectilePosition.x, projectile.ProjectilePosition.y, projectile.ProjectilePosition.z);
         modelStack.Scale(10, 10, 10);
         RenderMesh(meshList[BULLET], false);
         modelStack.PopMatrix();
     }
-    if (UI::UI_On == false) {
+
+    if (Application::IsKeyPressed('G')) {
+        SharedData::GetInstance()->Sword = true;
+        SharedData::GetInstance()->Gun = false;
+    }
+    if (Application::IsKeyPressed('F')) {
+        SharedData::GetInstance()->Gun = true;
+        SharedData::GetInstance()->Sword = false;
+    }
+
+    if (UI::UI_On == false && SharedData::GetInstance()->Gun == true) {
         RenderTextOnScreen(meshList[TEXT], "+", Color(1, 0, 0), 3, 13.7f, 10);
         RenderImageOnScreen(meshList[CHARACTER_HAND], 25, .8f, -0, -3, 0 + GunBounceBack, -10, 0);
         RenderImageOnScreen(meshList[GUN], 15, 3.5f, -.1f, -2, 20 + GunBounceBack, 190, 0);
+    }
+    else if (UI::UI_On == false && SharedData::GetInstance()->Sword == true) {
+        RenderTextOnScreen(meshList[TEXT], "+", Color(1, 0, 0), 3, 13.7f, 10);
+        RenderImageOnScreen(meshList[SWORD], 4, 15, 0, 0, 0, 45, 20);
     }
 
     //modelStack.PushMatrix();
@@ -510,6 +538,10 @@ void SP2Scene::Render()
     //RenderMesh(meshList[SLIME_BOSS], false);
     //modelStack.PopMatrix();
 
+    // Name
+    RenderTextOnScreen(meshList[TEXT], SharedData::GetInstance()->KeyInput, Color(1, 1, 1), 3, 5, 10);
+
+    // FPS
     RenderTextOnScreen(meshList[TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
     RenderTextOnScreen(meshList[TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
 }
@@ -517,7 +549,6 @@ void SP2Scene::Render()
 void SP2Scene::RenderShip()
 {
 	float skyboxsize = 20;
-	SharedData::GetInstance()->renderShip = true;
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHIP<<<<<<<<<<<<<<<<<<<<<<<<<<
 	modelStack.PushMatrix();
 	modelStack.Scale(10, 8, 10);
@@ -641,7 +672,6 @@ void SP2Scene::RenderShip()
 
 void SP2Scene::RenderPlanet1()
 {
-	SharedData::GetInstance()->renderPlanet1 = true;
 	modelStack.PushMatrix();
 	modelStack.Translate(camera.position.x, 500 + camera.position.y, camera.position.z);
 	modelStack.Scale(5000.0, 5000.0, 5000.0);
@@ -703,7 +733,6 @@ void SP2Scene::RenderPlanet1()
 
 void SP2Scene::RenderPlanet2()
 {
-	SharedData::GetInstance()->renderPlanet2 = true;
 	modelStack.PushMatrix();
 	modelStack.Translate(camera.position.x, 500 + camera.position.y, camera.position.z);
 	modelStack.Scale(5000.0, 5000.0, 5000.0);
@@ -759,7 +788,6 @@ void SP2Scene::RenderPlanet2()
 
 void SP2Scene::RenderPlanet3()
 {
-	SharedData::GetInstance()->renderPlanet3 = true;
 	modelStack.PushMatrix();
 	modelStack.Translate(camera.position.x, 500 + camera.position.y, camera.position.z);
 	modelStack.Scale(5000.0, 5000.0, 5000.0);

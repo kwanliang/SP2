@@ -11,8 +11,6 @@ class Mouse {
 private:
 
 public:
-    static bool Left_Clicked;
-
     static void MouseMovement(double& x, double& y);
     static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 };

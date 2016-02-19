@@ -6,6 +6,7 @@
 
 #include "SP2Scene.h"
 #include "Mouse.h"
+#include "Keyboard.h"
 
 GLFWwindow* m_window;
 const unsigned char FPS = 60; // FPS of this game
@@ -21,8 +22,12 @@ static void error_callback(int error, const char* description)
 //Define the key input callback
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GL_TRUE);
+    //if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+    //    glfwSetWindowShouldClose(window, GL_TRUE);
+    //}
+    if (Application::IsKeyPressed(VK_BACK) && SharedData::GetInstance()->KeyInput.size() > 0) {
+        SharedData::GetInstance()->KeyInput.pop_back();
+    }
 }
 
 bool Application::IsKeyPressed(unsigned short key)
@@ -32,12 +37,14 @@ bool Application::IsKeyPressed(unsigned short key)
 
 void Mouse::MouseMovement(double& x, double& y) 
 {
-    if (UI::UI_On == false) {
+    if (UI::UI_On == false) 
+    {
         glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         glfwGetCursorPos(m_window, &x, &y);
         glfwSetCursorPos(m_window, 800 / 2, 600 / 2);
     }
-    else {
+    else 
+    {
         glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         glfwGetCursorPos(m_window, &x, &y);
     }
@@ -47,11 +54,21 @@ void Mouse::MouseButtonCallback(GLFWwindow* window, int button, int action, int 
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
-        Mouse::Left_Clicked = true;
+        SharedData::GetInstance()->Left_Clicked = true;
     }
-    else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-        Mouse::Left_Clicked = false;
+    else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) 
+    {
+        SharedData::GetInstance()->Left_Clicked = false;
     }
+}
+
+void Keyboard::characterCallback(GLFWwindow* window, unsigned int keyCode)
+{
+    if (isalpha(static_cast<char>(keyCode)) && SharedData::GetInstance()->KeyInput.size() < 10) {
+        SharedData::GetInstance()->KeyInput.push_back(static_cast<char>(keyCode));
+    }
+
+    std::cout << SharedData::GetInstance()->KeyInput << std::endl;
 }
 
 Application::Application()
@@ -95,6 +112,10 @@ void Application::Init()
     //Mouse Clicks
     glfwSetMouseButtonCallback(m_window, Mouse::MouseButtonCallback);
 
+    //Keyboard Input
+    glfwSetCharCallback(m_window, Keyboard::characterCallback);
+    glfwSetKeyCallback(m_window, key_callback);
+
 	//If the window couldn't be created
 	if (!m_window)
 	{
@@ -105,9 +126,6 @@ void Application::Init()
 
 	//This function makes the context of the specified window current on the calling thread. 
 	glfwMakeContextCurrent(m_window);
-
-	//Sets the key callback
-	//glfwSetKeyCallback(m_window, key_callback);
 
 	glewExperimental = true; // Needed for core profile
 

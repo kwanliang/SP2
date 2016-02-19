@@ -2,6 +2,7 @@
 #define SP2SCENE_H
 
 #include <string>
+#include <vector>
 
 #include "Scene.h"
 #include "Camera2.h"
@@ -10,6 +11,7 @@
 #include "Light.h"
 #include "UI.h"
 #include "Collision.h"
+#include "Projectile.h"
 
 class SP2Scene : public Scene
 {
@@ -79,6 +81,7 @@ class SP2Scene : public Scene
 
         GUN,
         BULLET,
+        SWORD,
         CHARACTER_BODY,
         CHARACTER_HAND,
 
@@ -149,6 +152,11 @@ public:
 
     float GunBounceBack;
 
+    float yaw;
+    float pitch;
+
+    float rot;
+
     virtual void Init();
     virtual void Update(double dt);
     virtual void Render();
@@ -171,6 +179,8 @@ private:
     Camera2 camera;
 
     Collision collision;
+
+    Projectile projectile;
 
     UI UI;
 

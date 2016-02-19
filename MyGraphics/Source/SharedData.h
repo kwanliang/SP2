@@ -15,11 +15,25 @@ public:
 	bool renderPlanet2;
 	bool renderPlanet3;
 
+    bool Sword;
+    bool Gun;
+
+    bool Left_Clicked = false;
+
 	int hi;
+
+    std::string KeyInput;
+
+    Vector3 PlayerPosition;
+    Vector3 PlayerTarget;
+    Vector3 PlayerUp;
+    Vector3 PlayerRight;
+
+    double MousePos_X;
+    double MousePos_Y;
 
 private:
 	SharedData(){};
 };
-
 
 #endif

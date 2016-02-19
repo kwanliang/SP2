@@ -18,13 +18,13 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
     Vector3 ControlPanel(-350, 0, 0);
     Vector3 ControlPanelSize(100, 100, 200);
 
-	Vector3 table(1650, 0, 0);
-	Vector3 tableSize(100, 100, 800);
+	Vector3 table(1750, 0, 0);
+	Vector3 tableSize(200, 500, 800);
 
     this->ControlPanel = ControlPanel;
     this->ControlPanelSize = ControlPanelSize;
 
-	this -> table = table;
+	this->table = table;
 	this->tableSize = tableSize;
 
     this->position = defaultPosition = pos;
@@ -36,9 +36,6 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
     this->up = defaultUp = right.Cross(view).Normalized();
 
 	Test.SetRace(0);
-
-    BulletTime = 0;
-    time.startTimer();
 }
 
 void Camera2::Update(double dt)
@@ -60,48 +57,6 @@ void Camera2::Update(double dt)
     static const float CAMERA_SPEED = 50.f;
 
 	TestPosition = position;
-    PlayerPosition = position;
-
-    Vector3 Spread(.1, .1, .1);
-
-    int random = rand() % 10 + 1;
-
-    if (ProjectileDirChange == true) 
-    {
-        ProjectilePosition = position;
-        if (random > 7) 
-        {
-            ProjectileView = ((target + Spread) - position).Normalized();
-        }
-        else if (random > 5 && random < 8) 
-        {
-            ProjectileView = ((target - Spread) - position).Normalized();
-        }
-        else 
-        {
-            ProjectileView = (target- position).Normalized();
-        }
-    }
-
-    BulletTime += time.getElapsedTime();
-
-    if (Mouse::Left_Clicked == true && BulletTime > .5 && ProjectileDirChange == true && UI::UI_On == false)
-    {
-        ProjectileShot = true;
-        BulletTime = 0;
-    }
-
-    if (Collision::BoundaryCheck(ProjectilePosition) == true && BulletTime < .5 && UI::UI_On == false)
-    {
-        ProjectilePosition += ProjectileView * dt * 3000;
-        ProjectileDirChange = false;
-    }
-    else
-    {
-        ProjectilePosition = position;
-        ProjectileShot = false;
-        ProjectileDirChange = true;
-    }
 
     if (Application::IsKeyPressed('W') && UI::UI_On == false)
     {
@@ -173,7 +128,7 @@ void Camera2::Update(double dt)
 			target.z += right.z * dt * Test.Move_Speed;
         }
     }
-    
+
     //Mouse
     Mouse::MouseMovement(mouseXPos, mouseYPos);
 
@@ -200,6 +155,7 @@ void Camera2::Update(double dt)
         Vector3 view = ((target - position).Normalized()) * 10;
         // normalize view vector
         Vector3 right = view.Cross(up);
+        SharedData::GetInstance()->PlayerRight = right;
         Mtx44 rotation;
         rotation.SetToRotation(verticalMouseMovement, right.x, right.y, right.z);
         TESTview = rotation * view;
@@ -213,6 +169,11 @@ void Camera2::Update(double dt)
                 UI::UI_PlanatNav = true;
                 UI::UI_On = true;
             }
+            if (Application::IsKeyPressed('E') && Collision::ObjCheck(target, table, tableSize) == true)
+            {
+                UI::UI_Shop = true;
+                UI::UI_On = true;
+            }
         }
     }
 
@@ -220,7 +181,6 @@ void Camera2::Update(double dt)
     {
 		Vector3 view = ((target - position).Normalized()) * 10;
         // normalize view vector
-        float yaw = (float)(CAMERA_SPEED * dt);
         Mtx44 rotation;
         rotation.SetToRotation(horizontalMouseMovement, 0, 1, 0);
         view = rotation * view;
@@ -232,6 +192,12 @@ void Camera2::Update(double dt)
     {
         Reset();
     }
+
+    SharedData::GetInstance()->PlayerPosition = position;
+    SharedData::GetInstance()->PlayerTarget = target;
+    SharedData::GetInstance()->PlayerUp = up;
+    SharedData::GetInstance()->MousePos_X = mouseXPos;
+    SharedData::GetInstance()->MousePos_Y = mouseYPos;
 }
 
 void Camera2::Reset()
