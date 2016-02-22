@@ -276,20 +276,6 @@ void Camera2::Update(double dt)
     //Mouse
     Mouse::MouseMovement(mouseXPos, mouseYPos);
 
-    if (UI::UI_PlanatNav == true) {
-        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 350, 450, 100, 200, 1);
-        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 200, 300, 350, 450, 2);
-        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 500, 600, 350, 450, 3);
-        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 370, 420, 550, 570, 4);
-    }
-
-    if (UI::UI_Shop == true) {
-        UI::ShopUIHitbox(mouseXPos, mouseYPos, 80, 230, 230, 360, 1);
-        UI::ShopUIHitbox(mouseXPos, mouseYPos, 320, 470, 230, 360, 2);
-        UI::ShopUIHitbox(mouseXPos, mouseYPos, 560, 710, 230, 360, 3);
-        UI::ShopUIHitbox(mouseXPos, mouseYPos, 370, 425, 470, 485, 4);
-    }
-
     float horizontalMouseMovement = 10 * dt * static_cast<float>((800 / 2) - mouseXPos);
     float verticalMouseMovement = 10 * dt * static_cast<float>((600 / 2) - mouseYPos);
 

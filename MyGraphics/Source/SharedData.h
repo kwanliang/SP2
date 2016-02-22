@@ -10,17 +10,34 @@ public:
 		return &data;
 	}
 
+    //Menu
+    bool renderMenu;
+
+    //Race Selection
+    bool renderRaceSelection;
+    bool UI_Human_Selected;
+    bool UI_Robot_Selected;
+    bool UI_Infested_Selected;
+    bool Mouse_Race_Start;
+    bool Mouse_Race_Back;
+
+    //Name Input
+    bool renderNameInput;
+
+    //Render Skybox
 	bool renderShip;
 	bool renderPlanet1;
 	bool renderPlanet2;
 	bool renderPlanet3;
 
-    bool Sword;
-    bool Gun;
-
+    //Mouse
     bool Left_Clicked = false;
 
-	int hi;
+    //Window size
+    bool WindowHalfSized;
+
+    //Exit Application
+    bool Exit;
 
     std::string KeyInput;
 

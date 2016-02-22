@@ -21,39 +21,65 @@ class SP2Scene : public Scene
 
     enum GEOMETRY_TYPE
     {
-		AXES = 0,
-		LIGHTBALL,
+        AXES = 0,
+        LIGHTBALL,
+
+        //Menu
+        UI_MENU,
+        UI_MENU_SELECT_START,
+        UI_MENU_SELECT_EXIT,
+
+        //Race Selection
+        UI_RACESELECTION,
+        UI_HUMAN,
+        UI_ROBOT,
+        UI_INFESTED,
+        UI_RACE_SELECT,
+        UI_RACE_BACK,
+
+        //Name Input
+        UI_NAMEINPUT,
+        UI_TEXTBOX,
+        UI_NAME_ACCEPT,
+        UI_NAME_BACK,
+        UI_NAME_MENU,
+
+        //Planet Navigation
 		UI_PLANET_NAVIGATION,
 		UI_PLANET_SLIME,
 		UI_PLANET_ROBOT,
 		UI_PLANET_DARK,
 		UI_PLANET_SUN,
+
+        //Shop
 		UI_SHOP,
 		UI_SHOP_SELECT,
 		UI_SHOP_GUN,
 		UI_SHOP_MELEE,
 		UI_SHOP_ITEM,
+
+        //Text
 		TEXT,
 
-		//SHIP STUFF
-		SHIPFRONT,
-		SHIPBACK,
-		SHIPLEFT,
-		SHIPRIGHT,
-		SHIPTOP,
-		SHIPBOTTOM,
+        //Skybox Ship
 		BARFRONT,
 		BARBACK,
 		BARLEFT,
 		BARRIGHT,
 		BARTOP,
 		BARBOTTOM,
+        SHIPFRONT,
+        SHIPBACK,
+        SHIPLEFT,
+        SHIPRIGHT,
+        SHIPTOP,
+        SHIPBOTTOM,
 		COMPUTER1,
 		COMPUTER2,
 		CONTROLPANEL,
 		TABLE,
 
-		//PLANET 1
+        //Skybox Planet 1
 		PLANET1_FRONT,
 		PLANET1_BACK,
 		PLANET1_TOP,
@@ -63,7 +89,7 @@ class SP2Scene : public Scene
 		PLANET1_GROUND,
 		SLIME_TREE,
 
-		//PLANET 2
+        //Skybox Planet 2
 		PLANET2_FRONT,
 		PLANET2_BACK,
 		PLANET2_TOP,
@@ -72,7 +98,7 @@ class SP2Scene : public Scene
 		PLANET2_RIGHT,
 		PLANET2_GROUND,
 
-		//PLANET 3
+        //Skybox Planet 3
 		PLANET3_FRONT,
 		PLANET3_BACK,
 		PLANET3_LEFT,
@@ -95,14 +121,18 @@ class SP2Scene : public Scene
 		GOLEM_KNEE,
 		GOLEM_FEET,
 
+        //Character & Weapon
         GUN,
+        RIFLE,
+        RIFLE3,
         BULLET,
-        SWORD,
         CHARACTER_BODY,
         CHARACTER_HAND,
 
+        //Coin
 		COIN,
 
+        //Planet 1 Boss
         SLIME_BOSS,
         SLIME_GREEN,
         SLIME_PINK,
@@ -153,6 +183,10 @@ public:
     double frames;
     std::string FPS;
 
+    static float UI_Human_Rotate;
+    static float UI_Robot_Rotate;
+    static float UI_Infested_Rotate;
+
 	bool Planet3;
 	Boss3 Golem;
 
@@ -185,10 +219,13 @@ private:
 
     void RenderMesh(Mesh* mesh, bool enableLight);
 
-    void RenderPlanet1();
-	void RenderPlanet2();
-	void RenderPlanet3();
+    void RenderMenu();
+    void RenderRaceSelection();
+    void RenderNameInput();
 	void RenderShip();
+    void RenderPlanet1();
+    void RenderPlanet2();
+    void RenderPlanet3();
     void RenderText(Mesh* mesh, std::string text, Color color);
     void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
     void RenderImageOnScreen(Mesh* mesh, float size, float x, float y, float z, float rotateX, float rotateY, float rotateZ);

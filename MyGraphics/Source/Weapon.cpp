@@ -16,5 +16,8 @@ const string Weapon::getName(void)
 
 const int Weapon::getAttackValue(void)
 {
+    //if (bob == true) {
+    //    
+    //}
 	return Attack_Value;
 }
