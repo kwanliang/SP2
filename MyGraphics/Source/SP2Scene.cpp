@@ -233,6 +233,26 @@ void SP2Scene::Init()
 	meshList[PLANET3_DARKTREE]->textureID = LoadTGA("Image//planet3//darktree.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET3<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS3<<<<<<<<<<<<<<<<<<<<<<<<<<
+	GLuint Golem = LoadTGA("Image//planet3//planet3_monster//Night Knight Golem.tga");
+	meshList[GOLEM_HEAD] = MeshBuilder::GenerateOBJ("Golem's Head", "OBJ//planet3//Golem Head.obj");
+	meshList[GOLEM_HEAD]->textureID = Golem;
+	meshList[GOLEM_BODY] = MeshBuilder::GenerateOBJ("Golem's Body", "OBJ//planet3//Golem Body.obj");
+	meshList[GOLEM_BODY]->textureID = Golem;
+	meshList[GOLEM_CRYSTAL] = MeshBuilder::GenerateOBJ("Golem's Crystal", "OBJ//planet3//Golem Crystal.obj");
+	meshList[GOLEM_CRYSTAL]->textureID = Golem;
+	meshList[GOLEM_BARRIER] = MeshBuilder::GenerateOBJ("Golem's Barrier", "OBJ//planet3//Golem Barrier.obj");
+	meshList[GOLEM_BARRIER]->textureID = Golem;
+	meshList[GOLEM_ARM] = MeshBuilder::GenerateOBJ("Golem's Arm", "OBJ//planet3//Golem Arm.obj");
+	meshList[GOLEM_ARM]->textureID = Golem;
+	meshList[GOLEM_LOWER_BODY] = MeshBuilder::GenerateOBJ("Golem's crotch", "OBJ//planet3//Golem Lower Body.obj");
+	meshList[GOLEM_LOWER_BODY]->textureID = Golem;
+	meshList[GOLEM_KNEE] = MeshBuilder::GenerateOBJ("Golem's Knee", "OBJ//planet3//Golem Knee.obj");
+	meshList[GOLEM_KNEE]->textureID = Golem;
+	meshList[GOLEM_FEET] = MeshBuilder::GenerateOBJ("Golem's Feet", "OBJ//planet3//Golem Feet.obj");
+	meshList[GOLEM_FEET]->textureID = Golem;
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS3<<<<<<<<<<<<<<<<<<<<<<<<<<
+
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
     meshList[GUN] = MeshBuilder::GenerateOBJ("gun", "OBJ//gun.obj");
     meshList[GUN]->textureID = LoadTGA("Image//gun.tga");
@@ -255,7 +275,7 @@ void SP2Scene::Init()
 	meshList[COIN]->textureID = LoadTGA("Image//items//SadPepeCoin.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<ITEMS<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    light[0].type = Light::LIGHT_SPOT;
+    light[0].type = Light::LIGHT_POINT;
     light[0].position.Set(0, 0, 0);
     light[0].color.Set(1, 1, 1);
     light[0].power = 100.f;
@@ -347,11 +367,33 @@ void SP2Scene::Update(double dt)
 		Coin_Spin = 0;
 	}
 
+	//PLANET 3
 	if (SharedData::GetInstance()->renderPlanet3 == true)
 	{
+		light[0].type = Light::LIGHT_SPOT;
+		glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
 		Vector3 view = (camera.target - camera.position).Normalized();
 		light[0].position.Set(camera.position.x, camera.position.y, camera.position.z);
 		light[0].spotDirection.Set(-view.x, -view.y, -view.z);
+	}
+	//PLANET 3 BOSS
+	Golem.updates(dt);
+
+	if (Application::IsKeyPressed(VK_LBUTTON))
+	{
+		Golem.stompLeft = true;
+	}
+	if (Application::IsKeyPressed(VK_RBUTTON))
+	{
+		Golem.stompRight = true;
+	}
+	if (Application::IsKeyPressed('V'))
+	{
+		Golem.recieveDamage(100);
+	}
+	if (Golem.Phase2 == true)
+	{	
+		Golem.slap(dt, camera.position.x, camera.position.z);
 	}
 
 	// Show FPS
@@ -476,6 +518,7 @@ void SP2Scene::Render()
     }
     else if (SharedData::GetInstance()->renderPlanet3 == true) {
         RenderPlanet3();
+		RenderBoss3();
     }
 
     //glBlendFunc(2, 2);
@@ -934,6 +977,106 @@ void SP2Scene::RenderPlanet3()
 	modelStack.PopMatrix();
 
 
+}
+
+void SP2Scene::RenderBoss3()
+{
+	if (Golem.isDead() == false && SharedData::GetInstance()->renderPlanet3 == true)
+	{
+		//LEFT ARM
+		modelStack.PushMatrix();
+		modelStack.Translate(100, Golem.Y_Offset, 0);
+
+		modelStack.Translate(Golem.slapX, Golem.slapY + 100, Golem.slapZ);
+
+		modelStack.Scale(100, 100, 100);
+		if (Golem.Phase2 == true)
+		{
+			modelStack.Translate(-2, -2, 0);
+		}
+		modelStack.Rotate(Golem.Left_Arm_R, 0, 1, 0);
+		if (Golem.Phase2 == true)
+		{
+			modelStack.Translate(2, 10, 2);
+		}
+		modelStack.Rotate(Golem.Left_Arm_R2, 0, 0, 1);
+		if (Golem.Phase2 == true)
+		{
+			modelStack.Translate(-2, -10, -2);
+		}
+
+		RenderMesh(meshList[GOLEM_ARM], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Translate(100, Golem.Y_Offset, 0);
+		modelStack.Scale(100, 100, 100);
+		RenderMesh(meshList[GOLEM_BODY], true);
+
+		modelStack.PushMatrix();
+		modelStack.Rotate(30, 1, 0, 0);
+		modelStack.Translate(0, -1.5, -5.5);
+		RenderMesh(meshList[GOLEM_HEAD], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		modelStack.Rotate(Golem.barrier_R, 0, 1, 0);
+		RenderMesh(meshList[GOLEM_BARRIER], false);
+		modelStack.PopMatrix();
+
+		//RIGHT ARM
+		modelStack.PushMatrix();
+		modelStack.Rotate(180, 0, 1, 0);
+		RenderMesh(meshList[GOLEM_ARM], true);
+		modelStack.PopMatrix();
+
+		modelStack.PushMatrix();
+		RenderMesh(meshList[GOLEM_CRYSTAL], false);
+		modelStack.PopMatrix();
+
+		if (Golem.HP > 500)
+		{
+			modelStack.PushMatrix();
+			RenderMesh(meshList[GOLEM_LOWER_BODY], true);
+
+			//LEFT LEG
+			modelStack.PushMatrix();
+			modelStack.PushMatrix();
+			modelStack.Translate(0, Golem.STOMP_LEFT, 0);
+			modelStack.Translate(0, 8, 0);
+			modelStack.Rotate(Golem.Left_Hip_R, 1, 0, 0);
+			modelStack.Translate(0, -8, 0);
+			RenderMesh(meshList[GOLEM_KNEE], true);
+
+			modelStack.PushMatrix();
+			modelStack.Translate(0, 4, 0);
+			modelStack.Rotate(Golem.Left_Knee_R, 1, 0, 0);
+			modelStack.Translate(0, -4, 0);
+			RenderMesh(meshList[GOLEM_FEET], true);
+			modelStack.PopMatrix();
+			modelStack.PopMatrix();
+
+			//RIGHT LEG
+			modelStack.PushMatrix();
+			modelStack.PushMatrix();
+			modelStack.Translate(3, Golem.STOMP_RIGHT, 0);
+			modelStack.Translate(0, 8, 0);
+			modelStack.Rotate(Golem.Right_Hip_R, 1, 0, 0);
+			modelStack.Translate(0, -8, 0);
+			RenderMesh(meshList[GOLEM_KNEE], true);
+
+			modelStack.PushMatrix();
+			modelStack.Translate(0, 4, 0);
+			modelStack.Rotate(Golem.Right_Knee_R, 1, 0, 0);
+			modelStack.Translate(0, -4, 0);
+			RenderMesh(meshList[GOLEM_FEET], true);
+			modelStack.PopMatrix();
+			modelStack.PopMatrix();
+
+			modelStack.PopMatrix();
+		}
+		modelStack.PopMatrix();
+	}
 }
 
 void SP2Scene::RenderText(Mesh* mesh, std::string text, Color color)

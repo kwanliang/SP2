@@ -72,6 +72,9 @@
     <ClCompile Include="Source\Weapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Boss3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -135,7 +138,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\SharedData.h">
-<<<<<<< 72fe413749480990085aac90aa63221c69d79bcd
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Projectile.h">
@@ -148,8 +150,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Enemy.h">
-=======
->>>>>>> f14e01d05dc1b4394839e8c65ab6040ad4d6b3b7
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Boss3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

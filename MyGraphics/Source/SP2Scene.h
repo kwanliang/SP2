@@ -13,6 +13,8 @@
 #include "Collision.h"
 #include "Projectile.h"
 
+#include "Boss3.h"
+
 class SP2Scene : public Scene
 {
     MS modelStack, viewStack, projectionStack;
@@ -33,25 +35,25 @@ class SP2Scene : public Scene
 		UI_SHOP_ITEM,
 		TEXT,
 
+		//SHIP STUFF
 		SHIPFRONT,
 		SHIPBACK,
 		SHIPLEFT,
 		SHIPRIGHT,
 		SHIPTOP,
 		SHIPBOTTOM,
-
 		BARFRONT,
 		BARBACK,
 		BARLEFT,
 		BARRIGHT,
 		BARTOP,
 		BARBOTTOM,
-
 		COMPUTER1,
 		COMPUTER2,
-
 		CONTROLPANEL,
+		TABLE,
 
+		//PLANET 1
 		PLANET1_FRONT,
 		PLANET1_BACK,
 		PLANET1_TOP,
@@ -61,7 +63,7 @@ class SP2Scene : public Scene
 		PLANET1_GROUND,
 		SLIME_TREE,
 
-
+		//PLANET 2
 		PLANET2_FRONT,
 		PLANET2_BACK,
 		PLANET2_TOP,
@@ -70,6 +72,7 @@ class SP2Scene : public Scene
 		PLANET2_RIGHT,
 		PLANET2_GROUND,
 
+		//PLANET 3
 		PLANET3_FRONT,
 		PLANET3_BACK,
 		PLANET3_LEFT,
@@ -82,7 +85,15 @@ class SP2Scene : public Scene
 		PLANET3_DARKMOUNTAIN,
 		PLANET3_DARKTREE,
 
-		TABLE,
+		//BOSS 3
+		GOLEM_HEAD,
+		GOLEM_BODY,
+		GOLEM_CRYSTAL,
+		GOLEM_BARRIER,
+		GOLEM_ARM,
+		GOLEM_LOWER_BODY,
+		GOLEM_KNEE,
+		GOLEM_FEET,
 
         GUN,
         BULLET,
@@ -143,6 +154,7 @@ public:
     std::string FPS;
 
 	bool Planet3;
+	Boss3 Golem;
 
 	//Planet Nav Animation
     static bool UI_PlanetNav_Animation;
@@ -180,6 +192,9 @@ private:
     void RenderText(Mesh* mesh, std::string text, Color color);
     void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
     void RenderImageOnScreen(Mesh* mesh, float size, float x, float y, float z, float rotateX, float rotateY, float rotateZ);
+
+	//BOSSES
+	void RenderBoss3();
 
     Camera2 camera;
 
