@@ -3,6 +3,7 @@
 #include "Mtx44.h"
 #include "Mouse.h"
 #include "Collision.h"
+#include "SharedData.h"
 
 Camera2::Camera2()
 {
@@ -40,6 +41,8 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 
 void Camera2::Update(double dt)
 {
+	Vector3 bob(400, 400, 400);
+
 	if (Application::IsKeyPressed('Z'))
 	{
 		Test.SetRace(0);
@@ -63,18 +66,18 @@ void Camera2::Update(double dt)
         Vector3 view = (target - position).Normalized();
         // Normalize view vector
 
-		TestPosition.x += view.x * dt * Test.Move_Speed;
-		TestPosition.z += view.z * dt * Test.Move_Speed;
+		TestPosition.x += view.x * dt * SharedData::GetInstance()->Move_Speed;
+		TestPosition.z += view.z * dt * SharedData::GetInstance()->Move_Speed;
 
 		if (SharedData::GetInstance()->renderShip == true)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true
 				&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
 				&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
-				position.x += view.x * dt * Test.Move_Speed;
-				position.z += view.z * dt * Test.Move_Speed;
-				target.x += view.x * dt * Test.Move_Speed;
-				target.z += view.z * dt * Test.Move_Speed;
+				position.x += view.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z += view.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x += view.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z += view.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
 
@@ -82,10 +85,10 @@ void Camera2::Update(double dt)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
-				position.x += view.x * dt * Test.Move_Speed;
-				position.z += view.z * dt * Test.Move_Speed;
-				target.x += view.x * dt * Test.Move_Speed;
-				target.z += view.z * dt * Test.Move_Speed;
+				position.x += view.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z += view.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x += view.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z += view.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
 
@@ -93,10 +96,10 @@ void Camera2::Update(double dt)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
-				position.x += view.x * dt * Test.Move_Speed;
-				position.z += view.z * dt * Test.Move_Speed;
-				target.x += view.x * dt * Test.Move_Speed;
-				target.z += view.z * dt * Test.Move_Speed;
+				position.x += view.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z += view.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x += view.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z += view.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
 
@@ -104,10 +107,10 @@ void Camera2::Update(double dt)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
-				position.x += view.x * dt * Test.Move_Speed;
-				position.z += view.z * dt * Test.Move_Speed;
-				target.x += view.x * dt * Test.Move_Speed;
-				target.z += view.z * dt * Test.Move_Speed;
+				position.x += view.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z += view.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x += view.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z += view.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
     }
@@ -117,18 +120,18 @@ void Camera2::Update(double dt)
 		// Normalize view vector
 		Vector3 right = view.Cross(up);
 
-		TestPosition.x -= right.x * dt * Test.Move_Speed;
-		TestPosition.z -= right.z * dt * Test.Move_Speed;
+		TestPosition.x -= right.x * dt * SharedData::GetInstance()->Move_Speed;
+		TestPosition.z -= right.z * dt * SharedData::GetInstance()->Move_Speed;
 
 		if (SharedData::GetInstance()->renderShip == true)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true
 				&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
 				&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
-				position.x -= right.x * dt * Test.Move_Speed;
-				position.z -= right.z * dt * Test.Move_Speed;
-				target.x -= right.x * dt * Test.Move_Speed;
-				target.z -= right.z * dt * Test.Move_Speed;
+				position.x -= right.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z -= right.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x -= right.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z -= right.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
 
@@ -136,10 +139,10 @@ void Camera2::Update(double dt)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
-				position.x -= right.x * dt * Test.Move_Speed;
-				position.z -= right.z * dt * Test.Move_Speed;
-				target.x -= right.x * dt * Test.Move_Speed;
-				target.z -= right.z * dt * Test.Move_Speed;
+				position.x -= right.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z -= right.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x -= right.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z -= right.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
 
@@ -147,10 +150,10 @@ void Camera2::Update(double dt)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
-				position.x -= right.x * dt * Test.Move_Speed;
-				position.z -= right.z * dt * Test.Move_Speed;
-				target.x -= right.x * dt * Test.Move_Speed;
-				target.z -= right.z * dt * Test.Move_Speed;
+				position.x -= right.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z -= right.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x -= right.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z -= right.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
 
@@ -158,10 +161,10 @@ void Camera2::Update(double dt)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
-				position.x -= right.x * dt * Test.Move_Speed;
-				position.z -= right.z * dt * Test.Move_Speed;
-				target.x -= right.x * dt * Test.Move_Speed;
-				target.z -= right.z * dt * Test.Move_Speed;
+				position.x -= right.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z -= right.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x -= right.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z -= right.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
     }
@@ -170,18 +173,18 @@ void Camera2::Update(double dt)
         Vector3 view = (target - position).Normalized();
         // Normalize view vector
 
-		TestPosition.x -= view.x * dt * Test.Move_Speed;
-		TestPosition.z -= view.z * dt * Test.Move_Speed;
+		TestPosition.x -= view.x * dt * SharedData::GetInstance()->Move_Speed;
+		TestPosition.z -= view.z * dt * SharedData::GetInstance()->Move_Speed;
 
 		if (SharedData::GetInstance()->renderShip == true)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true
 				&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
 				&& Collision::ObjCheck(TestPosition, table, tableSize) == false) {
-				position.x -= view.x * dt * Test.Move_Speed;
-				position.z -= view.z * dt * Test.Move_Speed;
-				target.x -= view.x * dt * Test.Move_Speed;
-				target.z -= view.z * dt * Test.Move_Speed;
+				position.x -= view.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z -= view.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x -= view.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z -= view.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
 
@@ -189,10 +192,10 @@ void Camera2::Update(double dt)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
-				position.x -= view.x * dt * Test.Move_Speed;
-				position.z -= view.z * dt * Test.Move_Speed;
-				target.x -= view.x * dt * Test.Move_Speed;
-				target.z -= view.z * dt * Test.Move_Speed;
+				position.x -= view.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z -= view.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x -= view.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z -= view.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
 
@@ -200,10 +203,10 @@ void Camera2::Update(double dt)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
-				position.x -= view.x * dt * Test.Move_Speed;
-				position.z -= view.z * dt * Test.Move_Speed;
-				target.x -= view.x * dt * Test.Move_Speed;
-				target.z -= view.z * dt * Test.Move_Speed;
+				position.x -= view.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z -= view.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x -= view.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z -= view.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
 
@@ -211,10 +214,10 @@ void Camera2::Update(double dt)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
-				position.x -= view.x * dt * Test.Move_Speed;
-				position.z -= view.z * dt * Test.Move_Speed;
-				target.x -= view.x * dt * Test.Move_Speed;
-				target.z -= view.z * dt * Test.Move_Speed;
+				position.x -= view.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z -= view.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x -= view.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z -= view.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
     }
@@ -224,18 +227,19 @@ void Camera2::Update(double dt)
         // Normalize view vector
         Vector3 right = view.Cross(up);
 
-		TestPosition.x += right.x * dt * Test.Move_Speed;
-		TestPosition.z += right.z * dt * Test.Move_Speed;
+		TestPosition.x += right.x * dt * SharedData::GetInstance()->Move_Speed;
+		TestPosition.z += right.z * dt * SharedData::GetInstance()->Move_Speed;
 		if (SharedData::GetInstance()->renderShip == true)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true
 				&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
-				&& Collision::ObjCheck(TestPosition, table, tableSize) == false) 
+				&& Collision::ObjCheck(TestPosition, table, tableSize) == false
+				)
 			{
-				position.x += right.x * dt * Test.Move_Speed;
-				position.z += right.z * dt * Test.Move_Speed;
-				target.x += right.x * dt * Test.Move_Speed;
-				target.z += right.z * dt * Test.Move_Speed;
+				position.x += right.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z += right.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x += right.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z += right.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
 
@@ -243,10 +247,10 @@ void Camera2::Update(double dt)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
-				position.x += right.x * dt * Test.Move_Speed;
-				position.z += right.z * dt * Test.Move_Speed;
-				target.x += right.x * dt * Test.Move_Speed;
-				target.z += right.z * dt * Test.Move_Speed;
+				position.x += right.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z += right.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x += right.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z += right.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
 
@@ -254,10 +258,10 @@ void Camera2::Update(double dt)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
-				position.x += right.x * dt * Test.Move_Speed;
-				position.z += right.z * dt * Test.Move_Speed;
-				target.x += right.x * dt * Test.Move_Speed;
-				target.z += right.z * dt * Test.Move_Speed;
+				position.x += right.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z += right.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x += right.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z += right.z * dt * SharedData::GetInstance()->Move_Speed;
 			}
 		}
 
@@ -265,16 +269,30 @@ void Camera2::Update(double dt)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
-				position.x += right.x * dt * Test.Move_Speed;
-				position.z += right.z * dt * Test.Move_Speed;
-				target.x += right.x * dt * Test.Move_Speed;
-				target.z += right.z * dt * Test.Move_Speed; 
+				position.x += right.x * dt * SharedData::GetInstance()->Move_Speed;
+				position.z += right.z * dt * SharedData::GetInstance()->Move_Speed;
+				target.x += right.x * dt * SharedData::GetInstance()->Move_Speed;
+				target.z += right.z * dt * SharedData::GetInstance()->Move_Speed; 
 			}
 		}
     }
 
     //Mouse
     Mouse::MouseMovement(mouseXPos, mouseYPos);
+
+    if (UI::UI_PlanatNav == true) {
+        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 350, 450, 100, 200, 1);
+        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 200, 300, 350, 450, 2);
+        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 500, 600, 350, 450, 3);
+        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 370, 420, 550, 570, 4);
+    }
+
+    if (UI::UI_Shop == true) {
+        UI::ShopUIHitbox(mouseXPos, mouseYPos, 80, 230, 230, 360, 1);
+        UI::ShopUIHitbox(mouseXPos, mouseYPos, 320, 470, 230, 360, 2);
+        UI::ShopUIHitbox(mouseXPos, mouseYPos, 560, 710, 230, 360, 3);
+        UI::ShopUIHitbox(mouseXPos, mouseYPos, 370, 425, 470, 485, 4);
+    }
 
     float horizontalMouseMovement = 10 * dt * static_cast<float>((800 / 2) - mouseXPos);
     float verticalMouseMovement = 10 * dt * static_cast<float>((600 / 2) - mouseYPos);

@@ -19,7 +19,7 @@ Character::Character()
 {
 	MAX_HP = 0;
 	HP = 0;
-	Move_Speed = 0.0f;
+	SharedData::GetInstance()->Move_Speed = 0.0f;
 	Name = "";
 	Race = Race_Type::Human;
 	Coins = 0;
@@ -52,25 +52,26 @@ void Character::SetRace(int i)
 	{
 		MAX_HP = 20;
 		HP = 20;
-		Move_Speed = 400.0f;
+		SharedData::GetInstance()->Move_Speed = 400.0f;
 		break;
 	}
 	case Race_Type::Robot:
 	{
 		MAX_HP = 40;
 		HP = 40;
-		Move_Speed = 200.0f;
+		SharedData::GetInstance()->Move_Speed = 200.0f;
 		break;
 	}
 	case Race_Type::Infected:
 	{
 		MAX_HP = 10;
 		HP = 10;
-		Move_Speed = 800.0f;
+		SharedData::GetInstance()->Move_Speed = 800.0f;
 		break;
 	}
 	default: break;
 	}
+
 }
 
 /******************************************************************************/
@@ -246,3 +247,4 @@ void Character::MinusCoin(const int Minus)
 {
 	Coins -= Minus;
 }
+

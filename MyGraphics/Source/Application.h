@@ -15,9 +15,6 @@
 class Application
 {
 public:
-    int Window_Width;
-    int Window_Height;
-
 	Application();
 	~Application();
 	void Init();

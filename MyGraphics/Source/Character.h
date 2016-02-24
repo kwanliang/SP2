@@ -12,6 +12,7 @@
 
 #include "Race.h"
 #include "Weapon.h"
+#include "SharedData.h"
 
 /******************************************************************************/
 /*!
@@ -33,8 +34,8 @@ public:
 	string Name;
 	int health_kit_amount;
 	int large_health_kit_amount;
-	float Move_Speed;
 
+	
 	Character();
 	~Character();
 	void SetRace(int i);

@@ -83,6 +83,7 @@
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Boss1.cpp" />
+    <ClCompile Include="Source\Boss2.cpp" />
     <ClCompile Include="Source\Boss3.cpp" />
     <ClCompile Include="Source\Character.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
@@ -104,6 +105,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Boss1.h" />
+    <ClInclude Include="Source\Boss2.h" />
     <ClInclude Include="Source\Boss3.h" />
     <ClInclude Include="Source\Character.h" />
     <ClInclude Include="Source\Collision.h" />

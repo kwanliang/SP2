@@ -43,7 +43,7 @@ void Projectile::Update(double dt)
 
     BulletTime += time.getElapsedTime();
 
-    if (SharedData::GetInstance()->Left_Clicked == true && BulletTime > .5 && ProjectileDirChange == true && UI.UI_On == false)
+    if (SharedData::GetInstance()->Left_Clicked == true && BulletTime > .5 && ProjectileDirChange == true && UI.UI_On == false && SharedData::GetInstance()->Gun == true)
     {
         ProjectileShot = true;
         BulletTime = 0;

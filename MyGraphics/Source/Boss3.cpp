@@ -48,8 +48,7 @@ Boss3::Boss3()
 }
 
 Boss3::~Boss3()
-{
-}
+{}
 
 void Boss3::updates(double dt)
 {

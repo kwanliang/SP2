@@ -1,6 +1,13 @@
 #ifndef SHARED_DATA_H
 #define SHARED_DATA_H
 
+#include <iostream>
+#include <string>
+#include "Vector3.h"
+
+using std::cout;
+using std::endl;
+
 class SharedData
 {
 public:
@@ -10,34 +17,16 @@ public:
 		return &data;
 	}
 
-    //Menu
-    bool renderMenu;
-
-    //Race Selection
-    bool renderRaceSelection;
-    bool UI_Human_Selected;
-    bool UI_Robot_Selected;
-    bool UI_Infested_Selected;
-    bool Mouse_Race_Start;
-    bool Mouse_Race_Back;
-
-    //Name Input
-    bool renderNameInput;
-
-    //Render Skybox
 	bool renderShip;
 	bool renderPlanet1;
 	bool renderPlanet2;
 	bool renderPlanet3;
 
-    //Mouse
+    bool Sword;
+    bool Gun;
+
     bool Left_Clicked = false;
 
-    //Window size
-    bool WindowHalfSized;
-
-    //Exit Application
-    bool Exit;
 
     std::string KeyInput;
 
@@ -48,6 +37,10 @@ public:
 
     double MousePos_X;
     double MousePos_Y;
+
+	int Boss2_HP;
+	int Phase;
+	float Move_Speed;
 
 private:
 	SharedData(){};

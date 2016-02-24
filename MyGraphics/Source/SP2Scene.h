@@ -13,7 +13,9 @@
 #include "Collision.h"
 #include "Projectile.h"
 
+#include "Boss2.h"
 #include "Boss3.h"
+
 
 class SP2Scene : public Scene
 {
@@ -21,65 +23,42 @@ class SP2Scene : public Scene
 
     enum GEOMETRY_TYPE
     {
-        AXES = 0,
-        LIGHTBALL,
-
-        //Menu
-        UI_MENU,
-        UI_MENU_SELECT_START,
-        UI_MENU_SELECT_EXIT,
-
-        //Race Selection
-        UI_RACESELECTION,
-        UI_HUMAN,
-        UI_ROBOT,
-        UI_INFESTED,
-        UI_RACE_SELECT,
-        UI_RACE_BACK,
-
-        //Name Input
-        UI_NAMEINPUT,
-        UI_TEXTBOX,
-        UI_NAME_ACCEPT,
-        UI_NAME_BACK,
-        UI_NAME_MENU,
-
-        //Planet Navigation
+		AXES = 0,
+		LIGHTBALL,
 		UI_PLANET_NAVIGATION,
 		UI_PLANET_SLIME,
 		UI_PLANET_ROBOT,
 		UI_PLANET_DARK,
 		UI_PLANET_SUN,
-
-        //Shop
 		UI_SHOP,
 		UI_SHOP_SELECT,
 		UI_SHOP_GUN,
 		UI_SHOP_MELEE,
 		UI_SHOP_ITEM,
-
-        //Text
 		TEXT,
 
-        //Skybox Ship
+		//SHIP STUFF
+		SHIPFRONT,
+		SHIPBACK,
+		SHIPLEFT,
+		SHIPRIGHT,
+		SHIPTOP,
+		SHIPBOTTOM,
 		BARFRONT,
 		BARBACK,
 		BARLEFT,
 		BARRIGHT,
 		BARTOP,
 		BARBOTTOM,
-        SHIPFRONT,
-        SHIPBACK,
-        SHIPLEFT,
-        SHIPRIGHT,
-        SHIPTOP,
-        SHIPBOTTOM,
+		SHOP_NPC,
+
+
 		COMPUTER1,
 		COMPUTER2,
 		CONTROLPANEL,
 		TABLE,
 
-        //Skybox Planet 1
+		//PLANET 1
 		PLANET1_FRONT,
 		PLANET1_BACK,
 		PLANET1_TOP,
@@ -88,8 +67,9 @@ class SP2Scene : public Scene
 		PLANET1_RIGHT,
 		PLANET1_GROUND,
 		SLIME_TREE,
+		SLIME_MOUNTAIN,
 
-        //Skybox Planet 2
+		//PLANET 2
 		PLANET2_FRONT,
 		PLANET2_BACK,
 		PLANET2_TOP,
@@ -97,8 +77,17 @@ class SP2Scene : public Scene
 		PLANET2_LEFT,
 		PLANET2_RIGHT,
 		PLANET2_GROUND,
+		FENCE,
 
-        //Skybox Planet 3
+		//BOSS 2
+		ROBOT_MAINBODY,           
+		ROBOT_LEFTPAIR,
+		ROBOT_RIGHTPAIR,
+		ROBOT_BACKLEFTLEG,
+		ROBOT_BACKRIGHTLEG,
+
+
+		//PLANET 3
 		PLANET3_FRONT,
 		PLANET3_BACK,
 		PLANET3_LEFT,
@@ -121,18 +110,14 @@ class SP2Scene : public Scene
 		GOLEM_KNEE,
 		GOLEM_FEET,
 
-        //Character & Weapon
         GUN,
-        RIFLE,
-        RIFLE3,
         BULLET,
+        SWORD,
         CHARACTER_BODY,
         CHARACTER_HAND,
 
-        //Coin
 		COIN,
 
-        //Planet 1 Boss
         SLIME_BOSS,
         SLIME_GREEN,
         SLIME_PINK,
@@ -183,9 +168,8 @@ public:
     double frames;
     std::string FPS;
 
-    static float UI_Human_Rotate;
-    static float UI_Robot_Rotate;
-    static float UI_Infested_Rotate;
+	Boss2 Robot;
+
 
 	bool Planet3;
 	Boss3 Golem;
@@ -208,6 +192,8 @@ public:
 
     float rot;
 
+
+
     virtual void Init();
     virtual void Update(double dt);
     virtual void Render();
@@ -219,18 +205,16 @@ private:
 
     void RenderMesh(Mesh* mesh, bool enableLight);
 
-    void RenderMenu();
-    void RenderRaceSelection();
-    void RenderNameInput();
-	void RenderShip();
     void RenderPlanet1();
-    void RenderPlanet2();
-    void RenderPlanet3();
+	void RenderPlanet2();
+	void RenderPlanet3();
+	void RenderShip();
     void RenderText(Mesh* mesh, std::string text, Color color);
     void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
     void RenderImageOnScreen(Mesh* mesh, float size, float x, float y, float z, float rotateX, float rotateY, float rotateZ);
 
 	//BOSSES
+	void RenderBoss2();
 	void RenderBoss3();
 
     Camera2 camera;

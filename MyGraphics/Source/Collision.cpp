@@ -24,8 +24,8 @@ bool Collision::BoundaryCheck(const Vector3& CameraPosition)
 	if (SharedData::GetInstance()->renderPlanet1 == true)
 	{
 		
-		Vector3 MaxPoint(990, 300, 990);
-		Vector3 MinPoint(-990, -300, -990);
+		Vector3 MaxPoint(950, 300, 990);
+		Vector3 MinPoint(-950, -300, -990);
 		if (CameraPosition.x > MinPoint.x && CameraPosition.x < MaxPoint.x &&
 			CameraPosition.y > MinPoint.y && CameraPosition.y < MaxPoint.y &&
 			CameraPosition.z > MinPoint.z && CameraPosition.z < MaxPoint.z)
@@ -42,8 +42,8 @@ bool Collision::BoundaryCheck(const Vector3& CameraPosition)
 	if (SharedData::GetInstance()->renderPlanet2 == true)
 	{
 
-		Vector3 MaxPoint(990, 300, 990);
-		Vector3 MinPoint(-990, -300, -990);
+		Vector3 MaxPoint(960, 300, 960);
+		Vector3 MinPoint(-960, -300, -960);
 		if (CameraPosition.x > MinPoint.x && CameraPosition.x < MaxPoint.x &&
 			CameraPosition.y > MinPoint.y && CameraPosition.y < MaxPoint.y &&
 			CameraPosition.z > MinPoint.z && CameraPosition.z < MaxPoint.z)
