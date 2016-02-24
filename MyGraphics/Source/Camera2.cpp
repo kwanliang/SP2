@@ -34,27 +34,24 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
     right.y = 0;
     right.Normalize();
     this->up = defaultUp = right.Cross(view).Normalized();
-
-	Test.SetRace(0);
 }
 
 void Camera2::Update(double dt)
 {
-	if (Application::IsKeyPressed('Z'))
+    static const float CAMERA_SPEED = 50.f;
+
+	if(SharedData::GetInstance()->UI_Human_Selected == true)
 	{
 		Test.SetRace(0);
 	}
-
-	if (Application::IsKeyPressed('X'))
+	if (SharedData::GetInstance()->UI_Robot_Selected == true)
 	{
 		Test.SetRace(1);
 	}
-
-	if (Application::IsKeyPressed('C'))
+	if (SharedData::GetInstance()->UI_Infested_Selected == true)
 	{
 		Test.SetRace(2);
 	}
-    static const float CAMERA_SPEED = 50.f;
 
 	TestPosition = position;
 

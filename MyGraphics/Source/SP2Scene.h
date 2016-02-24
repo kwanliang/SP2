@@ -122,15 +122,23 @@ class SP2Scene : public Scene
 		GOLEM_FEET,
 
         //Character & Weapon
-        GUN,
-        RIFLE,
-        RIFLE3,
+		GUN_1,
+		GUN_2,
+		GUN_3,
+		GUN_4,
         BULLET,
         CHARACTER_BODY,
         CHARACTER_HAND,
 
-        //Coin
+        //Items
 		COIN,
+		HEALTH_KIT,
+		LARGE_HEALTH_KIT,
+
+		//HUD
+		HUD_AMMO,
+		HUD_INVENTORY,
+		HUD_CHARACTER,
 
         //Planet 1 Boss
         SLIME_BOSS,
@@ -174,21 +182,18 @@ public:
 	SP2Scene();
 	~SP2Scene();
 
-	Character Character;
-	float Coin_Spin;
+	float Item_Spin;
 
     float LSPEED;
 
-    double DeltaTime;
-    double frames;
     std::string FPS;
 
     static float UI_Human_Rotate;
     static float UI_Robot_Rotate;
     static float UI_Infested_Rotate;
 
-	bool Planet3;
-	Boss3 Golem;
+
+	bool TEST = false;
 
 	//Planet Nav Animation
     static bool UI_PlanetNav_Animation;
@@ -230,7 +235,10 @@ private:
     void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
     void RenderImageOnScreen(Mesh* mesh, float size, float x, float y, float z, float rotateX, float rotateY, float rotateZ);
 
+	Character Character;
+
 	//BOSSES
+	Boss3 Golem;
 	void RenderBoss3();
 
     Camera2 camera;

@@ -22,7 +22,7 @@ Character::Character()
 	Move_Speed = 0.0f;
 	Name = "";
 	Race = Race_Type::Human;
-	Coins = 0;
+	Coins = 100;
 }
 
 /******************************************************************************/
@@ -157,11 +157,11 @@ void Character::useHealth_kit(void)
 /******************************************************************************/
 /*!
 \brief
-Adds large healthkit according to Large_Health_Kit_Gained
+	
 
 \param Large_Health_Kit_Gained
-Amount of large 
-healthkit to be added
+	Amount of large 
+	healthkit to be added
 */
 /******************************************************************************/
 void Character::addLarge_Health_kit(const int Large_Health_kit_Gained)
@@ -172,10 +172,10 @@ void Character::addLarge_Health_kit(const int Large_Health_kit_Gained)
 /******************************************************************************/
 /*!
 \brief
-Recovers 10 health to Character per use.
-Health cannot exceed max health.
-Consumes 1 large healthkit per use.
-Prevents large healthkit usage if Character have no large healthkit.
+	Recovers 10 health to Character per use.
+	Health cannot exceed max health.
+	Consumes 1 large healthkit per use.
+	Prevents large healthkit usage if Character have no large healthkit.
 */
 /******************************************************************************/
 void Character::useLarge_Health_kit(void)
@@ -217,32 +217,4 @@ bool Character::isDead(void)
 	{
 		return false;
 	}
-}
-
-/******************************************************************************/
-/*!
-\brief
-	Add coins to the character
-
-\param Add
-	Amount of coins to be added
-*/
-/******************************************************************************/
-void Character::AddCoin(const int Add)
-{
-	Coins += Add;
-}
-
-/******************************************************************************/
-/*!
-\brief
-	Deduct coins for the character
-
-\param Add
-	Amount of coins to be deducted
-*/
-/******************************************************************************/
-void Character::MinusCoin(const int Minus)
-{
-	Coins -= Minus;
 }

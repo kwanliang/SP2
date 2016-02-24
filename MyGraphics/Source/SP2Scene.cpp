@@ -38,10 +38,15 @@ void SP2Scene::Init()
 {
     LSPEED = 100.f;
 
-	Character.SetRace(3);
-	Character.AddCoin(1000);
+	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(0, Weapon("Energy Pistol", 1, 0.5, 1, 20)));
+	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(1, Weapon("Pulse Rifle", 2, 0.4, 1, 30)));
+	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(2, Weapon("Heavy Pulse Rifle", 4, 1.0, 2, 10)));
+	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(3, Weapon("Laser Minigun", 1, 0.1, 1, 100)));
 
-	Coin_Spin = 0.f;
+	/*cout << SharedData::GetInstance()->WeaponMap[1].getName() << endl;*/
+	/*SharedData::GetInstance()->WeaponOwned[0] = SharedData::GetInstance()->WeaponMap.find(0)->second;*/
+
+	Item_Spin = 0.f;
 
 	nearDoor = false;
 	closeDoor = false;
@@ -172,7 +177,6 @@ void SP2Scene::Init()
 	meshList[UI_SHOP_SELECT]->textureID = LoadTGA("Image//UI//UI_Select.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<SHOP UI<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    //bob//
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHIP<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[SHIPFRONT] = MeshBuilder::GenerateOBJ("front", "OBJ//ship//ship_front.obj");
 	meshList[SHIPFRONT]->textureID = LoadTGA("Image//ship//ship_front.tga");
@@ -188,7 +192,6 @@ void SP2Scene::Init()
 	meshList[SHIPRIGHT]->textureID = LoadTGA("Image//ship//ship_left.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHIP<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    //bob//
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHOP<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[BARBOTTOM] = MeshBuilder::GenerateOBJ("bar_bottom", "OBJ//ship//ship_bottom.obj");
 	meshList[BARBOTTOM]->textureID = LoadTGA("Image//ship//ship_bottom.tga");
@@ -206,7 +209,6 @@ void SP2Scene::Init()
 	meshList[TABLE]->textureID = LoadTGA("Image//ship//table.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<SHOP<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    //bob//
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[COMPUTER1] = MeshBuilder::GenerateOBJ("computer", "OBJ//ship//computer.obj");
 	meshList[COMPUTER1]->textureID = LoadTGA("Image//ship//computer.tga");
@@ -216,7 +218,6 @@ void SP2Scene::Init()
 	meshList[CONTROLPANEL]->textureID = LoadTGA("Image//ship//controlpanel.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<COMPUTER<<<<<<<<<<<<<<<<<<<<<<<<
 
-    //bob//
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET1<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[PLANET1_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET1_FRONT]->textureID = LoadTGA("Image//planet1//planet1_front.tga");
@@ -253,7 +254,6 @@ void SP2Scene::Init()
 	meshList[PLANET2_GROUND]->textureID = LoadTGA("Image//planet2//planet2_ground.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET2<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    //bob//
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET3<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[PLANET3_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET3_FRONT]->textureID = LoadTGA("Image//planet3//Planet 3 Front.tga");
@@ -279,7 +279,6 @@ void SP2Scene::Init()
 	meshList[PLANET3_DARKTREE]->textureID = LoadTGA("Image//planet3//darktree.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET3<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    //bob//
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS3<<<<<<<<<<<<<<<<<<<<<<<<<<
 	GLuint Golem = LoadTGA("Image//planet3//planet3_monster//Night Knight Golem.tga");
 	meshList[GOLEM_HEAD] = MeshBuilder::GenerateOBJ("Golem's Head", "OBJ//planet3//Golem Head.obj");
@@ -301,12 +300,12 @@ void SP2Scene::Init()
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS3<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    meshList[GUN] = MeshBuilder::GenerateOBJ("gun", "OBJ//gun.obj");
-    meshList[GUN]->textureID = LoadTGA("Image//gun.tga");
-    meshList[RIFLE] = MeshBuilder::GenerateOBJ("rifle", "OBJ//Rifle.obj");
-    meshList[RIFLE]->textureID = LoadTGA("Image//Rifle.tga");
-    meshList[RIFLE3] = MeshBuilder::GenerateOBJ("rifle 3", "OBJ//Rifle3.obj");
-    //meshList[RIFLE3]->textureID = LoadTGA("Image//Rifle.tga");
+	meshList[GUN_1] = MeshBuilder::GenerateOBJ("Default gun", "OBJ//Weapon//D_Gun.obj");
+	meshList[GUN_1]->textureID = LoadTGA("Image//Weapon//D_Gun.tga");
+	meshList[GUN_2] = MeshBuilder::GenerateOBJ("Pulse Rifle", "OBJ//Weapon//P_Rifle.obj");
+	meshList[GUN_2]->textureID = LoadTGA("Image//Weapon//P_Rifle.tga");
+	meshList[GUN_3] = MeshBuilder::GenerateOBJ("Heavy Pulse Rifle", "OBJ//Weapon//H_Rifle.obj");
+	meshList[GUN_3]->textureID = LoadTGA("Image//Weapon//H_Rifle.tga");
     meshList[BULLET] = MeshBuilder::GenerateOBJ("bullet", "OBJ//bullet.obj");
     meshList[BULLET]->textureID = LoadTGA("Image//bullet.tga");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -318,9 +317,22 @@ void SP2Scene::Init()
     ////<<<<<<<<<<<<<<<<<<<<<<<<<<<BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<ITEMS<<<<<<<<<<<<<<<<<<<<<<<<<<
-	meshList[COIN] = MeshBuilder::GenerateOBJ("Coins", "OBJ//Coin.obj");
+	meshList[COIN] = MeshBuilder::GenerateOBJ("Coins", "OBJ//items//Coin.obj");
 	meshList[COIN]->textureID = LoadTGA("Image//items//SadPepeCoin.tga");
+	meshList[HEALTH_KIT] = MeshBuilder::GenerateOBJ("Coins", "OBJ//items//healthkit.obj");
+	meshList[HEALTH_KIT]->textureID = LoadTGA("Image//items//healthkit.tga");
+	meshList[LARGE_HEALTH_KIT] = MeshBuilder::GenerateOBJ("Coins", "OBJ//items//healthkit.obj");
+	meshList[LARGE_HEALTH_KIT]->textureID = LoadTGA("Image//items//large healthkit.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<ITEMS<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<HUD<<<<<<<<<<<<<<<<<<<<<<<<<<
+	meshList[HUD_AMMO] = MeshBuilder::GenerateOBJ("HUD for ammo", "OBJ//UI_Plane.obj");
+	meshList[HUD_AMMO]->textureID = LoadTGA("Image//HUD//Ammo.tga");
+	meshList[HUD_INVENTORY] = MeshBuilder::GenerateOBJ("HUD for inventory", "OBJ//UI_Plane.obj");
+	meshList[HUD_INVENTORY]->textureID = LoadTGA("Image//HUD//Inventory.tga");
+	meshList[HUD_CHARACTER] = MeshBuilder::GenerateOBJ("HUD for character", "OBJ//UI_Plane.obj");
+	meshList[HUD_CHARACTER]->textureID = LoadTGA("Image//HUD//Character.tga");
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<HUD<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     light[0].type = Light::LIGHT_POINT;
     light[0].position.Set(0, 0, 0);
@@ -412,22 +424,30 @@ void SP2Scene::Update(double dt)
         UI_Human_Rotate += (float)(50 * dt);
         UI_Robot_Rotate = 0;
         UI_Infested_Rotate = 0;
+		Character.SetRace(0);
     }
     else if (SharedData::GetInstance()->UI_Robot_Selected == true) {
         UI_Robot_Rotate += (float)(50 * dt);
         UI_Human_Rotate = 0;
         UI_Infested_Rotate = 0;
+		Character.SetRace(1);
     }
     else if (SharedData::GetInstance()->UI_Infested_Selected == true) {
         UI_Infested_Rotate += (float)(50 * dt);
         UI_Human_Rotate = 0;
         UI_Robot_Rotate = 0;
+		Character.SetRace(2);
     }
 
-	Coin_Spin += (float)(120 * dt);
-	if (Coin_Spin >= 360)
+	if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true || SharedData::GetInstance()->renderPlanet3 == true)
 	{
-		Coin_Spin = 0;
+		Character.isDead();
+	}
+
+	Item_Spin += (float)(120 * dt);
+	if (Item_Spin >= 360)
+	{
+		Item_Spin = 0;
 	}
 
 	//PLANET 3
@@ -442,28 +462,29 @@ void SP2Scene::Update(double dt)
 	//PLANET 3 BOSS
 	Golem.updates(dt);
 
-	if (Application::IsKeyPressed(VK_LBUTTON))
+	if (Golem.isDead() == false)
 	{
-		Golem.stompLeft = true;
-	}
-	if (Application::IsKeyPressed(VK_RBUTTON))
-	{
-		Golem.stompRight = true;
-	}
-	if (Application::IsKeyPressed('V'))
-	{
-		Golem.recieveDamage(100);
-	}
-	if (Golem.Phase2 == true)
-	{	
-		Golem.slap(dt, camera.position.x, camera.position.z);
+		if (Application::IsKeyPressed(VK_LBUTTON))
+		{
+			Golem.stompLeft = true;
+		}
+		if (Application::IsKeyPressed(VK_RBUTTON))
+		{
+			Golem.stompRight = true;
+		}
+		if (Application::IsKeyPressed('V'))
+		{
+			Golem.recieveDamage(100);
+		}
+		if (Golem.Phase2 == true)
+		{
+			Golem.slap(dt, camera.position.x, camera.position.z);
+		}
+		Golem.faceme(camera.position);
 	}
 
 	// Show FPS
-
-	DeltaTime = dt;
-	frames = 1.0 / DeltaTime;
-	FPS = std::to_string(frames);
+	FPS = std::to_string(toupper(1 / dt));
 
 	// Charcter Door
 
@@ -545,6 +566,7 @@ void SP2Scene::Render()
     //Set view matrix using camera settings
     viewStack.LoadIdentity();
 
+
     viewStack.LookAt(
         camera.position.x, camera.position.y, camera.position.z,
         camera.target.x, camera.target.y, camera.target.z,
@@ -592,6 +614,43 @@ void SP2Scene::Render()
 		RenderBoss3();
     }
 
+	if (UI::UI_On == false) 
+	{
+		RenderTextOnScreen(meshList[TEXT], "+", Color(1, 0, 0), 3, 13.7f, 10);
+		//RenderImageOnScreen(meshList[CHARACTER_HAND], 25, .8f, -0, -3, 0 + GunBounceBack, -10, 0);
+		RenderImageOnScreen(meshList[GUN_1], 12, 4.5f, -.1f, -2, 20 + GunBounceBack, 190, 0);
+		RenderImageOnScreen(meshList[GUN_2], 8, 7, 0, -2, 20 + GunBounceBack, 190, 0);
+		RenderImageOnScreen(meshList[GUN_3], 6, 9, 0, -2, 20 + GunBounceBack, 190, 0);
+	}
+
+	if (projectile.ProjectileShot == true)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(projectile.ProjectilePosition.x, projectile.ProjectilePosition.y, projectile.ProjectilePosition.z);
+		modelStack.Scale(10, 10, 10);
+		RenderMesh(meshList[BULLET], false);
+		modelStack.PopMatrix();
+	}
+
+	if (UI.UI_PlanatNav == false && UI.UI_Shop == false && SharedData::GetInstance()->renderMenu == false && SharedData::GetInstance()->renderRaceSelection == false && SharedData::GetInstance()->renderNameInput == false)
+	{
+		RenderImageOnScreen(meshList[HUD_INVENTORY], 40, 0.35, 0.06, 0, 0, 0, 0);
+		RenderImageOnScreen(meshList[COIN], 2, 1, 8.8, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 3, 2, 6.3);
+		RenderImageOnScreen(meshList[LARGE_HEALTH_KIT], 2.5, 0.8, 5.5, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.large_health_kit_amount), Color(1, 1, 1), 3, 2, 5);
+		RenderImageOnScreen(meshList[HEALTH_KIT], 2, 1, 5.5, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.health_kit_amount), Color(1, 1, 1), 3, 2, 4);
+
+		RenderImageOnScreen(meshList[HUD_CHARACTER], 40, 0.35, -0.3, 0.1, 0, 0, 0);
+		RenderTextOnScreen(meshList[TEXT], Character.Name, Color(1, 1, 1), 3, 1, 2);
+		RenderTextOnScreen(meshList[TEXT], "HP:", Color(1, 1, 1), 3, 1, 1);
+		RenderTextOnScreen(meshList[TEXT], "   " + std::to_string(Character.HP) + "/" + std::to_string(Character.MAX_HP), Color(1, 0.2, 0.2), 3, 1, 1);
+
+		RenderImageOnScreen(meshList[HUD_AMMO], 30, 2.4, -0.5, 0, 0, 0, 0);
+		RenderTextOnScreen(meshList[TEXT], "Ammo" ,Color(1, 1, 1), 3, 23.5, 1);
+	}
+
     if (UI.UI_PlanatNav == true)
     {
         UI_PlanetNav_Animation = true;
@@ -604,8 +663,8 @@ void SP2Scene::Render()
         if (UI.UI_PlanetName == true)
         {
             RenderTextOnScreen(meshList[TEXT], "Planet Slime", Color(1, 1, 1), 2, 16, 19);
-            RenderTextOnScreen(meshList[TEXT], "Planet Robot", Color(1, 1, 1), 2, 8, 6);
-            RenderTextOnScreen(meshList[TEXT], "Planet Dark", Color(1, 1, 1), 2, 24, 6);
+            RenderTextOnScreen(meshList[TEXT], "Planet Dark", Color(1, 1, 1), 2, 8, 6);
+            RenderTextOnScreen(meshList[TEXT], "Planet Robot", Color(1, 1, 1), 2, 24, 6);
         }
     }
 
@@ -620,35 +679,12 @@ void SP2Scene::Render()
         RenderTextOnScreen(meshList[TEXT], "Item", Color(1, 1, 1), 2, 31, 15.5f);
         RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 6);
 
-        RenderImageOnScreen(meshList[COIN], 4, 10, 13, 1, 0, Coin_Spin, 0);
+        RenderImageOnScreen(meshList[COIN], 4, 10, 13, 1, 0, Item_Spin, 0);
         RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 1, 1), 4, 12, 14);
     }
 
-    if (projectile.ProjectileShot == true) {
-        modelStack.PushMatrix();
-        modelStack.Translate(projectile.ProjectilePosition.x, projectile.ProjectilePosition.y, projectile.ProjectilePosition.z);
-        modelStack.Scale(10, 10, 10);
-        RenderMesh(meshList[BULLET], false);
-        modelStack.PopMatrix();
-    }
-
-    if (UI::UI_On == false) {
-        RenderTextOnScreen(meshList[TEXT], "+", Color(1, 0, 0), 3, 13.7f, 10);
-        //RenderImageOnScreen(meshList[CHARACTER_HAND], 25, .8f, -0, -3, 0 + GunBounceBack, -10, 0);
-        RenderImageOnScreen(meshList[GUN], 15, 3.5f, -.1f, -2, 20 + GunBounceBack, 190, 0);
-        //RenderImageOnScreen(meshList[RIFLE], 15, 3.5f, -1.3f, -2, 20 + GunBounceBack, 190, 0);
-        //RenderImageOnScreen(meshList[RIFLE3], 15, 4, 0, -2, 20 + GunBounceBack, 200, 0);
-    }
-
-    //modelStack.PushMatrix();
-    //modelStack.Translate(0, -400, 100);
-    //modelStack.Scale(200, 200, 200);
-    //RenderMesh(meshList[SLIME_BOSS], false);
-    //modelStack.PopMatrix();
-
     // FPS
-    RenderTextOnScreen(meshList[TEXT], "FPS:", Color(1, 1, 1), 3, 1, 19);
-    RenderTextOnScreen(meshList[TEXT], FPS, Color(1, 1, 1), 3, 5, 19);
+	RenderTextOnScreen(meshList[TEXT], "FPS:" + FPS, Color(1, 1, 1), 3, 1, 19);
 
     RenderTextOnScreen(meshList[TEXT], std::to_string(SharedData::GetInstance()->MousePos_X), Color(1, 1, 1), 3, 5, 13);
     RenderTextOnScreen(meshList[TEXT], std::to_string(SharedData::GetInstance()->MousePos_Y), Color(1, 1, 1), 3, 5, 12);
@@ -702,6 +738,7 @@ void SP2Scene::RenderNameInput() {
     RenderImageOnScreen(meshList[UI_NAME_BACK], 4, 10, 2, 1, 0, 0, 0);
     RenderImageOnScreen(meshList[UI_NAME_MENU], 4, 16, 2, 1, 0, 0, 0);
     RenderTextOnScreen(meshList[TEXT], SharedData::GetInstance()->KeyInput, Color(1, 1, 1), 3, 10, 10);
+	Character.Name = SharedData::GetInstance()->KeyInput;
     RenderTextOnScreen(meshList[TEXT], "Name your character!", Color(1, 1, 1), 2, 13, 18);
     RenderTextOnScreen(meshList[TEXT], "Maximum 10 letters", Color(1, 1, 1), 2, 13.5f, 12);
 }
@@ -828,8 +865,6 @@ void SP2Scene::RenderShip()
 	modelStack.Scale(200, 140, 200);
 	RenderMesh(meshList[TABLE], false);
 	modelStack.PopMatrix();
-
-    RenderTextOnScreen(meshList[TEXT], SharedData::GetInstance()->KeyInput, Color(1, 1, 1), 3, 10, 10);
 }
 
 void SP2Scene::RenderPlanet1()
@@ -1096,11 +1131,18 @@ void SP2Scene::RenderBoss3()
 	{
 		//LEFT ARM
 		modelStack.PushMatrix();
+		if (Golem.Phase2 == false)
+		{
+			modelStack.Rotate(Golem.Degree, 0, 1, 0);
+		}
 		modelStack.Translate(100, Golem.Y_Offset, 0);
-
-		modelStack.Translate(Golem.slapX, Golem.slapY + 100, Golem.slapZ);
-
+		modelStack.Translate(Golem.slapX, Golem.slapY, Golem.slapZ);
+		if (Golem.Phase2 == true)
+		{
+			modelStack.Translate(0, 100, 0);
+		}
 		modelStack.Scale(100, 100, 100);
+	
 		if (Golem.Phase2 == true)
 		{
 			modelStack.Translate(-2, -2, 0);
@@ -1120,6 +1162,7 @@ void SP2Scene::RenderBoss3()
 		modelStack.PopMatrix();
 
 		modelStack.PushMatrix();
+		modelStack.Rotate(Golem.Degree, 0, 1, 0);
 		modelStack.Translate(100, Golem.Y_Offset, 0);
 		modelStack.Scale(100, 100, 100);
 		RenderMesh(meshList[GOLEM_BODY], true);

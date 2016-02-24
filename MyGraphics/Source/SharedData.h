@@ -1,6 +1,9 @@
 #ifndef SHARED_DATA_H
 #define SHARED_DATA_H
 
+#include <map>
+#include "Weapon.h"
+
 class SharedData
 {
 public:
@@ -23,6 +26,10 @@ public:
 
     //Name Input
     bool renderNameInput;
+
+	//Weapon
+	std::map<int, Weapon> WeaponMap;
+	std::map<int, Weapon> WeaponOwned;
 
     //Render Skybox
 	bool renderShip;
