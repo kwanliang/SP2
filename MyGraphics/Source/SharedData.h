@@ -36,6 +36,10 @@ public:
     //Pause Menu
     bool renderPause;
 
+    //Selection Hovered
+    bool Menu_Start;
+    bool Menu_Exit;
+
 	//Weapon
 	std::map<int, Weapon> WeaponMap;
 	std::map<int, Weapon> WeaponOwned;
@@ -48,6 +52,11 @@ public:
 
     //Mouse
     bool Left_Clicked = false;
+
+    bool To_Last = false;
+    Vector3 Last_Position;
+    Vector3 Last_Target;
+    Vector3 Last_Up;
 
     //Window size
     bool WindowHalfSized;

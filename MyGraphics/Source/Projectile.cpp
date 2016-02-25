@@ -21,12 +21,12 @@ void Projectile::Update(double dt)
     Vector3 Spread(.1f, .1f, .1f);
     Vector3 Boss1HitboxSize(100, 200, 100);
 
-    if (SharedData::GetInstance()->BOSS1_Splits == 2) {
-        Vector3 Boss1HitboxSize(50, 100, 50);
-    }
-    else if (SharedData::GetInstance()->BOSS1_Splits == 4) {
-        Vector3 Boss1HitboxSize(25, 50, 25);
-    }
+    //if (SharedData::GetInstance()->BOSS1_Splits == 2) {
+    //    Vector3 Boss1HitboxSize(50, 100, 50);
+    //}
+    //else if (SharedData::GetInstance()->BOSS1_Splits == 4) {
+    //    Vector3 Boss1HitboxSize(25, 50, 25);
+    //}
 
     int random = rand() % 10 + 1;
 

@@ -22,10 +22,10 @@ float SP2Scene::UI_Infested_Rotate = 0;
 
 SP2Scene::SP2Scene()
 {
-    SharedData::GetInstance()->renderMenu = false;
+    SharedData::GetInstance()->renderMenu = true;
     SharedData::GetInstance()->renderRaceSelection = false;
     SharedData::GetInstance()->renderNameInput = false;
-	SharedData::GetInstance()->renderShip = true;
+	SharedData::GetInstance()->renderShip = false;
 	SharedData::GetInstance()->renderPlanet1 = false;
 	SharedData::GetInstance()->renderPlanet2 = false;
 	SharedData::GetInstance()->renderPlanet3 = false;
@@ -438,6 +438,13 @@ void SP2Scene::Update(double dt)
 	if (Application::IsKeyPressed('4'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
 
+    //if (UI.MenuUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int MenuUI_ID) == true) {
+    //    meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start_S.tga");
+    //}
+    //else {
+    //    meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start.tga");
+    //}
+
     if (SharedData::GetInstance()->UI_Human_Selected == true) {
         UI_Human_Rotate += (float)(50 * dt);
         UI_Robot_Rotate = 0;
@@ -744,8 +751,8 @@ void SP2Scene::RenderRaceSelection()
     RenderImageOnScreen(meshList[UI_ROBOT], 3, 13, 8, 5, 0, UI_Robot_Rotate, 0);
     RenderImageOnScreen(meshList[UI_INFESTED], 4, 15.5f, 6, 5, 0, UI_Infested_Rotate, 0);
     glBlendFunc(1, 1);
-    RenderImageOnScreen(meshList[UI_RACE_SELECT], 4, 7.5f, 1, 1, 0, 0, 0);
-    RenderImageOnScreen(meshList[UI_RACE_BACK], 4, 12, 1, 1, 0, 0, 0);
+    RenderImageOnScreen(meshList[UI_RACE_SELECT], 4, 4.5f, 1, 1, 0, 0, 0);
+    RenderImageOnScreen(meshList[UI_RACE_BACK], 4, 15, 1, 1, 0, 0, 0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     RenderTextOnScreen(meshList[TEXT], "Choose your race!", Color(1, 1, 1), 3, 7, 19);
     if (SharedData::GetInstance()->UI_Human_Selected == false) {

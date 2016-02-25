@@ -16,7 +16,7 @@ Camera2::~Camera2()
 void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 {
     Vector3 ControlPanel(-350, 0, 0);
-    Vector3 ControlPanelSize(100, 100, 200);
+    Vector3 ControlPanelSize(100, 400, 200);
 
 	Vector3 table(1750, 0, 0);
 	Vector3 tableSize(200, 800, 800);
@@ -34,13 +34,13 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
     right.y = 0;
     right.Normalize();
     this->up = defaultUp = right.Cross(view).Normalized();
+
+    Test.SetRace(2);
 }
 
 void Camera2::Update(double dt)
 {
     static const float CAMERA_SPEED = 50.f;
-
-    Test.SetRace(0);
 
 	if(SharedData::GetInstance()->UI_Human_Selected == true)
 	{
@@ -297,11 +297,17 @@ void Camera2::Update(double dt)
             {
                 UI::UI_PlanatNav = true;
                 UI::UI_On = true;
+                SharedData::GetInstance()->Last_Position = position;
+                SharedData::GetInstance()->Last_Target = target;
+                SharedData::GetInstance()->Last_Up = up;
             }
             if (Application::IsKeyPressed('E') && Collision::ObjCheck(target, table, tableSize) == true)
             {
                 UI::UI_Shop = true;
                 UI::UI_On = true;
+                SharedData::GetInstance()->Last_Position = position;
+                SharedData::GetInstance()->Last_Target = target;
+                SharedData::GetInstance()->Last_Up = up;
             }
         }
     }
@@ -315,6 +321,13 @@ void Camera2::Update(double dt)
         view = rotation * view;
         up = rotation * up;
         target = position + view;
+    }
+
+    if (SharedData::GetInstance()->To_Last == true) {
+        position = SharedData::GetInstance()->Last_Position;
+        target = SharedData::GetInstance()->Last_Target;
+        up = SharedData::GetInstance()->Last_Up;
+        SharedData::GetInstance()->To_Last = false;
     }
 
     if (Application::IsKeyPressed('R'))
