@@ -13,6 +13,7 @@
 #include "Collision.h"
 #include "Projectile.h"
 
+#include "Boss1.h"
 #include "Boss2.h"
 #include "Boss3.h"
 
@@ -121,12 +122,22 @@ class SP2Scene : public Scene
 		PLANET3_DARKMOUNTAIN,
 		PLANET3_DARKTREE,
 
+
 		//BOSS 2
 		ROBOT_MAINBODY,
 		ROBOT_LEFTPAIR,
 		ROBOT_RIGHTPAIR,
 		ROBOT_BACKLEFTLEG,
 		ROBOT_BACKRIGHTLEG,
+
+        //Planet 1 Monsters
+        SLIME_GREEN,
+        SLIME_PINK,
+        SLIME_BLUE,
+
+        //BOSS 1
+        SLIME_BOSS,
+
 
 		//BOSS 3
 		GOLEM_HEAD,
@@ -163,11 +174,11 @@ class SP2Scene : public Scene
 		HUD_INVENTORY,
 		HUD_CHARACTER,
 
-        //Planet 1 Boss
-        SLIME_BOSS,
-        SLIME_GREEN,
-        SLIME_PINK,
-        SLIME_BLUE,
+        //Pause
+        UI_PAUSE,
+        UI_PAUSE_SELECT_RESUME,
+        UI_PAUSE_SELECT_MENU,
+        UI_PAUSE_SELECT_EXIT,
 
         NUM_GEOMETRY,
     };
@@ -268,6 +279,7 @@ private:
     void RenderPlanet1();
     void RenderPlanet2();
     void RenderPlanet3();
+    void RenderPause();
     void RenderText(Mesh* mesh, std::string text, Color color);
     void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
     void RenderImageOnScreen(Mesh* mesh, float size, float x, float y, float z, float rotateX, float rotateY, float rotateZ);
@@ -280,9 +292,12 @@ private:
 	Weapon* Equipped;
 
 	//BOSSES
+	void RenderBoss1();
+
 	Boss2 Robot;
 	void RenderBoss2();
-	Boss3 Golem; 
+
+	Boss3 Golem;
 	void RenderBoss3();
 
     Camera2 camera;
@@ -292,6 +307,8 @@ private:
     Projectile projectile;
 
     UI UI;
+
+    Boss1 boss1;
 
     Mesh *meshList[NUM_GEOMETRY];
 

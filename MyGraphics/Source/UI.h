@@ -10,6 +10,11 @@ public:
     UI();
     ~UI();
 
+    float MonitorWidth;
+    float MonitorHeight;
+    float Current_MonitorWidth;
+    float Current_MonitorHeight;
+
     static bool UI_On;
 
     static bool UI_PlanatNav;
@@ -30,12 +35,10 @@ public:
     static int ShopItemUI_ID;
 
     static bool MenuUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int MenuUI_ID);
-
     static bool RaceSelectionUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int RaceSelectionUI_ID);
-
     static bool NameInputHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int NameInput_ID);
-
     static bool PlanetUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int PlanetUI_ID);
+    static bool PauseUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int PauseUI_ID);
 
     static bool ShopUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ShopUI_ID);
     static bool ShopGunUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ShopGunUI_ID);

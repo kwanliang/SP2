@@ -71,8 +71,6 @@ void Keyboard::characterCallback(GLFWwindow* window, unsigned int keyCode)
 
 Application::Application()
 {
-    Application::Window_Width = 1920;
-    Application::Window_Height = 1080;
 }
 
 Application::~Application()
@@ -103,8 +101,10 @@ void Application::Init()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //We don't want the old OpenGL 
 
 	//Create a window and create its OpenGL context
-	//const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    m_window = glfwCreateWindow(800, 600, "Computer Graphics", NULL, NULL);
+	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    m_window = glfwCreateWindow(mode->width, mode->height, "Computer Graphics", glfwGetPrimaryMonitor(), NULL);
+    SharedData::GetInstance()->MonitorWidth = mode->width;
+    SharedData::GetInstance()->MonitorHeight = mode->height;
 
     //Resize objects according to window
     glfwSetWindowSizeCallback(m_window, resize_callback);
@@ -148,8 +148,9 @@ void Application::Run()
 	scene->Init();
 
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
-    while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE) && SharedData::GetInstance()->Exit == false)
+    while (!glfwWindowShouldClose(m_window) && SharedData::GetInstance()->Exit == false)
 	{
+        glfwGetWindowSize(m_window, &SharedData::GetInstance()->Current_MonitorWidth, &SharedData::GetInstance()->Current_MonitorHeight);
 		scene->Update(m_timer.getElapsedTime());
 		scene->Render();
 		//Swap buffers
