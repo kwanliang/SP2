@@ -25,7 +25,7 @@ Boss2::~Boss2()
 
 void Boss2::updates(double dt)
 {
-	movelegs(dt);
+	moveRobotBosssleg(dt);
 }
 
 void Boss2::recieveDamage(int Damage)
@@ -33,7 +33,7 @@ void Boss2::recieveDamage(int Damage)
 	SharedData::GetInstance()->Boss2_HP -= Damage;
 }
 
-void Boss2::movelegs(double dt)
+void Boss2::moveRobotBosssleg(double dt)
 {
 	if (SharedData::GetInstance()->Boss2_HP > 400)
 	{
@@ -61,9 +61,6 @@ void Boss2::movelegs(double dt)
 			stopscale = false;
 		}
 	}
-
-	cout << scaleRobotBoss << endl;
-
 
 	if (moveleftforward == true)
 	{

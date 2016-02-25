@@ -64,15 +64,15 @@ void Mouse::MouseButtonCallback(GLFWwindow* window, int button, int action, int 
 
 void Keyboard::characterCallback(GLFWwindow* window, unsigned int keyCode)
 {
-    if (isalpha(static_cast<char>(keyCode)) && SharedData::GetInstance()->KeyInput.size() < 10) {
+    if (SharedData::GetInstance()->renderNameInput == true && isalpha(static_cast<char>(keyCode)) && SharedData::GetInstance()->KeyInput.size() < 10 || keyCode == 32) {
         SharedData::GetInstance()->KeyInput.push_back(static_cast<char>(keyCode));
     }
-
-    //std::cout << SharedData::GetInstance()->KeyInput << std::endl;
 }
 
 Application::Application()
 {
+    Application::Window_Width = 1920;
+    Application::Window_Height = 1080;
 }
 
 Application::~Application()
@@ -104,7 +104,7 @@ void Application::Init()
 
 	//Create a window and create its OpenGL context
 	//const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	m_window = glfwCreateWindow(800,600, "Computer Graphics", NULL, NULL);
+    m_window = glfwCreateWindow(800, 600, "Computer Graphics", NULL, NULL);
 
     //Resize objects according to window
     glfwSetWindowSizeCallback(m_window, resize_callback);
@@ -148,7 +148,7 @@ void Application::Run()
 	scene->Init();
 
 	m_timer.startTimer();    // Start timer to calculate how long it takes to render this frame
-	while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE))
+    while (!glfwWindowShouldClose(m_window) && !IsKeyPressed(VK_ESCAPE) && SharedData::GetInstance()->Exit == false)
 	{
 		scene->Update(m_timer.getElapsedTime());
 		scene->Render();

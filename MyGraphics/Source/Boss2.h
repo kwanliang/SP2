@@ -9,7 +9,7 @@ public:
 	~Boss2();
 
 	void recieveDamage(int Damage);
-	void movelegs(double dt);
+	void moveRobotBosssleg(double dt);
 	void updates(double dt);
 
 	bool moveleftforward;

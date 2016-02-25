@@ -6,6 +6,8 @@ Boss3::Boss3()
 	HP = 1000;
 	Attack = 10;
 
+	Degree = 0;
+
 	Phase2 = false;
 	Y_Offset = -30.f;
 
@@ -48,7 +50,8 @@ Boss3::Boss3()
 }
 
 Boss3::~Boss3()
-{}
+{
+}
 
 void Boss3::updates(double dt)
 {
@@ -133,6 +136,8 @@ void Boss3::reset(void)
 	MAX_HP = 1000;
 	HP = 1000;
 	Attack = 10;
+
+	Degree = 0;
 
 	Phase2 = false;
 	Y_Offset = -30.f;
@@ -303,7 +308,14 @@ void Boss3::slapDown(double dt)
 {
 	if (slapping == true)
 	{
-		slapY -= (float)(1000 * dt);
+		if (HP > (MAX_HP / 100 * 20))
+		{
+			slapY -= (float)(800 * dt);
+		}
+		else
+		{
+			slapY -= (float)(1200 * dt);
+		}
 		if (slapY <= -500)
 		{
 			slap_wait = 0.f;
@@ -315,7 +327,7 @@ void Boss3::slapDown(double dt)
 		slap_wait += (float)(100 * dt);
 		if (slap_wait >= 400)
 		{
-			slapY += (float)(1000 * dt);
+			slapY += (float)(1200 * dt);
 			if (slapY >= 0)
 			{
 				slap_X = true;
@@ -357,5 +369,20 @@ void Boss3::slap(double dt, float x, float z)
 		{
 			slapZ += (float)(500 * dt);
 		}
+	}
+}
+
+void Boss3::faceme(Vector3 Player)
+{
+	Vector3 initView(0, 0, 1);
+	Vector3 wantView(Player - Vector3(100, 0, 0));
+	wantView.Normalize();
+	Vector3 normal(0, 1, 0);
+
+	Degree = Math::RadianToDegree(acos(initView.Dot(wantView)));
+	Vector3 Crossed = initView.Cross(wantView);
+	if (Crossed.Dot(normal) < 0)
+	{
+		Degree *= -1;
 	}
 }

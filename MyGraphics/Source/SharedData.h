@@ -1,12 +1,8 @@
 #ifndef SHARED_DATA_H
 #define SHARED_DATA_H
 
-#include <iostream>
-#include <string>
-#include "Vector3.h"
-
-using std::cout;
-using std::endl;
+#include <map>
+#include "Weapon.h"
 
 class SharedData
 {
@@ -17,16 +13,42 @@ public:
 		return &data;
 	}
 
+    //Menu
+    bool renderMenu;
+
+    //Race Selection
+    bool renderRaceSelection;
+    bool UI_Human_Selected;
+    bool UI_Robot_Selected;
+    bool UI_Infested_Selected;
+    bool Mouse_Race_Start;
+    bool Mouse_Race_Back;
+
+	bool renderRobotlegs;
+	bool renderHumanlegs;
+	bool renderInfestedlegs;
+
+    //Name Input
+    bool renderNameInput;
+
+	//Weapon
+	std::map<int, Weapon> WeaponMap;
+	std::map<int, Weapon> WeaponOwned;
+
+    //Render Skybox
 	bool renderShip;
 	bool renderPlanet1;
 	bool renderPlanet2;
 	bool renderPlanet3;
 
-    bool Sword;
-    bool Gun;
-
+    //Mouse
     bool Left_Clicked = false;
 
+    //Window size
+    bool WindowHalfSized;
+
+    //Exit Application
+    bool Exit;
 
     std::string KeyInput;
 

@@ -17,6 +17,11 @@ public:
 
 	Vector3 TestPosition;
 
+	float horizontalMouseMovement;
+	float verticalMouseMovement;
+	float theta;
+
+
 	Character Test;
 
     Vector3 ControlPanel;

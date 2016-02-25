@@ -35,7 +35,6 @@ public:
 	int health_kit_amount;
 	int large_health_kit_amount;
 
-	
 	Character();
 	~Character();
 	void SetRace(int i);
@@ -46,8 +45,6 @@ public:
 	void addLarge_Health_kit(const int Large_Health_kit_Gained);
 	void useLarge_Health_kit(void);
 	bool isDead(void);
-	void AddCoin(const int Add);
-	void MinusCoin(const int Minus);
 };
 
 #endif

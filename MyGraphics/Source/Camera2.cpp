@@ -3,7 +3,6 @@
 #include "Mtx44.h"
 #include "Mouse.h"
 #include "Collision.h"
-#include "SharedData.h"
 
 Camera2::Camera2()
 {
@@ -22,6 +21,10 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 	Vector3 table(1750, 0, 0);
 	Vector3 tableSize(200, 500, 800);
 
+	Vector3 returnShip(0, 0, 0);
+	Vector3 returnShipsize(225, 100, 225);
+
+
     this->ControlPanel = ControlPanel;
     this->ControlPanelSize = ControlPanelSize;
 
@@ -35,35 +38,31 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
     right.y = 0;
     right.Normalize();
     this->up = defaultUp = right.Cross(view).Normalized();
-
-	Test.SetRace(0);
 }
 
 void Camera2::Update(double dt)
 {
-	Vector3 bob(400, 400, 400);
+    static const float CAMERA_SPEED = 50.f;
+	Vector3 view = (target - position).Normalized();
 
-	if (Application::IsKeyPressed('Z'))
+	if(SharedData::GetInstance()->UI_Human_Selected == true)
 	{
 		Test.SetRace(0);
 	}
-
-	if (Application::IsKeyPressed('X'))
+	if (SharedData::GetInstance()->UI_Robot_Selected == true)
 	{
 		Test.SetRace(1);
 	}
-
-	if (Application::IsKeyPressed('C'))
+	if (SharedData::GetInstance()->UI_Infested_Selected == true)
 	{
 		Test.SetRace(2);
 	}
-    static const float CAMERA_SPEED = 50.f;
 
 	TestPosition = position;
 
     if (Application::IsKeyPressed('W') && UI::UI_On == false)
     {
-        Vector3 view = (target - position).Normalized();
+        view = (target - position).Normalized();
         // Normalize view vector
 
 		TestPosition.x += view.x * dt * SharedData::GetInstance()->Move_Speed;
@@ -233,8 +232,7 @@ void Camera2::Update(double dt)
 		{
 			if (Collision::BoundaryCheck(TestPosition) == true
 				&& Collision::ObjCheck(TestPosition, ControlPanel, ControlPanelSize) == false
-				&& Collision::ObjCheck(TestPosition, table, tableSize) == false
-				)
+				&& Collision::ObjCheck(TestPosition, table, tableSize) == false) 
 			{
 				position.x += right.x * dt * SharedData::GetInstance()->Move_Speed;
 				position.z += right.z * dt * SharedData::GetInstance()->Move_Speed;
@@ -280,23 +278,20 @@ void Camera2::Update(double dt)
     //Mouse
     Mouse::MouseMovement(mouseXPos, mouseYPos);
 
-    if (UI::UI_PlanatNav == true) {
-        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 350, 450, 100, 200, 1);
-        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 200, 300, 350, 450, 2);
-        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 500, 600, 350, 450, 3);
-        UI::PlanetUIHitbox(mouseXPos, mouseYPos, 370, 420, 550, 570, 4);
-    }
+    horizontalMouseMovement = 10 * dt * static_cast<float>((800 / 2) - mouseXPos);
+    verticalMouseMovement = 10 * dt * static_cast<float>((600 / 2) - mouseYPos);
 
-    if (UI::UI_Shop == true) {
-        UI::ShopUIHitbox(mouseXPos, mouseYPos, 80, 230, 230, 360, 1);
-        UI::ShopUIHitbox(mouseXPos, mouseYPos, 320, 470, 230, 360, 2);
-        UI::ShopUIHitbox(mouseXPos, mouseYPos, 560, 710, 230, 360, 3);
-        UI::ShopUIHitbox(mouseXPos, mouseYPos, 370, 425, 470, 485, 4);
-    }
-
-    float horizontalMouseMovement = 10 * dt * static_cast<float>((800 / 2) - mouseXPos);
-    float verticalMouseMovement = 10 * dt * static_cast<float>((600 / 2) - mouseYPos);
-
+	Vector3 objInitView(0, 0, 1);
+	Vector3 XZview = target - position;
+	XZview.y = 0;
+	XZview.Normalize();
+	theta = Math::RadianToDegree(acos(objInitView.Dot(XZview)));
+	Vector3 V3 = objInitView.Cross(XZview);
+	if (V3.Dot(Vector3(0, 1, 0)) < 0)
+	{
+		theta *= -1;
+	}
+	
     if (verticalMouseMovement && UI::UI_On == false)
     {
         Vector3 TESTview = ((target - position).Normalized()) * 10;
@@ -327,6 +322,7 @@ void Camera2::Update(double dt)
 
     if (horizontalMouseMovement && UI::UI_On == false)
     {
+
 		Vector3 view = ((target - position).Normalized()) * 10;
         // normalize view vector
         Mtx44 rotation;

@@ -18,17 +18,16 @@ public:
 	Enemy();
 	virtual ~Enemy();
 
+	//void addEnemy(Enemy newGuy);
 	void Update(double dt); //outsource to SP2Scene
-	int getDistance(Enemy temp, Camera2 playerPos);
-	void setDistance(int dist);
-
+	
 	int getHealth(void);
 	int getDamage(void);
 	void setHealth(int HP);
 	void setDamage(int DMG);
 	bool isDead(Enemy testSubject);
 
-	enum ENEMY_STATES
+	/*enum ENEMY_STATES
 	{
 		ENEMY_IDLE,
 		ENEMY_CHASE,
@@ -36,13 +35,17 @@ public:
 		ENEMY_DIE,
 		TOTAL,
 	};
-	ENEMY_STATES eState;
+	ENEMY_STATES eState;*/
+
+	Vector3 playerPos;
+	Vector3 position;
+	Vector3 distToPlayer;
+	Collision collision;
 
 private:
-	int distToPlayer;
 	bool enemyLiving;
 	int health;
 	int damage;
-	Vector3 position;
+	
 };
 
