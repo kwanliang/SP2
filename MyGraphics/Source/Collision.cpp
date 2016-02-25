@@ -1,7 +1,7 @@
 #include "Collision.h"
 
 
-bool Collision::BoundaryCheck(const Vector3& CameraPosition) 
+bool Collision::BoundaryCheck(Vector3& CameraPosition) 
 {
 
 	if (SharedData::GetInstance()->renderShip== true)
@@ -20,10 +20,8 @@ bool Collision::BoundaryCheck(const Vector3& CameraPosition)
 		}
 	}
 
-
 	if (SharedData::GetInstance()->renderPlanet1 == true)
 	{
-		
 		Vector3 MaxPoint(990, 300, 990);
 		Vector3 MinPoint(-990, -300, -990);
 		if (CameraPosition.x > MinPoint.x && CameraPosition.x < MaxPoint.x &&
@@ -76,7 +74,7 @@ bool Collision::BoundaryCheck(const Vector3& CameraPosition)
 	}
 }
 
-bool Collision::ObjCheck(const Vector3& CameraPosition, Vector3& ObjPosition, Vector3& HitboxSize)
+bool Collision::ObjCheck(Vector3& CameraPosition, const Vector3& ObjPosition, const Vector3& HitboxSize)
 { 
     Vector3 MaxPoint = ObjPosition + HitboxSize;
     Vector3 MinPoint = ObjPosition - HitboxSize;
@@ -84,6 +82,23 @@ bool Collision::ObjCheck(const Vector3& CameraPosition, Vector3& ObjPosition, Ve
     if (CameraPosition.x > MinPoint.x && CameraPosition.x < MaxPoint.x &&
         CameraPosition.y > MinPoint.y && CameraPosition.y < MaxPoint.y &&
         CameraPosition.z > MinPoint.z && CameraPosition.z < MaxPoint.z)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Collision::BossHitbox(Vector3& ProjectilePosition, Vector3& BossPosition, const Vector3& HitboxSize)
+{
+    Vector3 MaxPoint = BossPosition + HitboxSize;
+    Vector3 MinPoint = BossPosition - HitboxSize;
+
+    if (ProjectilePosition.x > MinPoint.x && ProjectilePosition.x < MaxPoint.x &&
+        ProjectilePosition.y > MinPoint.y && ProjectilePosition.y < MaxPoint.y &&
+        ProjectilePosition.z > MinPoint.z && ProjectilePosition.z < MaxPoint.z)
     {
         return true;
     }

@@ -13,6 +13,12 @@ public:
 		return &data;
 	}
 
+    //Screen
+    int MonitorWidth;
+    int MonitorHeight;
+    int Current_MonitorWidth;
+    int Current_MonitorHeight;
+
     //Menu
     bool renderMenu;
 
@@ -26,6 +32,9 @@ public:
 
     //Name Input
     bool renderNameInput;
+
+    //Pause Menu
+    bool renderPause;
 
 	//Weapon
 	std::map<int, Weapon> WeaponMap;
@@ -46,12 +55,24 @@ public:
     //Exit Application
     bool Exit;
 
+    //Name Input
     std::string KeyInput;
 
+    //Player Position
     Vector3 PlayerPosition;
     Vector3 PlayerTarget;
     Vector3 PlayerUp;
     Vector3 PlayerRight;
+
+    //Projectile Position
+    Vector3 ProjectilePosition;
+
+    //Boss1 Position
+    Vector3 Boss1PositionSplit1;
+    Vector3 Boss1PositionSplit2;
+    Vector3 Boss1PositionSplit3;
+
+    int BOSS1_Splits;
 
     double MousePos_X;
     double MousePos_Y;

@@ -6,10 +6,10 @@
 #include "Camera2.h"
 #include "Collision.h"
 #include "UI.h"
+#include "Boss1.h"
 
 class Projectile {
 public:
-    Vector3 ProjectilePosition;
     Vector3 ProjectileTarget;
     Vector3 ProjectileView;
 
@@ -19,6 +19,8 @@ public:
 
     double BulletTime;
 
+    unsigned int ProjectileCount;
+
     Projectile();
     ~Projectile();
     virtual void Init(const Vector3& pos);
@@ -27,6 +29,8 @@ public:
     StopWatch time;
 
     Camera2 camera;
+
+    Boss1 boss1;
 
     Collision collision;
 

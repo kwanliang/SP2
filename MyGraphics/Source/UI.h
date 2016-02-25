@@ -10,6 +10,11 @@ public:
     UI();
     ~UI();
 
+    float MonitorWidth;
+    float MonitorHeight;
+    float Current_MonitorWidth;
+    float Current_MonitorHeight;
+
     static bool UI_On;
 
     static bool UI_PlanatNav;

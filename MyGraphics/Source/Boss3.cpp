@@ -380,7 +380,6 @@ void Boss3::faceme(Vector3 Player)
 	Vector3 normal(0, 1, 0);
 
 	Degree = Math::RadianToDegree(acos(initView.Dot(wantView)));
-	std::cout << Degree << std::endl;
 	Vector3 Crossed = initView.Cross(wantView);
 	if (Crossed.Dot(normal) < 0)
 	{

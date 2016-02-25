@@ -2,17 +2,25 @@
 #define BOSS1_H
 
 #include "Vector3.h"
+#include "Collision.h"
 
 class Boss1 {
 public:
-    int HP;
+    int BOSS1_MAX_HP;
+    int BOSS1_HP;
+    int BOSS1_Attack;
+    float BOSS1_MoveSpd;
 
     Boss1();
     ~Boss1();
-    virtual void Init(const Vector3& pos, const Vector3& target, const Vector3& up);
     virtual void Update(double dt);
+    virtual void Reset();
 
+    void receiveDamage(int Damage);
+    bool isDead();
     void SlimeSplit();
+
+    Collision collision;
 };
 
 #endif

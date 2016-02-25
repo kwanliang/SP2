@@ -19,7 +19,7 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
     Vector3 ControlPanelSize(100, 100, 200);
 
 	Vector3 table(1750, 0, 0);
-	Vector3 tableSize(200, 500, 800);
+	Vector3 tableSize(200, 800, 800);
 
     this->ControlPanel = ControlPanel;
     this->ControlPanelSize = ControlPanelSize;
@@ -39,6 +39,8 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 void Camera2::Update(double dt)
 {
     static const float CAMERA_SPEED = 50.f;
+
+    Test.SetRace(0);
 
 	if(SharedData::GetInstance()->UI_Human_Selected == true)
 	{
