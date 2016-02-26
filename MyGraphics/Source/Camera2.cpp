@@ -21,8 +21,8 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 	Vector3 table(1750, 0, 0);
 	Vector3 tableSize(200, 800, 800);
 
-	Vector3 returnShip(0, 0, 0);
-	Vector3 returnShipsize(225, 100, 225);
+	Vector3 boss2Hitbox(0, 0, 1000);
+	Vector3 boss2Hitboxsize(375, 200, 375);
 
 
     this->ControlPanel = ControlPanel;
@@ -30,6 +30,9 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 
 	this->table = table;
 	this->tableSize = tableSize;
+
+	this->boss2Hitbox = boss2Hitbox;
+	this->boss2Hitboxsize = boss2Hitboxsize;
 
     this->position = defaultPosition = pos;
     this->target = defaultTarget = target;
@@ -50,14 +53,27 @@ void Camera2::Update(double dt)
 	if(SharedData::GetInstance()->UI_Human_Selected == true)
 	{
 		Test.SetRace(0);
+		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999))
+		{
+			SharedData::GetInstance()->Move_Speed = 100.f;
+		}
 	}
 	if (SharedData::GetInstance()->UI_Robot_Selected == true)
 	{
 		Test.SetRace(1);
+		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999))
+		{
+			SharedData::GetInstance()->Move_Speed = 200.f;
+		}
 	}
 	if (SharedData::GetInstance()->UI_Infested_Selected == true)
 	{
 		Test.SetRace(2);
+		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999))
+		{
+			SharedData::GetInstance()->Move_Speed = 100.f;
+		}
+
 	}
 
 	TestPosition = position;
@@ -95,7 +111,8 @@ void Camera2::Update(double dt)
 
 		if (SharedData::GetInstance()->renderPlanet2 == true)
 		{
-			if (Collision::BoundaryCheck(TestPosition) == true)
+			if (Collision::BoundaryCheck(TestPosition) == true
+				&& Collision::ObjCheck(TestPosition, boss2Hitbox, boss2Hitboxsize) == false)
 			{
 				position.x += view.x * dt * SharedData::GetInstance()->Move_Speed;
 				position.z += view.z * dt * SharedData::GetInstance()->Move_Speed;
@@ -149,7 +166,8 @@ void Camera2::Update(double dt)
 
 		if (SharedData::GetInstance()->renderPlanet2 == true)
 		{
-			if (Collision::BoundaryCheck(TestPosition) == true)
+			if (Collision::BoundaryCheck(TestPosition) == true
+				&& Collision::ObjCheck(TestPosition, boss2Hitbox, boss2Hitboxsize) == false)
 			{
 				position.x -= right.x * dt * SharedData::GetInstance()->Move_Speed;
 				position.z -= right.z * dt * SharedData::GetInstance()->Move_Speed;
@@ -202,7 +220,8 @@ void Camera2::Update(double dt)
 
 		if (SharedData::GetInstance()->renderPlanet2 == true)
 		{
-			if (Collision::BoundaryCheck(TestPosition) == true)
+			if (Collision::BoundaryCheck(TestPosition) == true
+				&& Collision::ObjCheck(TestPosition, boss2Hitbox, boss2Hitboxsize) == false)
 			{
 				position.x -= view.x * dt * SharedData::GetInstance()->Move_Speed;
 				position.z -= view.z * dt * SharedData::GetInstance()->Move_Speed;
@@ -256,7 +275,8 @@ void Camera2::Update(double dt)
 
 		if (SharedData::GetInstance()->renderPlanet2 == true)
 		{
-			if (Collision::BoundaryCheck(TestPosition) == true)
+			if (Collision::BoundaryCheck(TestPosition) == true
+				&& Collision::ObjCheck(TestPosition, boss2Hitbox, boss2Hitboxsize) == false)
 			{
 				position.x += right.x * dt * SharedData::GetInstance()->Move_Speed;
 				position.z += right.z * dt * SharedData::GetInstance()->Move_Speed;
@@ -309,15 +329,15 @@ void Camera2::Update(double dt)
             view = rotation * view;
             up = rotation * up;
             target = position + view;
-            if (Application::IsKeyPressed('E') && Collision::ObjCheck(target, ControlPanel, ControlPanelSize) == true)
+            if (Application::IsKeyPressed('E') && Collision::ObjCheck(target, ControlPanel, ControlPanelSize) == true && SharedData::GetInstance()->renderShip == true)
             {
                 UI::UI_PlanatNav = true;
                 UI::UI_On = true;
                 SharedData::GetInstance()->Last_Position = position;
                 SharedData::GetInstance()->Last_Target = target;
                 SharedData::GetInstance()->Last_Up = up;
-            }
-            if (Application::IsKeyPressed('E') && Collision::ObjCheck(target, table, tableSize) == true)
+            } 
+			if (Application::IsKeyPressed('E') && Collision::ObjCheck(target, table, tableSize) == true && SharedData::GetInstance()->renderShip == true)
             {
                 UI::UI_Shop = true;
                 UI::UI_On = true;

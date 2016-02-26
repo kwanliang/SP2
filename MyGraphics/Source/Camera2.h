@@ -30,6 +30,9 @@ public:
 	Vector3 table;
 	Vector3 tableSize;
 
+	Vector3 boss2Hitbox;
+	Vector3 boss2Hitboxsize;
+
     double mouseXPos;
     double mouseYPos;
 

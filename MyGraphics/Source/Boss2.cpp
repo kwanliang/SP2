@@ -4,7 +4,7 @@
 Boss2::Boss2()
 {
 	MAX_HP = 600;
-	SharedData::GetInstance()->Boss2_HP= 600;
+	SharedData::GetInstance()->Boss2_HP = 600;
 	Attack = 5;
 
 	moveleftforward = false;
@@ -17,6 +17,14 @@ Boss2::Boss2()
 	growbig = false;
 	scaleRobotBoss = 1.f;
 	stopscale = false;
+
+	moveleftBacklegup = false;
+	moveleftBacklegdown = false;
+	moveleftbackleg = 0.f;
+
+	moverightBacklegup = false;
+	moverightBacklegdown = false;
+	moverightbackleg = 0.f;
 }
 
 Boss2::~Boss2()
@@ -101,6 +109,62 @@ void Boss2::moveRobotBosssleg(double dt)
 			moverightback = false;
 		}
 	}
-	
-	
+
+
+
+
+
+
+	if (moveleftBacklegup == true)
+	{
+		moveleftbackleg -= move_Speed;
+		if (moveleftbackleg <= -2)
+		{
+			moveleftBacklegup = false;
+			moveleftBacklegdown = true;
+		}
+	}
+
+	if (moveleftBacklegdown == true)
+	{
+		moveleftbackleg += move_Speed;
+		if (moveleftbackleg >= 4)
+		{
+			moveleftBacklegup = true;
+			moveleftBacklegdown = false;
+		}
+	}
+
+	if (moverightBacklegup == true)
+	{
+		moverightbackleg -= move_Speed;
+		if (moverightbackleg <= -2)
+		{
+			moverightBacklegup = false;
+			moverightBacklegdown = true;
+		}
+	}
+
+	if (moverightBacklegdown == true)
+	{
+		moverightbackleg += move_Speed;
+		if (moverightbackleg >= 4)
+		{
+			moverightBacklegup = true;
+			moverightBacklegdown = false;
+		}
+	}
+}
+
+bool Boss2::isDead(void)
+{
+	if (SharedData::GetInstance()->Boss2_HP <= 0)
+	{
+		SharedData::GetInstance()->Boss2_HP = 0;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }

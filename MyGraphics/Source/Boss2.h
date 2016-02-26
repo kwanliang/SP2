@@ -15,9 +15,18 @@ public:
 	bool moveleftforward;
 	bool moveleftback;
 	float moveleftpair;
+
 	bool moverightforward;
 	bool moverightback;
 	float moverightpair;
+
+	bool moveleftBacklegup;
+	bool moveleftBacklegdown;
+	float moveleftbackleg;
+
+	bool moverightBacklegup;
+	bool moverightBacklegdown;
+	float moverightbackleg;
 
 	bool growbig;
 	float scaleRobotBoss;
@@ -26,6 +35,8 @@ public:
 	int MAX_HP;
 	int Attack;
 	float move_Speed;
+
+	bool isDead(void);
 
 
 };

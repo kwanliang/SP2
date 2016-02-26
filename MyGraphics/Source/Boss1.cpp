@@ -34,7 +34,7 @@ void Boss1::Update(double dt)
 
     Boss1::isDead();
 
-    if (Application::IsKeyPressed('P')) 
+    if (Application::IsKeyPressed('L')) 
     {
         Boss1::Reset();
     }

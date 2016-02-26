@@ -292,6 +292,7 @@ private:
 	Weapon* Equipped;
 
 	//BOSSES
+	Boss1 Slime;
 	void RenderBoss1();
 
 	Boss2 Robot;
