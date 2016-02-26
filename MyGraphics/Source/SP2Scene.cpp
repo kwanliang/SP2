@@ -54,13 +54,29 @@ void SP2Scene::Init()
 {
     LSPEED = 100.f;
 
-	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(0, Weapon("Energy Pistol", 1, 0.5, 1, 20)));
-	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(1, Weapon("Pulse Rifle", 2, 0.4, 1, 30)));
-	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(2, Weapon("Heavy Pulse Rifle", 4, 1.0, 2, 10)));
-	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(3, Weapon("Laser Minigun", 1, 0.1, 1, 100)));
-	
-	//Equipped = SharedData::GetInstance()->WeaponMap.find[1]->second;
-	//cout << Equipped << endl;
+	reloading = false;
+	reload_delay = 0.f;
+
+	Character.Coins += 9900;
+
+	//WEAPONS
+	SharedData::GetInstance()->Buy = false;
+	SharedData::GetInstance()->Wep0_Equipped = true;
+	SharedData::GetInstance()->Wep1_Equipped = false;
+	SharedData::GetInstance()->Wep2_Equipped = false;
+	SharedData::GetInstance()->Wep3_Equipped = false;
+
+	SharedData::GetInstance()->Own_Wep0 = true;
+	SharedData::GetInstance()->Own_Wep1 = false;
+	SharedData::GetInstance()->Own_Wep2 = false;
+	SharedData::GetInstance()->Own_Wep3 = false;
+
+	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(0, Weapon("Energy Pistol", 1, 0.5f, 1, 20, 0)));
+	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(1, Weapon("Pulse Rifle", 2, 0.4f, 1, 30, 200)));
+	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(2, Weapon("Heavy Pulse Rifle", 4, 1.0f, 2, 10, 500)));
+	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(3, Weapon("Minigun", 1, 0.1f, 1, 100, 1000)));
+
+	SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(0)->second;
 
 	Item_Spin = 0.f;
 
@@ -340,12 +356,14 @@ void SP2Scene::Init()
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS3<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	meshList[GUN_1] = MeshBuilder::GenerateOBJ("Default gun", "OBJ//Weapon//D_Gun.obj");
-	meshList[GUN_1]->textureID = LoadTGA("Image//Weapon//D_Gun.tga");
-	meshList[GUN_2] = MeshBuilder::GenerateOBJ("Pulse Rifle", "OBJ//Weapon//P_Rifle.obj");
-	meshList[GUN_2]->textureID = LoadTGA("Image//Weapon//P_Rifle.tga");
-	meshList[GUN_3] = MeshBuilder::GenerateOBJ("Heavy Pulse Rifle", "OBJ//Weapon//H_Rifle.obj");
-	meshList[GUN_3]->textureID = LoadTGA("Image//Weapon//H_Rifle.tga");
+	meshList[GUN_0] = MeshBuilder::GenerateOBJ("Default gun", "OBJ//Weapon//D_Gun.obj");
+	meshList[GUN_0]->textureID = LoadTGA("Image//Weapon//D_Gun.tga");
+	meshList[GUN_1] = MeshBuilder::GenerateOBJ("Pulse Rifle", "OBJ//Weapon//P_Rifle.obj");
+	meshList[GUN_1]->textureID = LoadTGA("Image//Weapon//P_Rifle.tga");
+	meshList[GUN_2] = MeshBuilder::GenerateOBJ("Heavy Pulse Rifle", "OBJ//Weapon//H_Rifle.obj");
+	meshList[GUN_2]->textureID = LoadTGA("Image//Weapon//H_Rifle.tga");
+	meshList[GUN_3] = MeshBuilder::GenerateOBJ("minigun", "OBJ//Weapon//minigun.obj");
+	meshList[GUN_3]->textureID = LoadTGA("Image//Weapon//minigun.tga");
     meshList[BULLET] = MeshBuilder::GenerateOBJ("bullet", "OBJ//bullet.obj");
     meshList[BULLET]->textureID = LoadTGA("Image//bullet.tga");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -373,7 +391,6 @@ void SP2Scene::Init()
 	meshList[HUD_CHARACTER] = MeshBuilder::GenerateOBJ("HUD for character", "OBJ//UI_Plane.obj");
 	meshList[HUD_CHARACTER]->textureID = LoadTGA("Image//HUD//Character.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<HUD<<<<<<<<<<<<<<<<<<<<<<<<<<
-
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<Character legs<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[HUMAN_LEFTLEG] = MeshBuilder::GenerateOBJ("humanlegs", "OBJ//characterleg//Human_leftleg.obj");
@@ -497,7 +514,6 @@ void SP2Scene::Update(double dt)
 	if (Application::IsKeyPressed('4'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
 
-
     //if (UI.MenuUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int MenuUI_ID) == true) {
     //    meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start_S.tga");
     //}
@@ -535,11 +551,34 @@ void SP2Scene::Update(double dt)
 
 	/*turnleg(camera.position);*/
 
+	//Check if player is dead
 	if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true || SharedData::GetInstance()->renderPlanet3 == true)
 	{
 		Character.isDead();
 	}
 
+	//Reloads the gun
+	if (Application::IsKeyPressed('Q') && Wait >= 5 && SharedData::GetInstance()->Equipped->Ammo != SharedData::GetInstance()->Equipped->MAX_Ammo)
+	{
+		Wait = 0;
+		reloading = true;
+	}
+	else if (Wait < 5 && reloading == false)
+	{
+		reload_delay = 0;
+		Wait += (float)(10 * dt);
+	}
+	if (reloading == true)
+	{
+		reload_delay += (float)(10 * dt);
+		if (reload_delay >= 20)
+		{
+			SharedData::GetInstance()->Equipped->reload();
+			reloading = false;
+		}
+	}
+
+	//Spin item
 	Item_Spin += (float)(120 * dt);
 	if (Item_Spin >= 360)
 	{
@@ -596,15 +635,15 @@ void SP2Scene::Update(double dt)
 	}
 
 	//PLANET 3 BOSS
-	Golem.updates(dt);
-
 	if (Golem.isDead() == false)
 	{
-		if (Application::IsKeyPressed(VK_LBUTTON))
+		Golem.updates(dt);
+		Golem.faceme(camera.position);
+		if (Application::IsKeyPressed(VK_NUMPAD1))
 		{
 			Golem.stompLeft = true;
 		}
-		if (Application::IsKeyPressed(VK_RBUTTON))
+		if (Application::IsKeyPressed(VK_NUMPAD2))
 		{
 			Golem.stompRight = true;
 		}
@@ -615,9 +654,8 @@ void SP2Scene::Update(double dt)
 		}
 		if (Golem.Phase2 == true)
 		{
-			Golem.slap(dt, camera.position.x, camera.position.z);
+			Golem.slap(dt, camera.position);
 		}
-		Golem.faceme(camera.position);
 	}
 
 	// Show FPS
@@ -836,9 +874,6 @@ void SP2Scene::Update(double dt)
 		enemydefeated = 0;
 	}
 
-	cout << "ship" << SharedData::GetInstance()->renderShip << endl;
-	cout << enemydefeated << endl;
-
     camera.Update(dt);
     projectile.Update(dt);
     UI.Update(dt);
@@ -938,10 +973,24 @@ void SP2Scene::Render()
 
 	if (UI::UI_On == false) 
 	{
-		//RenderImageOnScreen(meshList[CHARACTER_HAND], 25, .8f, -0, -3, 0 + GunBounceBack, -10, 0);
-		RenderImageOnScreen(meshList[GUN_1], 12, 4.5f, -.1f, -2, 20 + GunBounceBack, 190, 0);
-		RenderImageOnScreen(meshList[GUN_2], 8, 7, 0, -2, 20 + GunBounceBack, 190, 0);
-		RenderImageOnScreen(meshList[GUN_3], 6, 9, 0, -2, 20 + GunBounceBack, 190, 0);
+		RenderHUD();
+		RenderTextOnScreen(meshList[TEXT], "+", Color(1, 0, 0), 3, 13.7f, 10);
+		if (SharedData::GetInstance()->Wep0_Equipped == true)
+		{
+			RenderImageOnScreen(meshList[GUN_0], 12, 4.5f, -.1f, -2, 20 + GunBounceBack, 190, 0);
+		}
+		else if (SharedData::GetInstance()->Wep1_Equipped == true)
+		{
+			RenderImageOnScreen(meshList[GUN_1], 8, 7, 0, -2, 20 + GunBounceBack, 190, 0);
+		}
+		else if (SharedData::GetInstance()->Wep2_Equipped == true)
+		{
+			RenderImageOnScreen(meshList[GUN_2], 6, 9, 0, -2, 20 + GunBounceBack, 190, 0);
+		}
+		else if (SharedData::GetInstance()->Wep3_Equipped == true)
+		{
+			RenderImageOnScreen(meshList[GUN_3], 6, 9, 0, -2, 15 + GunBounceBack, 190, 0);
+		}
 	}
 
 	if (projectile.ProjectileShot == true)
@@ -953,29 +1002,18 @@ void SP2Scene::Render()
 		modelStack.PopMatrix();
 	}
 
+	if (reloading == true)
+	{
+		RenderTextOnScreen(meshList[TEXT], "RELOADING...", Color(1, 0.5, 0.5), 4, 6.5, 8);
+	}
+
 	if (UI.UI_PlanatNav == false && UI.UI_Shop == false 
         && SharedData::GetInstance()->renderMenu == false 
         && SharedData::GetInstance()->renderRaceSelection == false 
         && SharedData::GetInstance()->renderNameInput == false
         && SharedData::GetInstance()->renderPause == false)
 	{
-		RenderImageOnScreen(meshList[HUD_INVENTORY], 40, 0.35, 0.06, 0, 0, 0, 0);
-		RenderImageOnScreen(meshList[COIN], 2, 1, 8.8, 1, 0, Item_Spin, 0);
-		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 3, 2, 6.3);
-		RenderImageOnScreen(meshList[LARGE_HEALTH_KIT], 2.5, 0.8, 5.5, 1, 0, Item_Spin, 0);
-		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.large_health_kit_amount), Color(1, 1, 1), 3, 2, 5);
-		RenderImageOnScreen(meshList[HEALTH_KIT], 2, 1, 5.5, 1, 0, Item_Spin, 0);
-		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.health_kit_amount), Color(1, 1, 1), 3, 2, 4);
-
-		RenderImageOnScreen(meshList[HUD_CHARACTER], 40, 0.35, -0.3, 0.1, 0, 0, 0);
-		RenderTextOnScreen(meshList[TEXT], Character.Name, Color(1, 1, 1), 3, 1, 2);
-		RenderTextOnScreen(meshList[TEXT], "HP:", Color(1, 1, 1), 3, 1, 1);
-		RenderTextOnScreen(meshList[TEXT], "   " + std::to_string(Character.HP) + "/" + std::to_string(Character.MAX_HP), Color(1, 0.2, 0.2), 3, 1, 1);
-
-		RenderImageOnScreen(meshList[HUD_AMMO], 30, 2.4, -0.5, 0, 0, 0, 0);
-		RenderTextOnScreen(meshList[TEXT], "Ammo" ,Color(1, 1, 1), 3, 23.5, 1);
-
-        RenderTextOnScreen(meshList[TEXT], "+", Color(1, 0, 0), 3, 13.7f, 10);
+		RenderHUD();
 	}
 
     if (UI.UI_PlanatNav == true)
@@ -995,21 +1033,7 @@ void SP2Scene::Render()
         }
     }
 
-    if (UI.UI_Shop == true)
-    {
-        RenderImageOnScreen(meshList[UI_SHOP_SELECT], 8, 2, 3, 0, 0, 0, 0);
-        RenderImageOnScreen(meshList[UI_SHOP_SELECT], 8, 5, 3, 0, 0, 0, 0);
-        RenderImageOnScreen(meshList[UI_SHOP_SELECT], 8, 8, 3, 0, 0, 0, 0);
-        RenderImageOnScreen(meshList[UI_SHOP], 80, .5f, -.1f, 0, 0, 0, 0);
-        RenderTextOnScreen(meshList[TEXT], "Ranged", Color(1, 1, 1), 2, 6.3f, 15.5f);
-        RenderTextOnScreen(meshList[TEXT], "Melee", Color(1, 1, 1), 2, 18.8f, 15.5f);
-        RenderTextOnScreen(meshList[TEXT], "Item", Color(1, 1, 1), 2, 31, 15.5f);
-        RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 6);
-
-        RenderImageOnScreen(meshList[COIN], 4, 10, 13, 1, 0, Item_Spin, 0);
-        RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 1, 1), 4, 12, 14);
-    }
-	
+	RenderShop();
 
     if (projectile.ProjectileShot == true) {
         modelStack.PushMatrix();
@@ -1079,6 +1103,28 @@ void SP2Scene::RenderNameInput() {
 	Character.Name = SharedData::GetInstance()->KeyInput;
     RenderTextOnScreen(meshList[TEXT], "Name your character!", Color(1, 1, 1), 2, 13, 18);
     RenderTextOnScreen(meshList[TEXT], "Maximum 10 letters", Color(1, 1, 1), 2, 13.5f, 12);
+}
+
+void SP2Scene::RenderHUD()
+{
+	if (UI.UI_On == false)
+	{
+		RenderImageOnScreen(meshList[HUD_INVENTORY], 40, 0.35, 0.06, 0, 0, 0, 0);
+		RenderImageOnScreen(meshList[COIN], 2, 1, 8.8, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 3, 2, 6.3);
+		RenderImageOnScreen(meshList[LARGE_HEALTH_KIT], 2.5, 0.8, 5.5, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.large_health_kit_amount), Color(1, 1, 1), 3, 2, 5);
+		RenderImageOnScreen(meshList[HEALTH_KIT], 2, 1, 5.5, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.health_kit_amount), Color(1, 1, 1), 3, 2, 4);
+
+		RenderImageOnScreen(meshList[HUD_CHARACTER], 40, 0.35, -0.3, 0.1, 0, 0, 0);
+		RenderTextOnScreen(meshList[TEXT], Character.Name, Color(1, 1, 1), 3, 1, 2);
+		RenderTextOnScreen(meshList[TEXT], "HP:", Color(1, 1, 1), 3, 1, 1);
+		RenderTextOnScreen(meshList[TEXT], "   " + std::to_string(Character.HP) + "/" + std::to_string(Character.MAX_HP), Color(1, 0.2, 0.2), 3, 1, 1);
+
+		RenderImageOnScreen(meshList[HUD_AMMO], 30, 2.4, -0.5, 0, 0, 0, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(SharedData::GetInstance()->Equipped->Ammo) + "/" + std::to_string(SharedData::GetInstance()->Equipped->MAX_Ammo), Color(1, 1, 1), 2.5, 27, 1);
+	}
 }
 
 void SP2Scene::RenderShip()
@@ -1210,6 +1256,217 @@ void SP2Scene::RenderShip()
 	modelStack.Scale(50, 50, 50);
 	RenderMesh(meshList[SHOP_NPC], false);
 	modelStack.PopMatrix();
+}
+
+void SP2Scene::RenderShop()
+{
+	if (UI.UI_Shop == true)
+	{
+		RenderImageOnScreen(meshList[UI_SHOP_SELECT], 8, 4, 3, 0, 0, 0, 0);
+		RenderImageOnScreen(meshList[UI_SHOP_SELECT], 8, 6, 3, 0, 0, 0, 0);
+		RenderImageOnScreen(meshList[UI_SHOP], 80, .5f, -.1f, 0, 0, 0, 0);
+		RenderTextOnScreen(meshList[TEXT], "Weapon", Color(1, 1, 1), 2, 14, 15.5f);
+		RenderTextOnScreen(meshList[TEXT], "Item", Color(1, 1, 1), 2, 23, 15.5f);
+		RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 6);
+
+		RenderImageOnScreen(meshList[COIN], 4, 10, 13, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 4, 12, 14);
+	}
+
+	if (UI.UI_ShopGun == true)
+	{
+		RenderImageOnScreen(meshList[UI_SHOP], 80, .5f, -.1f, 0, 0, 0, 0);
+		RenderImageOnScreen(meshList[COIN], 4, 10, 13, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 4, 12, 14);
+		RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 3);
+
+		if (SharedData::GetInstance()->Wep1 == false && SharedData::GetInstance()->Wep2 == false && SharedData::GetInstance()->Wep3 == false)
+		{
+			RenderImageOnScreen(meshList[GUN_1], 2, 4, 22, 1, 0, 90, 0);
+			RenderImageOnScreen(meshList[GUN_2], 2, 7, 12, 1, 0, 90, 0);
+			RenderImageOnScreen(meshList[GUN_3], 2, 2.5, 5, 1, 0, 90, 0);
+		}
+
+		//WEAPON 1
+		if (SharedData::GetInstance()->Wep1 == true)
+		{
+			RenderImageOnScreen(meshList[GUN_1], 2, 7, 22, 10, 0, 90 + Item_Spin, 0);
+			RenderImageOnScreen(meshList[GUN_2], 2, 7, 12, 1, 0, 90, 0);
+			RenderImageOnScreen(meshList[GUN_3], 2, 2.5, 5, 1, 0, 90, 0);
+			RenderTextOnScreen(meshList[TEXT], SharedData::GetInstance()->WeaponMap.find(1)->second.Weapon_Name, Color(0.5, 0.7, 1), 2, 18, 23);
+			RenderTextOnScreen(meshList[TEXT], "Damage :" + std::to_string(toupper(SharedData::GetInstance()->WeaponMap.find(1)->second.Attack_Value)), Color(0.5, 0.7, 1), 2, 18, 21);
+			RenderTextOnScreen(meshList[TEXT], "Fire rate : Fast", Color(0.5, 0.7, 1), 2, 18, 20);
+			RenderTextOnScreen(meshList[TEXT], "Ammo consumtion :" + std::to_string(SharedData::GetInstance()->WeaponMap.find(1)->second.Ammo_Consumption) + " per shot", Color(0.5, 0.7, 1), 2, 18, 19);
+			RenderTextOnScreen(meshList[TEXT], "Ammo per clip :" + std::to_string(SharedData::GetInstance()->WeaponMap.find(1)->second.MAX_Ammo), Color(0.5, 0.7, 1), 2, 18, 18);
+
+			//Owns it
+			if (SharedData::GetInstance()->Own_Wep1 == true)
+			{
+				if (SharedData::GetInstance()->Wep1_Equipped == false)
+				{
+					RenderTextOnScreen(meshList[TEXT], "EQUIP", Color(0.5, 0.5, 0.5), 3, 15, 6);
+					if (SharedData::GetInstance()->Buy == true)
+					{
+						SharedData::GetInstance()->Wep0_Equipped = false;
+						SharedData::GetInstance()->Wep1_Equipped = true;
+						SharedData::GetInstance()->Wep2_Equipped = false;
+						SharedData::GetInstance()->Wep3_Equipped = false;
+						SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(1)->second;
+					}
+				}
+				else
+				{
+					SharedData::GetInstance()->Buy = false;
+				}
+			}
+			if (SharedData::GetInstance()->Wep1_Equipped == true)
+			{
+				RenderTextOnScreen(meshList[TEXT], "EQUIPPED", Color(0.5, 0.5, 0.5), 3, 15, 6);
+			}
+
+
+			//Doesnt own it
+			if (SharedData::GetInstance()->Own_Wep1 == false)
+			{
+				RenderTextOnScreen(meshList[TEXT], "Cost : " + std::to_string(SharedData::GetInstance()->WeaponMap.find(1)->second.Cost), Color(1, 0.85, 0), 3, 12, 8);
+				RenderImageOnScreen(meshList[COIN], 3, 20.5, 7.5, 1, 0, Item_Spin, 0);
+				RenderTextOnScreen(meshList[TEXT], "BUY", Color(0.5, 0.5, 0.5), 5, 9.3, 3.5);
+				if (SharedData::GetInstance()->Buy == true)
+				{
+					if (Character.Coins - SharedData::GetInstance()->WeaponMap.find(1)->second.Cost >= 0)
+					{
+						SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(1)->second;
+						SharedData::GetInstance()->Wep0_Equipped = false;
+						SharedData::GetInstance()->Wep1_Equipped = true;
+						SharedData::GetInstance()->Wep2_Equipped = false;
+						SharedData::GetInstance()->Wep3_Equipped = false;
+						Character.Coins -= SharedData::GetInstance()->WeaponMap.find(1)->second.Cost;
+						SharedData::GetInstance()->Own_Wep1 = true;
+					}
+				}
+			}
+		}
+
+		//WEAPON 2
+		if (SharedData::GetInstance()->Wep2 == true)
+		{
+			RenderImageOnScreen(meshList[GUN_1], 2, 4, 22, 1, 0, 90, 0);
+			RenderImageOnScreen(meshList[GUN_2], 2, 7, 12, 10, 0, 90 + Item_Spin, 0);
+			RenderImageOnScreen(meshList[GUN_3], 2, 2.5, 5, 1, 0, 90, 0);
+			RenderTextOnScreen(meshList[TEXT], SharedData::GetInstance()->WeaponMap.find(2)->second.Weapon_Name, Color(0.5, 0.7, 1), 2, 18, 23);
+			RenderTextOnScreen(meshList[TEXT], "Damage :" + std::to_string(toupper(SharedData::GetInstance()->WeaponMap.find(2)->second.Attack_Value)), Color(0.5, 0.7, 1), 2, 18, 21);
+			RenderTextOnScreen(meshList[TEXT], "Fire rate : Slow", Color(0.5, 0.7, 1), 2, 18, 20);
+			RenderTextOnScreen(meshList[TEXT], "Ammo consumtion :" + std::to_string(SharedData::GetInstance()->WeaponMap.find(2)->second.Ammo_Consumption) + " per shot", Color(0.5, 0.7, 1), 2, 18, 19);
+			RenderTextOnScreen(meshList[TEXT], "Ammo per clip :" + std::to_string(SharedData::GetInstance()->WeaponMap.find(2)->second.MAX_Ammo), Color(0.5, 0.7, 1), 2, 18, 18);
+
+			//Owns it
+			if (SharedData::GetInstance()->Own_Wep2 == true)
+			{
+				if (SharedData::GetInstance()->Wep2_Equipped == false)
+				{
+					RenderTextOnScreen(meshList[TEXT], "EQUIP", Color(0.5, 0.5, 0.5), 3, 15, 6);
+					if (SharedData::GetInstance()->Buy == true)
+					{
+						SharedData::GetInstance()->Wep0_Equipped = false;
+						SharedData::GetInstance()->Wep1_Equipped = false;
+						SharedData::GetInstance()->Wep2_Equipped = true;
+						SharedData::GetInstance()->Wep3_Equipped = false;
+						SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(2)->second;
+					}
+				}
+				else
+				{
+					SharedData::GetInstance()->Buy = false;
+				}
+			}
+			if (SharedData::GetInstance()->Wep2_Equipped == true)
+			{
+				RenderTextOnScreen(meshList[TEXT], "EQUIPPED", Color(0.5, 0.5, 0.5), 3, 15, 6);
+			}
+
+
+			//Doesnt own it
+			if (SharedData::GetInstance()->Own_Wep2 == false)
+			{
+				RenderTextOnScreen(meshList[TEXT], "Cost : " + std::to_string(SharedData::GetInstance()->WeaponMap.find(2)->second.Cost), Color(1, 0.85, 0), 3, 12, 8);
+				RenderImageOnScreen(meshList[COIN], 3, 20.5, 7.5, 1, 0, Item_Spin, 0);
+				RenderTextOnScreen(meshList[TEXT], "BUY", Color(0.5, 0.5, 0.5), 5, 9.3, 3.5);
+				if (SharedData::GetInstance()->Buy == true)
+				{
+					if (Character.Coins - SharedData::GetInstance()->WeaponMap.find(2)->second.Cost >= 0)
+					{
+						SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(2)->second;
+						SharedData::GetInstance()->Wep0_Equipped = false;
+						SharedData::GetInstance()->Wep1_Equipped = false;
+						SharedData::GetInstance()->Wep2_Equipped = true;
+						SharedData::GetInstance()->Wep3_Equipped = false;
+						Character.Coins -= SharedData::GetInstance()->WeaponMap.find(2)->second.Cost;
+						SharedData::GetInstance()->Own_Wep2 = true;
+					}
+				}
+			}
+		}
+
+		//WEAPON 3
+		if (SharedData::GetInstance()->Wep3 == true)
+		{
+			RenderImageOnScreen(meshList[GUN_1], 2, 4, 22, 1, 0, 90, 0);
+			RenderImageOnScreen(meshList[GUN_2], 2, 7, 12, 1, 0, 90, 0);
+			RenderImageOnScreen(meshList[GUN_3], 2, 8, 5, 10, 0, 90 + Item_Spin, 0);
+			RenderTextOnScreen(meshList[TEXT], SharedData::GetInstance()->WeaponMap.find(3)->second.Weapon_Name, Color(0.5, 0.7, 1), 2, 18, 23);
+			RenderTextOnScreen(meshList[TEXT], "Damage :" + std::to_string(toupper(SharedData::GetInstance()->WeaponMap.find(3)->second.Attack_Value)), Color(0.5, 0.7, 1), 2, 18, 21);
+			RenderTextOnScreen(meshList[TEXT], "Fire rate : Very Fast", Color(0.5, 0.7, 1), 2, 18, 20);
+			RenderTextOnScreen(meshList[TEXT], "Ammo consumtion :" + std::to_string(SharedData::GetInstance()->WeaponMap.find(3)->second.Ammo_Consumption) + " per shot", Color(0.5, 0.7, 1), 2, 18, 19);
+			RenderTextOnScreen(meshList[TEXT], "Ammo per clip :" + std::to_string(SharedData::GetInstance()->WeaponMap.find(3)->second.MAX_Ammo), Color(0.5, 0.7, 1), 2, 18, 18);
+
+			//Owns it
+			if (SharedData::GetInstance()->Own_Wep3 == true)
+			{
+				if (SharedData::GetInstance()->Wep3_Equipped == false)
+				{
+					RenderTextOnScreen(meshList[TEXT], "EQUIP", Color(0.5, 0.5, 0.5), 3, 15, 6);
+					if (SharedData::GetInstance()->Buy == true)
+					{
+						SharedData::GetInstance()->Wep0_Equipped = false;
+						SharedData::GetInstance()->Wep1_Equipped = false;
+						SharedData::GetInstance()->Wep2_Equipped = false;
+						SharedData::GetInstance()->Wep3_Equipped = true;
+						SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(3)->second;
+					}
+				}
+				else
+				{
+					SharedData::GetInstance()->Buy = false;
+				}
+			}
+			if (SharedData::GetInstance()->Wep3_Equipped == true)
+			{
+				RenderTextOnScreen(meshList[TEXT], "EQUIPPED", Color(0.5, 0.5, 0.5), 3, 15, 6);
+			}
+
+
+			//Doesnt own it
+			if (SharedData::GetInstance()->Own_Wep3 == false)
+			{
+				RenderTextOnScreen(meshList[TEXT], "Cost : " + std::to_string(SharedData::GetInstance()->WeaponMap.find(3)->second.Cost), Color(1, 0.85, 0), 3, 12, 8);
+				RenderImageOnScreen(meshList[COIN], 3, 21, 7.5, 1, 0, Item_Spin, 0);
+				RenderTextOnScreen(meshList[TEXT], "BUY", Color(0.5, 0.5, 0.5), 5, 9.3, 3.5);
+				if (SharedData::GetInstance()->Buy == true)
+				{
+					if (Character.Coins - SharedData::GetInstance()->WeaponMap.find(3)->second.Cost >= 0)
+					{
+						SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(3)->second;
+						SharedData::GetInstance()->Wep0_Equipped = false;
+						SharedData::GetInstance()->Wep1_Equipped = false;
+						SharedData::GetInstance()->Wep2_Equipped = false;
+						SharedData::GetInstance()->Wep3_Equipped = true;
+						Character.Coins -= SharedData::GetInstance()->WeaponMap.find(3)->second.Cost;
+						SharedData::GetInstance()->Own_Wep3 = true;
+					}
+				}
+			}
+		}
+	}
 }
 
 void SP2Scene::RenderPlanet1()
@@ -1808,7 +2065,7 @@ void SP2Scene::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, flo
 void SP2Scene::RenderImageOnScreen(Mesh* mesh, float size, float x, float y , float z, float rotateX, float rotateY, float rotateZ)
 {
     Mtx44 ortho;
-    ortho.SetToOrtho(0, 80, 0, 60, -50, 50); //size of screen UI
+    ortho.SetToOrtho(0, 80, 0, 60, -100, 100); //size of screen UI
     projectionStack.PushMatrix();
     projectionStack.LoadMatrix(ortho);
     viewStack.PushMatrix();

@@ -1,8 +1,11 @@
 #ifndef SHARED_DATA_H
 #define SHARED_DATA_H
 
+#include <vector>
 #include <map>
+#include "Vector3.h"
 #include "Weapon.h"
+#include "MyMath.h"
 
 class SharedData
 {
@@ -45,8 +48,24 @@ public:
     bool Menu_Exit;
 
 	//Weapon
+	Weapon* Equipped;
+
+	bool Wep0_Equipped;
+	bool Wep1_Equipped;
+	bool Wep2_Equipped;
+	bool Wep3_Equipped;
+
+	bool Own_Wep0;
+	bool Own_Wep1;
+	bool Own_Wep2;
+	bool Own_Wep3;
 	std::map<int, Weapon> WeaponMap;
-	std::map<int, Weapon> WeaponOwned;
+
+	//Shop
+	bool Wep1;
+	bool Wep2;
+	bool Wep3;
+	bool Buy;
 
     //Render Skybox
 	bool renderShip;

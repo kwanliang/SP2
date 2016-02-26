@@ -22,7 +22,7 @@ Character::Character()
 	SharedData::GetInstance()->Move_Speed = 0.0f;
 	Name = "";
 	Race = Race_Type::Human;
-	Coins = 100;
+	Coins = 20;
 }
 
 /******************************************************************************/
@@ -76,34 +76,6 @@ void Character::SetRace(int i)
 /******************************************************************************/
 /*!
 \brief
-	Assigns a Weapon to Character.
-	Replaces old weapon and returns the old weapon.
-
-\param NewWeapon
-	New Weapon for Character
-
-\return
-	Returns OldWeapon if weapon is replaced.
-*/
-/******************************************************************************/
-Weapon* Character::assignWeapon(Weapon* NewWeapon)
-{
-	if (Weapon_)
-	{
-		Weapon* OldWeapon = Weapon_;
-		Weapon_ = NewWeapon;
-		return OldWeapon;
-	}
-	else
-	{
-		Weapon_ = NewWeapon;
-		return nullptr;
-	}
-}
-
-/******************************************************************************/
-/*!
-\brief
 	Deducts HP based on Damage received
 
 \param Damage
@@ -113,20 +85,6 @@ Weapon* Character::assignWeapon(Weapon* NewWeapon)
 void Character::recieveDamage(int Damage)
 {
 	HP -= Damage;
-}
-
-/******************************************************************************/
-/*!
-\brief
-	Adds healthkit according to Health_Kit_Gained
-
-\param Health_Kit_Gained
-	Amount of healthkit to be added
-*/
-/******************************************************************************/
-void Character::addHealth_kit(const int Health_kit_Gained)
-{
-	health_kit_amount += Health_kit_Gained;
 }
 
 /******************************************************************************/
@@ -152,21 +110,6 @@ void Character::useHealth_kit(void)
 		}
 		health_kit_amount -= 1;
 	}
-}
-
-/******************************************************************************/
-/*!
-\brief
-	
-
-\param Large_Health_Kit_Gained
-	Amount of large 
-	healthkit to be added
-*/
-/******************************************************************************/
-void Character::addLarge_Health_kit(const int Large_Health_kit_Gained)
-{
-	large_health_kit_amount += Large_Health_kit_Gained;
 }
 
 /******************************************************************************/

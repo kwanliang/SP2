@@ -150,6 +150,7 @@ class SP2Scene : public Scene
 		GOLEM_FEET,
 
         //Character & Weapon
+		GUN_0,
 		GUN_1,
 		GUN_2,
 		GUN_3,
@@ -220,11 +221,17 @@ public:
 
     float LSPEED;
 
+	float Wait = 0.f;
+
     std::string FPS;
 
     static float UI_Human_Rotate;
     static float UI_Robot_Rotate;
 	static float UI_Infested_Rotate;
+
+	//Reloading
+	bool reloading;
+	float reload_delay;
 
 	//Planet Nav Animation
     static bool UI_PlanetNav_Animation;
@@ -275,7 +282,9 @@ private:
     void RenderMenu();
     void RenderRaceSelection();
     void RenderNameInput();
+	void RenderHUD();
 	void RenderShip();
+	void RenderShop();
     void RenderPlanet1();
     void RenderPlanet2();
     void RenderPlanet3();
@@ -289,7 +298,6 @@ private:
 	void renderReturnShip();
 
 	Character Character;
-	Weapon* Equipped;
 
 	//BOSSES
 	void RenderBoss1();

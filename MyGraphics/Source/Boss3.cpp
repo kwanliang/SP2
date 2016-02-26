@@ -1,5 +1,20 @@
+/******************************************************************************/
+/*!
+\file	Boss3.cpp
+\author Chuan Guang Zhe
+\par	email: 152104G@mymail.nyp.edu.sg
+\brief
+	Class to define Boss 3, the Night Knight Golem
+*/
+/******************************************************************************/
 #include "Boss3.h"
 
+/******************************************************************************/
+/*!
+\brief
+	Boss3 default constructor
+*/
+/******************************************************************************/
 Boss3::Boss3()
 {
 	MAX_HP = 1000;
@@ -49,10 +64,25 @@ Boss3::Boss3()
 	Right_Hip_R = 0.f;
 }
 
+/******************************************************************************/
+/*!
+\brief
+	Boss3 default deconstructor
+*/
+/******************************************************************************/
 Boss3::~Boss3()
 {
 }
 
+/******************************************************************************/
+/*!
+\brief
+	Boss3 Updates
+
+\param dt
+	Delta time in order to animate the boss
+*/
+/******************************************************************************/
 void Boss3::updates(double dt)
 {
 	PhaseShift(dt);
@@ -60,11 +90,29 @@ void Boss3::updates(double dt)
 	StompR(dt);
 }
 
+/******************************************************************************/
+/*!
+\brief
+	Deducts Boss' HP based on amount of Damage
+
+\param Damage
+	Amount of health to be deducted
+*/
+/******************************************************************************/
 void Boss3::recieveDamage(int Damage)
 {
 	HP -= Damage;
 }
 
+/******************************************************************************/
+/*!
+\brief
+	Changes Boss' Phase
+
+\param dt
+	Delta time in order to animate the boss
+*/
+/******************************************************************************/
 void Boss3::PhaseShift(double dt)
 {
 	if (HP <= MAX_HP/2)
@@ -118,6 +166,12 @@ void Boss3::PhaseShift(double dt)
 	}
 }
 
+/******************************************************************************/
+/*!
+\brief
+	Checks if Boss is dead
+*/
+/******************************************************************************/
 bool Boss3::isDead(void)
 {
 	if (HP <= 0)
@@ -131,6 +185,12 @@ bool Boss3::isDead(void)
 	}
 }
 
+/******************************************************************************/
+/*!
+\brief
+	Resets all of Boss's values and states
+*/
+/******************************************************************************/
 void Boss3::reset(void)
 {
 	MAX_HP = 1000;
@@ -180,7 +240,15 @@ void Boss3::reset(void)
 	Right_Hip_R = 0.f;
 }
 
-//ATTACK FUNCTIONS
+/******************************************************************************/
+/*!
+\brief
+	Stomping of Left leg
+
+\param dt
+	Delta time in order to animate the boss
+*/
+/******************************************************************************/
 void Boss3::StompL(double dt)
 {
 	if (HP > 500)
@@ -244,6 +312,15 @@ void Boss3::StompL(double dt)
 	}
 }
 
+/******************************************************************************/
+/*!
+\brief
+	Stomping of Right leg
+
+\param dt
+	Delta time in order to animate the boss
+*/
+/******************************************************************************/
 void Boss3::StompR(double dt)
 {
 	if (stompRight == true)
@@ -304,6 +381,15 @@ void Boss3::StompR(double dt)
 	}
 }
 
+/******************************************************************************/
+/*!
+\brief
+	Boss's hand falls onto the ground after around 3 seconds
+
+\param dt
+	Delta time in order to animate the boss
+*/
+/******************************************************************************/
 void Boss3::slapDown(double dt)
 {
 	if (slapping == true)
@@ -339,7 +425,19 @@ void Boss3::slapDown(double dt)
 	}
 }
 
-void Boss3::slap(double dt, float x, float z)
+/******************************************************************************/
+/*!
+\brief
+	Boss's hand tracks and follows the Player
+
+\param dt
+	Delta time in order to animate the boss
+
+\param Player
+	Player's position
+*/
+/******************************************************************************/
+void Boss3::slap(double dt, Vector3 Player)
 {
 	slap_time += (float)(100 * dt);
 	if (slap_time >= 500)
@@ -350,28 +448,37 @@ void Boss3::slap(double dt, float x, float z)
 	}
 	if (slap_X == true)
 	{
-		if (slapX >= x + 100)
+		if (slapX >= Player.x + 100)
 		{
 			slapX -= (float)(1000 * dt);
 		}
-		else if (slapX <= x + 100)
+		else if (slapX <= Player.x + 100)
 		{
 			slapX += (float)(1000 * dt);
 		}
 	}
 	if (slap_Z == true)
 	{
-		if (slapZ >= z - 500)
+		if (slapZ >= Player.z - 500)
 		{
 			slapZ -= (float)(500 * dt);
 		}
-		else if (slapZ <= z - 500)
+		else if (slapZ <= Player.z - 500)
 		{
 			slapZ += (float)(500 * dt);
 		}
 	}
 }
 
+/******************************************************************************/
+/*!
+\brief
+	Makes the Boss always face the Player
+
+\param Player
+	Player's position
+*/
+/******************************************************************************/
 void Boss3::faceme(Vector3 Player)
 {
 	Vector3 initView(0, 0, 1);
