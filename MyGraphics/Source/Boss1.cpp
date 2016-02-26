@@ -27,12 +27,10 @@ void Boss1::Init()
 
 void Boss1::Update(double dt)
 {
-    if (Collision::ObjCheck(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->Boss1PositionSplit1, SharedData::GetInstance()->Boss1Hitbox) == true &&
-        Boss1::isDead() == false)
-    {
-        receiveDamage(10);
-        std::cout << SharedData::GetInstance()->ProjectilePosition << " : " << BOSS1_HP << std::endl;
-    }
+    //if (Collision::BossHitbox(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->Boss1PositionSplit1, Boss1HitboxSize) == true)
+    //{
+    //    receiveDamage(10);
+    //}
 
     //std::cout << Boss1HitboxSize << std::endl;
 

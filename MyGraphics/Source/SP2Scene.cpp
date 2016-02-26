@@ -133,8 +133,8 @@ void SP2Scene::Init()
 
 	//Initialize camera settings
 	camera.Init(Vector3(0, 0, -200), Vector3(0, 0, 0), Vector3(0, 1, 0));
-    projectile.Init(camera.position);
     boss1.Init();
+    //projectile.Init(camera.position);
 
 	// Get a handle for our "colorTexture" uniform
 	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
@@ -931,7 +931,10 @@ void SP2Scene::Update(double dt)
 	}
 
     camera.Update(dt);
-    projectile.Update(dt);
+	for (auto q : Projectile::ProjectileCount){
+		q->Update(dt);
+	}
+
     UI.Update(dt);
     boss1.Update(dt);
 }
@@ -1035,10 +1038,9 @@ void SP2Scene::Render()
 		}
 	}
 
-	if (projectile.ProjectileShot == true)
-	{
+	for (auto q : Projectile::ProjectileCount) {
 		modelStack.PushMatrix();
-        modelStack.Translate(SharedData::GetInstance()->ProjectilePosition.x, SharedData::GetInstance()->ProjectilePosition.y, SharedData::GetInstance()->ProjectilePosition.z);
+		modelStack.Translate(q->ProjectilePosition.x, q->ProjectilePosition.y, q->ProjectilePosition.z);
 		modelStack.Scale(10, 10, 10);
 		RenderMesh(meshList[BULLET], false);
 		modelStack.PopMatrix();
@@ -1094,14 +1096,6 @@ void SP2Scene::Render()
     }
 
 	RenderShop();
-
-    if (projectile.ProjectileShot == true) {
-        modelStack.PushMatrix();
-        modelStack.Translate(SharedData::GetInstance()->ProjectilePosition.x, SharedData::GetInstance()->ProjectilePosition.y, SharedData::GetInstance()->ProjectilePosition.z);
-        modelStack.Scale(10, 10, 10);
-        RenderMesh(meshList[BULLET], false);
-        modelStack.PopMatrix();
-    }
 
     // FPS
 	RenderTextOnScreen(meshList[TEXT], "FPS:" + FPS, Color(1, 1, 1), 3, 1, 19);
@@ -1530,6 +1524,19 @@ void SP2Scene::RenderShop()
 				}
 			}
 		}
+	}
+	if (UI::UI_ShopItem == true)
+	{
+		RenderImageOnScreen(meshList[UI_SHOP], 80, .5f, -.1f, 0, 0, 0, 0);
+		RenderImageOnScreen(meshList[COIN], 4, 10, 13, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 4, 12, 14);
+		RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 3);
+
+		RenderImageOnScreen(meshList[LARGE_HEALTH_KIT], 13, 1, 2.6, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.large_health_kit_amount), Color(1, 1, 1), 3, 2, 5);
+		RenderImageOnScreen(meshList[HEALTH_KIT], 13, 1, 1.1, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.health_kit_amount), Color(1, 1, 1), 3, 2, 4);
+
 	}
 }
 

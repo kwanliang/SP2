@@ -6,6 +6,7 @@
 #include "Vector3.h"
 #include "Weapon.h"
 #include "MyMath.h"
+//#include "Projectile.h"
 
 class SharedData
 {
@@ -112,9 +113,11 @@ public:
     Vector3 PlayerTarget;
     Vector3 PlayerUp;
     Vector3 PlayerRight;
+	//Vector3 PlayerView;
 
     //Projectile Position
-    Vector3 ProjectilePosition;
+	//std::vector<Projectile*> Projectile::ProjectileCount;
+    //Vector3 ProjectilePosition;
 
     //Boss1 Position
     Vector3 Boss1PositionSplit1;

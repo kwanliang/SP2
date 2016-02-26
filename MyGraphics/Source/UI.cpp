@@ -215,8 +215,8 @@ void UI::Update(double dt)
 	float Weapon_MinY = (400.f / MonitorHeight) * Current_MonitorHeight;
 	float Weapon_MaxY = (630.f / MonitorHeight) * Current_MonitorHeight;
 
-	float Item_MinX = (680.f / MonitorWidth) * Current_MonitorWidth;
-	float Item_MaxX = (850.f / MonitorWidth) * Current_MonitorWidth;
+	float Item_MinX = (1060.f / MonitorWidth) * Current_MonitorWidth;
+	float Item_MaxX = (1250.f / MonitorWidth) * Current_MonitorWidth;
 	float Item_MinY = (400.f / MonitorHeight) * Current_MonitorHeight;
 	float Item_MaxY = (1230.f / MonitorHeight) * Current_MonitorHeight;
 
@@ -263,6 +263,13 @@ void UI::Update(double dt)
 		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun3_MinX, Gun3_MaxX, Gun3_MinY, Gun3_MaxY, 3);
 		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Back2_MinX, Back2_MaxX, Back2_MinY, Back2_MaxY, 4);
 		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Buy1_MinX, Buy1_MaxX, Buy1_MinY, Buy1_MaxY, 5);
+	}
+
+	if (UI::UI_ShopItem == true)
+	{
+		//UI::ShopItemUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun1_MinX, Gun1_MaxX, Gun1_MinY, Gun1_MaxY, 1);
+		//UI::ShopItemUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun2_MinX, Gun2_MaxX, Gun2_MinY, Gun2_MaxY, 2);
+		//UI::ShopItemUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun3_MinX, Gun3_MaxX, Gun3_MinY, Gun3_MaxY, 3);
 	}
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -594,6 +601,12 @@ bool UI::ShopItemUIHitbox(double& MousePositionX, double& MousePositionY, int Mi
         }
 		if (ShopItemUI_ID == 2 && SharedData::GetInstance()->Left_Clicked == true)
 		{
+		}
+		if (ShopItemUI_ID == 3 && SharedData::GetInstance()->Left_Clicked == true)
+		{
+			UI::UI_Shop = false;
+			UI::UI_ShopItem = false;
+			UI::UI_On = false;
 		}
         return true;
     }
