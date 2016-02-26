@@ -1,9 +1,24 @@
+/******************************************************************************/
+/*!
+\file	Boss3.h
+\author Chuan Guang Zhe
+\par	email: 152104G@mymail.nyp.edu.sg
+\brief
+	Class to define Boss 3, the Night Knight Golem
+*/
+/******************************************************************************/
 #ifndef BOSS3_H
 #define BOSS3_H
 
 #include "SharedData.h"
-#include "MyMath.h"
 
+/******************************************************************************/
+/*!
+Class Boss 3:
+\brief
+	Defines the Boss and its methods
+*/
+/******************************************************************************/
 class Boss3
 {
 public:
@@ -65,7 +80,7 @@ public:
 	void StompR(double dt);
 	void spin_arm(double dt);
 	void slapDown(double dt);
-	void slap(double dt, float x, float z);
+	void slap(double dt, Vector3 Player);
 	void faceme(Vector3 Player);
 };
 

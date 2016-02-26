@@ -22,11 +22,11 @@ float SP2Scene::UI_Infested_Rotate = 0;
 
 SP2Scene::SP2Scene()
 {
-    SharedData::GetInstance()->renderMenu = true;
+    SharedData::GetInstance()->renderMenu = false;
     SharedData::GetInstance()->renderRaceSelection = false;
     SharedData::GetInstance()->renderNameInput = false;
 	SharedData::GetInstance()->renderShip = false;
-	SharedData::GetInstance()->renderPlanet1 = false;
+	SharedData::GetInstance()->renderPlanet1 = true;
 	SharedData::GetInstance()->renderPlanet2 = false;
 	SharedData::GetInstance()->renderPlanet3 = false;
 	moveupLeftleg = false;
@@ -54,13 +54,29 @@ void SP2Scene::Init()
 {
     LSPEED = 100.f;
 
-	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(0, Weapon("Energy Pistol", 1, 0.5, 1, 20)));
-	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(1, Weapon("Pulse Rifle", 2, 0.4, 1, 30)));
-	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(2, Weapon("Heavy Pulse Rifle", 4, 1.0, 2, 10)));
-	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(3, Weapon("Laser Minigun", 1, 0.1, 1, 100)));
-	
-	//Equipped = SharedData::GetInstance()->WeaponMap.find[1]->second;
-	//cout << Equipped << endl;
+	reloading = false;
+	reload_delay = 0.f;
+
+	Character.Coins += 9900;
+
+	//WEAPONS
+	SharedData::GetInstance()->Buy = false;
+	SharedData::GetInstance()->Wep0_Equipped = true;
+	SharedData::GetInstance()->Wep1_Equipped = false;
+	SharedData::GetInstance()->Wep2_Equipped = false;
+	SharedData::GetInstance()->Wep3_Equipped = false;
+
+	SharedData::GetInstance()->Own_Wep0 = true;
+	SharedData::GetInstance()->Own_Wep1 = false;
+	SharedData::GetInstance()->Own_Wep2 = false;
+	SharedData::GetInstance()->Own_Wep3 = false;
+
+	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(0, Weapon("Energy Pistol", 1, 0.5f, 1, 20, 0)));
+	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(1, Weapon("Pulse Rifle", 2, 0.4f, 1, 30, 200)));
+	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(2, Weapon("Heavy Pulse Rifle", 4, 1.0f, 2, 10, 500)));
+	SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(3, Weapon("Minigun", 1, 0.1f, 1, 100, 1000)));
+
+	SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(0)->second;
 
 	Item_Spin = 0.f;
 
@@ -117,7 +133,8 @@ void SP2Scene::Init()
 
 	//Initialize camera settings
 	camera.Init(Vector3(0, 0, -200), Vector3(0, 0, 0), Vector3(0, 1, 0));
-    projectile.Init(camera.position);
+    boss1.Init();
+    //projectile.Init(camera.position);
 
 	// Get a handle for our "colorTexture" uniform
 	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
@@ -135,6 +152,8 @@ void SP2Scene::Init()
 
 	meshList[TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[TEXT]->textureID = LoadTGA("Image//calibri.tga");
+
+    meshList[Hitbox] = MeshBuilder::GenerateCube("hitbox wireframe", (1, 0, 0));
 
     //<<<<<<<<<<<<<<<<<<<<<<<MENU UI<<<<<<<<<<<<<<<<<<<<<<<<<<
     meshList[UI_MENU] = MeshBuilder::GenerateOBJ("UI menu plane", "OBJ//UI_Plane.obj");
@@ -257,6 +276,11 @@ void SP2Scene::Init()
 	meshList[SLIME_MOUNTAIN]->textureID = LoadTGA("Image//planet1//slimemountain.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET1<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS1<<<<<<<<<<<<<<<<<<<<<<<<<<
+    meshList[SLIME_BOSS] = MeshBuilder::GenerateOBJ("boss slime", "OBJ//planet1//Boss_Slime.obj");
+    meshList[SLIME_BOSS]->textureID = LoadTGA("Image//planet1//slimes//Boss_Slime.tga");
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS1<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET2<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[PLANET2_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET2_FRONT]->textureID = LoadTGA("Image//planet2//planet2_front.tga");
@@ -287,7 +311,7 @@ void SP2Scene::Init()
 	meshList[ROBOT_BACKLEFTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p1.tga");
 	meshList[ROBOT_BACKRIGHTLEG] = MeshBuilder::GenerateOBJ("robot's back right legs", "OBJ//planet2//boss2_backrightleg.obj");
 	meshList[ROBOT_BACKRIGHTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p1.tga");
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS3<<<<<<<<<<<<<<<<<<<<<<<<<
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS2<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET3<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[PLANET3_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
@@ -314,11 +338,6 @@ void SP2Scene::Init()
 	meshList[PLANET3_DARKTREE]->textureID = LoadTGA("Image//planet3//darktree.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET3<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS1<<<<<<<<<<<<<<<<<<<<<<<<<<
-    meshList[SLIME_BOSS] = MeshBuilder::GenerateOBJ("boss slime", "OBJ//planet1//Boss_Slime.obj");
-    meshList[SLIME_BOSS]->textureID = LoadTGA("Image//planet1//slimes//Boss_Slime.tga");
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS1<<<<<<<<<<<<<<<<<<<<<<<<<<
-
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS3<<<<<<<<<<<<<<<<<<<<<<<<<<
 	GLuint Golem = LoadTGA("Image//planet3//planet3_monster//Night Knight Golem.tga");
 	meshList[GOLEM_HEAD] = MeshBuilder::GenerateOBJ("Golem's Head", "OBJ//planet3//Golem Head.obj");
@@ -340,21 +359,17 @@ void SP2Scene::Init()
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS3<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	meshList[GUN_1] = MeshBuilder::GenerateOBJ("Default gun", "OBJ//Weapon//D_Gun.obj");
-	meshList[GUN_1]->textureID = LoadTGA("Image//Weapon//D_Gun.tga");
-	meshList[GUN_2] = MeshBuilder::GenerateOBJ("Pulse Rifle", "OBJ//Weapon//P_Rifle.obj");
-	meshList[GUN_2]->textureID = LoadTGA("Image//Weapon//P_Rifle.tga");
-	meshList[GUN_3] = MeshBuilder::GenerateOBJ("Heavy Pulse Rifle", "OBJ//Weapon//H_Rifle.obj");
-	meshList[GUN_3]->textureID = LoadTGA("Image//Weapon//H_Rifle.tga");
+	meshList[GUN_0] = MeshBuilder::GenerateOBJ("Default gun", "OBJ//Weapon//D_Gun.obj");
+	meshList[GUN_0]->textureID = LoadTGA("Image//Weapon//D_Gun.tga");
+	meshList[GUN_1] = MeshBuilder::GenerateOBJ("Pulse Rifle", "OBJ//Weapon//P_Rifle.obj");
+	meshList[GUN_1]->textureID = LoadTGA("Image//Weapon//P_Rifle.tga");
+	meshList[GUN_2] = MeshBuilder::GenerateOBJ("Heavy Pulse Rifle", "OBJ//Weapon//H_Rifle.obj");
+	meshList[GUN_2]->textureID = LoadTGA("Image//Weapon//H_Rifle.tga");
+	meshList[GUN_3] = MeshBuilder::GenerateOBJ("minigun", "OBJ//Weapon//minigun.obj");
+	meshList[GUN_3]->textureID = LoadTGA("Image//Weapon//minigun.tga");
     meshList[BULLET] = MeshBuilder::GenerateOBJ("bullet", "OBJ//bullet.obj");
     meshList[BULLET]->textureID = LoadTGA("Image//bullet.tga");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-    ////<<<<<<<<<<<<<<<<<<<<<<<<<<<BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    //meshList[CHARACTER_BODY] = MeshBuilder::GenerateCube("character", Color(1, 1, 1));
-    //meshList[CHARACTER_HAND] = MeshBuilder::GenerateOBJ("hand", "OBJ//hand.obj");
-    //meshList[CHARACTER_HAND]->textureID = LoadTGA("Image//hand.tga");
-    ////<<<<<<<<<<<<<<<<<<<<<<<<<<<BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<ITEMS<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[COIN] = MeshBuilder::GenerateOBJ("Coins", "OBJ//items//Coin.obj");
@@ -374,8 +389,7 @@ void SP2Scene::Init()
 	meshList[HUD_CHARACTER]->textureID = LoadTGA("Image//HUD//Character.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<HUD<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<Character legs<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[HUMAN_LEFTLEG] = MeshBuilder::GenerateOBJ("humanlegs", "OBJ//characterleg//Human_leftleg.obj");
 	meshList[HUMAN_LEFTLEG]->textureID = LoadTGA("Image//character//Human.tga");
 	meshList[HUMAN_RIGHTLEG] = MeshBuilder::GenerateOBJ("humanlegs", "OBJ//characterleg//Human_rightleg.obj");
@@ -390,14 +404,14 @@ void SP2Scene::Init()
 	meshList[INFESTED_LEFTLEG]->textureID = LoadTGA("Image//character//Infested.tga");
 	meshList[INFESTED_RIGHTLEG] = MeshBuilder::GenerateOBJ("infested legs", "OBJ//characterleg//Infested_rightleg.obj");
 	meshList[INFESTED_RIGHTLEG]->textureID = LoadTGA("Image//character//Infested.tga");
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<Character legs<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<return ship<<<<<<<<<<<<<<<<<<<<<<<<<<
-	meshList[RETURN_SHIP] = MeshBuilder::GenerateOBJ("return ship ", "OBJ//returnship.obj");
-	meshList[RETURN_SHIP]->textureID = LoadTGA("Image//returnship.tga");
+	//<<<<<<<<<<<<<<<<<<<<<<<<RETURN SHIP<<<<<<<<<<<<<<<<<<<<<<<
+	//meshList[RETURN_SHIP] = MeshBuilder::GenerateOBJ("return ship ", "OBJ//returnship.obj");
+	//meshList[RETURN_SHIP]->textureID = LoadTGA("Image//returnship.tga");
 	meshList[ARROW_SIGN] = MeshBuilder::GenerateOBJ("return ship ", "OBJ//arrowsign.obj");
 	meshList[ARROW_SIGN]->textureID = LoadTGA("Image//arrowsign.tga");
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<return ship<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //<<<<<<<<<<<<<<<<<<<<<<<<RETURN SHIP<<<<<<<<<<<<<<<<<<<<<<<
 
     //<<<<<<<<<<<<<<<<<<<<<<<<<<PAUSE<<<<<<<<<<<<<<<<<<<<<<<<<<
     meshList[UI_PAUSE] = MeshBuilder::GenerateOBJ("UI pause plane", "OBJ//UI_Plane.obj");
@@ -497,13 +511,74 @@ void SP2Scene::Update(double dt)
 	if (Application::IsKeyPressed('4'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
 
+    //<<<<<<<<<<<<<<<<<<<<<<HOVER CHECK<<<<<<<<<<<<<<<<<<<<<<<<
+    //Menu
+    if (SharedData::GetInstance()->Menu_Start_Hovered == true) {
+        meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start_S.tga");
+    } else {
+        meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start.tga");
+    }
 
-    //if (UI.MenuUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int MenuUI_ID) == true) {
-    //    meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start_S.tga");
-    //}
-    //else {
-    //    meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start.tga");
-    //}
+    if (SharedData::GetInstance()->Menu_Exit_Hovered == true) {
+        meshList[UI_MENU_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit_S.tga");
+    } else {
+        meshList[UI_MENU_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
+    }
+
+    //Race
+    if (SharedData::GetInstance()->Race_Name_Hovered == true) {
+        meshList[UI_RACE_SELECT]->textureID = LoadTGA("Image//UI//UI_Race_Select_S.tga");
+    } else {
+        meshList[UI_RACE_SELECT]->textureID = LoadTGA("Image//UI//UI_Race_Select.tga");
+    }
+
+    if (SharedData::GetInstance()->Race_Back_Hovered == true) {
+        meshList[UI_RACE_BACK]->textureID = LoadTGA("Image//UI//UI_Race_Back_S.tga");
+    } else {
+        meshList[UI_RACE_BACK]->textureID = LoadTGA("Image//UI//UI_Race_Back.tga");
+    }
+
+    //Name
+    if (SharedData::GetInstance()->Name_Start_Hovered == true) {
+        meshList[UI_NAME_ACCEPT]->textureID = LoadTGA("Image//UI//UI_Name_Accept_S.tga");
+    } else {
+        meshList[UI_NAME_ACCEPT]->textureID = LoadTGA("Image//UI//UI_Name_Accept.tga");
+    }
+
+    if (SharedData::GetInstance()->Name_Back_Hovered == true) {
+        meshList[UI_NAME_BACK]->textureID = LoadTGA("Image//UI//UI_Name_Back_S.tga");
+    } else {
+        meshList[UI_NAME_BACK]->textureID = LoadTGA("Image//UI//UI_Name_Back.tga");
+    }
+
+    if (SharedData::GetInstance()->Name_Menu_Hovered == true) {
+        meshList[UI_NAME_MENU]->textureID = LoadTGA("Image//UI//UI_Name_Menu_S.tga");
+    } else {
+        meshList[UI_NAME_MENU]->textureID = LoadTGA("Image//UI//UI_Name_Menu.tga");
+    }
+
+    //Pause
+    if (SharedData::GetInstance()->Pause_Resume_Hovered == true) {
+        meshList[UI_PAUSE_SELECT_RESUME]->textureID = LoadTGA("Image//UI//UI_Resume_S.tga");
+    }
+    else {
+        meshList[UI_PAUSE_SELECT_RESUME]->textureID = LoadTGA("Image//UI//UI_Resume.tga");
+    }
+
+    if (SharedData::GetInstance()->Pause_Menu_Hovered == true) {
+        meshList[UI_PAUSE_SELECT_MENU]->textureID = LoadTGA("Image//UI//UI_Pause_BTMM_S.tga");
+    }
+    else {
+        meshList[UI_PAUSE_SELECT_MENU]->textureID = LoadTGA("Image//UI//UI_Pause_BTMM.tga");
+    }
+
+    if (SharedData::GetInstance()->Pause_Exit_Hovered == true) {
+        meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit_S.tga");
+    }
+    else {
+        meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
+    }
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     if (SharedData::GetInstance()->UI_Human_Selected == true) {
         UI_Human_Rotate += (float)(50 * dt);
@@ -533,13 +608,33 @@ void SP2Scene::Update(double dt)
 		SharedData::GetInstance()->renderRobotlegs = false;
 	}
 
-	/*turnleg(camera.position);*/
-
 	if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true || SharedData::GetInstance()->renderPlanet3 == true)
 	{
 		Character.isDead();
 	}
 
+	//Reloads the gun
+	if (Application::IsKeyPressed('Q') && Wait >= 5 && SharedData::GetInstance()->Equipped->Ammo != SharedData::GetInstance()->Equipped->MAX_Ammo)
+	{
+		Wait = 0;
+		reloading = true;
+	}
+	else if (Wait < 5 && reloading == false)
+	{
+		reload_delay = 0;
+		Wait += (float)(10 * dt);
+	}
+	if (reloading == true)
+	{
+		reload_delay += (float)(10 * dt);
+		if (reload_delay >= 20)
+		{
+			SharedData::GetInstance()->Equipped->reload();
+			reloading = false;
+		}
+	}
+
+	//Spin item
 	Item_Spin += (float)(120 * dt);
 	if (Item_Spin >= 360)
 	{
@@ -596,15 +691,15 @@ void SP2Scene::Update(double dt)
 
 
 	//PLANET 3 BOSS
-	Golem.updates(dt);
-
 	if (Golem.isDead() == false)
 	{
-		if (Application::IsKeyPressed(VK_LBUTTON))
+		Golem.updates(dt);
+		Golem.faceme(camera.position);
+		if (Application::IsKeyPressed(VK_NUMPAD1))
 		{
 			Golem.stompLeft = true;
 		}
-		if (Application::IsKeyPressed(VK_RBUTTON))
+		if (Application::IsKeyPressed(VK_NUMPAD2))
 		{
 			Golem.stompRight = true;
 		}
@@ -615,9 +710,8 @@ void SP2Scene::Update(double dt)
 		}
 		if (Golem.Phase2 == true)
 		{
-			Golem.slap(dt, camera.position.x, camera.position.z);
+			Golem.slap(dt, camera.position);
 		}
-		Golem.faceme(camera.position);
 	}
 
 	// Show FPS
@@ -861,7 +955,10 @@ void SP2Scene::Update(double dt)
 	}
 
     camera.Update(dt);
-    projectile.Update(dt);
+	for (auto q : Projectile::ProjectileCount){
+		q->Update(dt);
+	}
+
     UI.Update(dt);
     boss1.Update(dt);
 }
@@ -947,19 +1044,37 @@ void SP2Scene::Render()
 
 	if (UI::UI_On == false) 
 	{
-		//RenderImageOnScreen(meshList[CHARACTER_HAND], 25, .8f, -0, -3, 0 + GunBounceBack, -10, 0);
-		RenderImageOnScreen(meshList[GUN_1], 12, 4.5f, -.1f, -2, 20 + GunBounceBack, 190, 0);
-		RenderImageOnScreen(meshList[GUN_2], 8, 7, 0, -2, 20 + GunBounceBack, 190, 0);
-		RenderImageOnScreen(meshList[GUN_3], 6, 9, 0, -2, 20 + GunBounceBack, 190, 0);
+		RenderHUD();
+		RenderTextOnScreen(meshList[TEXT], "+", Color(1, 0, 0), 3, 13.7f, 10);
+		if (SharedData::GetInstance()->Wep0_Equipped == true)
+		{
+			RenderImageOnScreen(meshList[GUN_0], 12, 4.5f, -.1f, -2, 20 + GunBounceBack, 190, 0);
+		}
+		else if (SharedData::GetInstance()->Wep1_Equipped == true)
+		{
+			RenderImageOnScreen(meshList[GUN_1], 8, 7, 0, -2, 20 + GunBounceBack, 190, 0);
+		}
+		else if (SharedData::GetInstance()->Wep2_Equipped == true)
+		{
+			RenderImageOnScreen(meshList[GUN_2], 6, 9, 0, -2, 20 + GunBounceBack, 190, 0);
+		}
+		else if (SharedData::GetInstance()->Wep3_Equipped == true)
+		{
+			RenderImageOnScreen(meshList[GUN_3], 6, 9, 0, -2, 15 + GunBounceBack, 190, 0);
+		}
 	}
 
-	if (projectile.ProjectileShot == true)
-	{
+	for (auto q : Projectile::ProjectileCount) {
 		modelStack.PushMatrix();
-        modelStack.Translate(SharedData::GetInstance()->ProjectilePosition.x, SharedData::GetInstance()->ProjectilePosition.y, SharedData::GetInstance()->ProjectilePosition.z);
+		modelStack.Translate(q->ProjectilePosition.x, q->ProjectilePosition.y, q->ProjectilePosition.z);
 		modelStack.Scale(10, 10, 10);
 		RenderMesh(meshList[BULLET], false);
 		modelStack.PopMatrix();
+	}
+
+	if (reloading == true)
+	{
+		RenderTextOnScreen(meshList[TEXT], "RELOADING...", Color(1, 0.5, 0.5), 4, 6.5, 8);
 	}
 
 	if (UI.UI_PlanatNav == false && UI.UI_Shop == false 
@@ -968,23 +1083,7 @@ void SP2Scene::Render()
         && SharedData::GetInstance()->renderNameInput == false
         && SharedData::GetInstance()->renderPause == false)
 	{
-		RenderImageOnScreen(meshList[HUD_INVENTORY], 40, 0.35, 0.06, 0, 0, 0, 0);
-		RenderImageOnScreen(meshList[COIN], 2, 1, 8.8, 1, 0, Item_Spin, 0);
-		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 3, 2, 6.3);
-		RenderImageOnScreen(meshList[LARGE_HEALTH_KIT], 2.5, 0.8, 5.5, 1, 0, Item_Spin, 0);
-		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.large_health_kit_amount), Color(1, 1, 1), 3, 2, 5);
-		RenderImageOnScreen(meshList[HEALTH_KIT], 2, 1, 5.5, 1, 0, Item_Spin, 0);
-		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.health_kit_amount), Color(1, 1, 1), 3, 2, 4);
-
-		RenderImageOnScreen(meshList[HUD_CHARACTER], 40, 0.35, -0.3, 0.1, 0, 0, 0);
-		RenderTextOnScreen(meshList[TEXT], Character.Name, Color(1, 1, 1), 3, 1, 2);
-		RenderTextOnScreen(meshList[TEXT], "HP:", Color(1, 1, 1), 3, 1, 1);
-		RenderTextOnScreen(meshList[TEXT], "   " + std::to_string(Character.HP) + "/" + std::to_string(Character.MAX_HP), Color(1, 0.2, 0.2), 3, 1, 1);
-
-		RenderImageOnScreen(meshList[HUD_AMMO], 30, 2.4, -0.5, 0, 0, 0, 0);
-		RenderTextOnScreen(meshList[TEXT], "Ammo" ,Color(1, 1, 1), 3, 23.5, 1);
-
-        RenderTextOnScreen(meshList[TEXT], "+", Color(1, 0, 0), 3, 13.7f, 10);
+		RenderHUD();
 	}
 
     if (UI.UI_PlanatNav == true)
@@ -995,44 +1094,44 @@ void SP2Scene::Render()
         RenderImageOnScreen(meshList[UI_PLANET_DARK], 5, 9 + PlanetMove_3_X, 5 + PlanetMove_3_Y, 0, 0, 0, 0);
         RenderImageOnScreen(meshList[UI_PLANET_SUN], 6, 6.7f, 4, 0, 0, 0, 0);
         RenderImageOnScreen(meshList[UI_PLANET_NAVIGATION], 80, .5f, -.1f, 0, 0, 0, 0);
-        RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 2);
         if (UI.UI_PlanetName == true)
         {
-            RenderTextOnScreen(meshList[TEXT], "Planet Slime", Color(1, 1, 1), 2, 16, 19);
-            RenderTextOnScreen(meshList[TEXT], "Planet Robot", Color(1, 1, 1), 2, 8, 6);
-            RenderTextOnScreen(meshList[TEXT], "Planet Dark", Color(1, 1, 1), 2, 24, 6);
+            if (SharedData::GetInstance()->NAV_Slime_Hovered == true) {
+                RenderTextOnScreen(meshList[TEXT], "Planet Slime", Color(1, 0, 0), 2, 16, 19);
+            } else {
+                RenderTextOnScreen(meshList[TEXT], "Planet Slime", Color(1, 1, 1), 2, 16, 19);
+            }
+            if (SharedData::GetInstance()->NAV_Robot_Hovered == true) {
+                RenderTextOnScreen(meshList[TEXT], "Planet Robot", Color(1, 0, 0), 2, 8, 6);
+            } else {
+                RenderTextOnScreen(meshList[TEXT], "Planet Robot", Color(1, 1, 1), 2, 8, 6);
+            }
+            if (SharedData::GetInstance()->NAV_Dark_Hovered == true) {
+                RenderTextOnScreen(meshList[TEXT], "Planet Dark", Color(1, 0, 0), 2, 24, 6);
+            }
+            else {
+                RenderTextOnScreen(meshList[TEXT], "Planet Dark", Color(1, 1, 1), 2, 24, 6);
+            }
+            if (SharedData::GetInstance()->NAV_Back_Hovered == true) {
+                RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 0, 0), 2, 19, 2);
+            }
+            else {
+                RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 2);
+            }
         }
     }
 
-    if (UI.UI_Shop == true)
-    {
-        RenderImageOnScreen(meshList[UI_SHOP_SELECT], 8, 2, 3, 0, 0, 0, 0);
-        RenderImageOnScreen(meshList[UI_SHOP_SELECT], 8, 5, 3, 0, 0, 0, 0);
-        RenderImageOnScreen(meshList[UI_SHOP_SELECT], 8, 8, 3, 0, 0, 0, 0);
-        RenderImageOnScreen(meshList[UI_SHOP], 80, .5f, -.1f, 0, 0, 0, 0);
-        RenderTextOnScreen(meshList[TEXT], "Ranged", Color(1, 1, 1), 2, 6.3f, 15.5f);
-        RenderTextOnScreen(meshList[TEXT], "Melee", Color(1, 1, 1), 2, 18.8f, 15.5f);
-        RenderTextOnScreen(meshList[TEXT], "Item", Color(1, 1, 1), 2, 31, 15.5f);
-        RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 6);
-
-        RenderImageOnScreen(meshList[COIN], 4, 10, 13, 1, 0, Item_Spin, 0);
-        RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 1, 1), 4, 12, 14);
-    }
-	
-
-    if (projectile.ProjectileShot == true) {
-        modelStack.PushMatrix();
-        modelStack.Translate(SharedData::GetInstance()->ProjectilePosition.x, SharedData::GetInstance()->ProjectilePosition.y, SharedData::GetInstance()->ProjectilePosition.z);
-        modelStack.Scale(10, 10, 10);
-        RenderMesh(meshList[BULLET], false);
-        modelStack.PopMatrix();
-    }
+	RenderShop();
 
     // FPS
 	RenderTextOnScreen(meshList[TEXT], "FPS:" + FPS, Color(1, 1, 1), 3, 1, 19);
 
-    RenderTextOnScreen(meshList[TEXT], std::to_string(SharedData::GetInstance()->MousePos_X), Color(1, 1, 1), 3, 1, 18);
-    RenderTextOnScreen(meshList[TEXT], std::to_string(SharedData::GetInstance()->MousePos_Y), Color(1, 1, 1), 3, 1, 17);
+    RenderTextOnScreen(meshList[TEXT], "MouseX : " + std::to_string(SharedData::GetInstance()->MousePos_X), Color(1, 1, 1), 3, 1, 18);
+    RenderTextOnScreen(meshList[TEXT], "MouseY : " + std::to_string(SharedData::GetInstance()->MousePos_Y), Color(1, 1, 1), 3, 1, 17);
+
+    RenderTextOnScreen(meshList[TEXT], "PosX : " + std::to_string(SharedData::GetInstance()->PlayerPosition.x), Color(1, 1, 1), 3, 1, 16);
+    RenderTextOnScreen(meshList[TEXT], "PosY : " + std::to_string(SharedData::GetInstance()->PlayerPosition.y), Color(1, 1, 1), 3, 1, 15);
+    RenderTextOnScreen(meshList[TEXT], "PosZ : " + std::to_string(SharedData::GetInstance()->PlayerPosition.z), Color(1, 1, 1), 3, 1, 14);
 }
 
 void SP2Scene::RenderMenu()
@@ -1088,6 +1187,28 @@ void SP2Scene::RenderNameInput() {
 	Character.Name = SharedData::GetInstance()->KeyInput;
     RenderTextOnScreen(meshList[TEXT], "Name your character!", Color(1, 1, 1), 2, 13, 18);
     RenderTextOnScreen(meshList[TEXT], "Maximum 10 letters", Color(1, 1, 1), 2, 13.5f, 12);
+}
+
+void SP2Scene::RenderHUD()
+{
+	if (UI.UI_On == false)
+	{
+		RenderImageOnScreen(meshList[HUD_INVENTORY], 40, 0.35, 0.06, 0, 0, 0, 0);
+		RenderImageOnScreen(meshList[COIN], 2, 1, 8.8, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 3, 2, 6.3);
+		RenderImageOnScreen(meshList[LARGE_HEALTH_KIT], 2.5, 0.8, 5.5, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.large_health_kit_amount), Color(1, 1, 1), 3, 2, 5);
+		RenderImageOnScreen(meshList[HEALTH_KIT], 2, 1, 5.5, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.health_kit_amount), Color(1, 1, 1), 3, 2, 4);
+
+		RenderImageOnScreen(meshList[HUD_CHARACTER], 40, 0.35, -0.3, 0.1, 0, 0, 0);
+		RenderTextOnScreen(meshList[TEXT], Character.Name, Color(1, 1, 1), 3, 1, 2);
+		RenderTextOnScreen(meshList[TEXT], "HP:", Color(1, 1, 1), 3, 1, 1);
+		RenderTextOnScreen(meshList[TEXT], "   " + std::to_string(Character.HP) + "/" + std::to_string(Character.MAX_HP), Color(1, 0.2, 0.2), 3, 1, 1);
+
+		RenderImageOnScreen(meshList[HUD_AMMO], 30, 2.4, -0.5, 0, 0, 0, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(SharedData::GetInstance()->Equipped->Ammo) + "/" + std::to_string(SharedData::GetInstance()->Equipped->MAX_Ammo), Color(1, 1, 1), 2.5, 27, 1);
+	}
 }
 
 void SP2Scene::RenderShip()
@@ -1219,6 +1340,230 @@ void SP2Scene::RenderShip()
 	modelStack.Scale(50, 50, 50);
 	RenderMesh(meshList[SHOP_NPC], false);
 	modelStack.PopMatrix();
+}
+
+void SP2Scene::RenderShop()
+{
+	if (UI.UI_Shop == true)
+	{
+		RenderImageOnScreen(meshList[UI_SHOP_SELECT], 8, 4, 3, 0, 0, 0, 0);
+		RenderImageOnScreen(meshList[UI_SHOP_SELECT], 8, 6, 3, 0, 0, 0, 0);
+		RenderImageOnScreen(meshList[UI_SHOP], 80, .5f, -.1f, 0, 0, 0, 0);
+		RenderTextOnScreen(meshList[TEXT], "Weapon", Color(1, 1, 1), 2, 14, 15.5f);
+		RenderTextOnScreen(meshList[TEXT], "Item", Color(1, 1, 1), 2, 23, 15.5f);
+		RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 6);
+
+		RenderImageOnScreen(meshList[COIN], 4, 10, 13, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 4, 12, 14);
+	}
+
+	if (UI.UI_ShopGun == true)
+	{
+		RenderImageOnScreen(meshList[UI_SHOP], 80, .5f, -.1f, 0, 0, 0, 0);
+		RenderImageOnScreen(meshList[COIN], 4, 10, 13, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 4, 12, 14);
+		RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 3);
+
+		if (SharedData::GetInstance()->Wep1 == false && SharedData::GetInstance()->Wep2 == false && SharedData::GetInstance()->Wep3 == false)
+		{
+			RenderImageOnScreen(meshList[GUN_1], 2, 4, 22, 1, 0, 90, 0);
+			RenderImageOnScreen(meshList[GUN_2], 2, 7, 12, 1, 0, 90, 0);
+			RenderImageOnScreen(meshList[GUN_3], 2, 2.5, 5, 1, 0, 90, 0);
+		}
+
+		//WEAPON 1
+		if (SharedData::GetInstance()->Wep1 == true)
+		{
+			RenderImageOnScreen(meshList[GUN_1], 2, 7, 22, 10, 0, 90 + Item_Spin, 0);
+			RenderImageOnScreen(meshList[GUN_2], 2, 7, 12, 1, 0, 90, 0);
+			RenderImageOnScreen(meshList[GUN_3], 2, 2.5, 5, 1, 0, 90, 0);
+			RenderTextOnScreen(meshList[TEXT], SharedData::GetInstance()->WeaponMap.find(1)->second.Weapon_Name, Color(0.5, 0.7, 1), 2, 18, 23);
+			RenderTextOnScreen(meshList[TEXT], "Damage :" + std::to_string(toupper(SharedData::GetInstance()->WeaponMap.find(1)->second.Attack_Value)), Color(0.5, 0.7, 1), 2, 18, 21);
+			RenderTextOnScreen(meshList[TEXT], "Fire rate : Fast", Color(0.5, 0.7, 1), 2, 18, 20);
+			RenderTextOnScreen(meshList[TEXT], "Ammo consumtion :" + std::to_string(SharedData::GetInstance()->WeaponMap.find(1)->second.Ammo_Consumption) + " per shot", Color(0.5, 0.7, 1), 2, 18, 19);
+			RenderTextOnScreen(meshList[TEXT], "Ammo per clip :" + std::to_string(SharedData::GetInstance()->WeaponMap.find(1)->second.MAX_Ammo), Color(0.5, 0.7, 1), 2, 18, 18);
+
+			//Owns it
+			if (SharedData::GetInstance()->Own_Wep1 == true)
+			{
+				if (SharedData::GetInstance()->Wep1_Equipped == false)
+				{
+					RenderTextOnScreen(meshList[TEXT], "EQUIP", Color(0.5, 0.5, 0.5), 3, 15, 6);
+					if (SharedData::GetInstance()->Buy == true)
+					{
+						SharedData::GetInstance()->Wep0_Equipped = false;
+						SharedData::GetInstance()->Wep1_Equipped = true;
+						SharedData::GetInstance()->Wep2_Equipped = false;
+						SharedData::GetInstance()->Wep3_Equipped = false;
+						SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(1)->second;
+					}
+				}
+				else
+				{
+					SharedData::GetInstance()->Buy = false;
+				}
+			}
+			if (SharedData::GetInstance()->Wep1_Equipped == true)
+			{
+				RenderTextOnScreen(meshList[TEXT], "EQUIPPED", Color(0.5, 0.5, 0.5), 3, 15, 6);
+			}
+
+
+			//Doesnt own it
+			if (SharedData::GetInstance()->Own_Wep1 == false)
+			{
+				RenderTextOnScreen(meshList[TEXT], "Cost : " + std::to_string(SharedData::GetInstance()->WeaponMap.find(1)->second.Cost), Color(1, 0.85, 0), 3, 12, 8);
+				RenderImageOnScreen(meshList[COIN], 3, 20.5, 7.5, 1, 0, Item_Spin, 0);
+				RenderTextOnScreen(meshList[TEXT], "BUY", Color(0.5, 0.5, 0.5), 5, 9.3, 3.5);
+				if (SharedData::GetInstance()->Buy == true)
+				{
+					if (Character.Coins - SharedData::GetInstance()->WeaponMap.find(1)->second.Cost >= 0)
+					{
+						SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(1)->second;
+						SharedData::GetInstance()->Wep0_Equipped = false;
+						SharedData::GetInstance()->Wep1_Equipped = true;
+						SharedData::GetInstance()->Wep2_Equipped = false;
+						SharedData::GetInstance()->Wep3_Equipped = false;
+						Character.Coins -= SharedData::GetInstance()->WeaponMap.find(1)->second.Cost;
+						SharedData::GetInstance()->Own_Wep1 = true;
+					}
+				}
+			}
+		}
+
+		//WEAPON 2
+		if (SharedData::GetInstance()->Wep2 == true)
+		{
+			RenderImageOnScreen(meshList[GUN_1], 2, 4, 22, 1, 0, 90, 0);
+			RenderImageOnScreen(meshList[GUN_2], 2, 7, 12, 10, 0, 90 + Item_Spin, 0);
+			RenderImageOnScreen(meshList[GUN_3], 2, 2.5, 5, 1, 0, 90, 0);
+			RenderTextOnScreen(meshList[TEXT], SharedData::GetInstance()->WeaponMap.find(2)->second.Weapon_Name, Color(0.5, 0.7, 1), 2, 18, 23);
+			RenderTextOnScreen(meshList[TEXT], "Damage :" + std::to_string(toupper(SharedData::GetInstance()->WeaponMap.find(2)->second.Attack_Value)), Color(0.5, 0.7, 1), 2, 18, 21);
+			RenderTextOnScreen(meshList[TEXT], "Fire rate : Slow", Color(0.5, 0.7, 1), 2, 18, 20);
+			RenderTextOnScreen(meshList[TEXT], "Ammo consumtion :" + std::to_string(SharedData::GetInstance()->WeaponMap.find(2)->second.Ammo_Consumption) + " per shot", Color(0.5, 0.7, 1), 2, 18, 19);
+			RenderTextOnScreen(meshList[TEXT], "Ammo per clip :" + std::to_string(SharedData::GetInstance()->WeaponMap.find(2)->second.MAX_Ammo), Color(0.5, 0.7, 1), 2, 18, 18);
+
+			//Owns it
+			if (SharedData::GetInstance()->Own_Wep2 == true)
+			{
+				if (SharedData::GetInstance()->Wep2_Equipped == false)
+				{
+					RenderTextOnScreen(meshList[TEXT], "EQUIP", Color(0.5, 0.5, 0.5), 3, 15, 6);
+					if (SharedData::GetInstance()->Buy == true)
+					{
+						SharedData::GetInstance()->Wep0_Equipped = false;
+						SharedData::GetInstance()->Wep1_Equipped = false;
+						SharedData::GetInstance()->Wep2_Equipped = true;
+						SharedData::GetInstance()->Wep3_Equipped = false;
+						SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(2)->second;
+					}
+				}
+				else
+				{
+					SharedData::GetInstance()->Buy = false;
+				}
+			}
+			if (SharedData::GetInstance()->Wep2_Equipped == true)
+			{
+				RenderTextOnScreen(meshList[TEXT], "EQUIPPED", Color(0.5, 0.5, 0.5), 3, 15, 6);
+			}
+
+
+			//Doesnt own it
+			if (SharedData::GetInstance()->Own_Wep2 == false)
+			{
+				RenderTextOnScreen(meshList[TEXT], "Cost : " + std::to_string(SharedData::GetInstance()->WeaponMap.find(2)->second.Cost), Color(1, 0.85, 0), 3, 12, 8);
+				RenderImageOnScreen(meshList[COIN], 3, 20.5, 7.5, 1, 0, Item_Spin, 0);
+				RenderTextOnScreen(meshList[TEXT], "BUY", Color(0.5, 0.5, 0.5), 5, 9.3, 3.5);
+				if (SharedData::GetInstance()->Buy == true)
+				{
+					if (Character.Coins - SharedData::GetInstance()->WeaponMap.find(2)->second.Cost >= 0)
+					{
+						SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(2)->second;
+						SharedData::GetInstance()->Wep0_Equipped = false;
+						SharedData::GetInstance()->Wep1_Equipped = false;
+						SharedData::GetInstance()->Wep2_Equipped = true;
+						SharedData::GetInstance()->Wep3_Equipped = false;
+						Character.Coins -= SharedData::GetInstance()->WeaponMap.find(2)->second.Cost;
+						SharedData::GetInstance()->Own_Wep2 = true;
+					}
+				}
+			}
+		}
+
+		//WEAPON 3
+		if (SharedData::GetInstance()->Wep3 == true)
+		{
+			RenderImageOnScreen(meshList[GUN_1], 2, 4, 22, 1, 0, 90, 0);
+			RenderImageOnScreen(meshList[GUN_2], 2, 7, 12, 1, 0, 90, 0);
+			RenderImageOnScreen(meshList[GUN_3], 2, 8, 5, 10, 0, 90 + Item_Spin, 0);
+			RenderTextOnScreen(meshList[TEXT], SharedData::GetInstance()->WeaponMap.find(3)->second.Weapon_Name, Color(0.5, 0.7, 1), 2, 18, 23);
+			RenderTextOnScreen(meshList[TEXT], "Damage :" + std::to_string(toupper(SharedData::GetInstance()->WeaponMap.find(3)->second.Attack_Value)), Color(0.5, 0.7, 1), 2, 18, 21);
+			RenderTextOnScreen(meshList[TEXT], "Fire rate : Very Fast", Color(0.5, 0.7, 1), 2, 18, 20);
+			RenderTextOnScreen(meshList[TEXT], "Ammo consumtion :" + std::to_string(SharedData::GetInstance()->WeaponMap.find(3)->second.Ammo_Consumption) + " per shot", Color(0.5, 0.7, 1), 2, 18, 19);
+			RenderTextOnScreen(meshList[TEXT], "Ammo per clip :" + std::to_string(SharedData::GetInstance()->WeaponMap.find(3)->second.MAX_Ammo), Color(0.5, 0.7, 1), 2, 18, 18);
+
+			//Owns it
+			if (SharedData::GetInstance()->Own_Wep3 == true)
+			{
+				if (SharedData::GetInstance()->Wep3_Equipped == false)
+				{
+					RenderTextOnScreen(meshList[TEXT], "EQUIP", Color(0.5, 0.5, 0.5), 3, 15, 6);
+					if (SharedData::GetInstance()->Buy == true)
+					{
+						SharedData::GetInstance()->Wep0_Equipped = false;
+						SharedData::GetInstance()->Wep1_Equipped = false;
+						SharedData::GetInstance()->Wep2_Equipped = false;
+						SharedData::GetInstance()->Wep3_Equipped = true;
+						SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(3)->second;
+					}
+				}
+				else
+				{
+					SharedData::GetInstance()->Buy = false;
+				}
+			}
+			if (SharedData::GetInstance()->Wep3_Equipped == true)
+			{
+				RenderTextOnScreen(meshList[TEXT], "EQUIPPED", Color(0.5, 0.5, 0.5), 3, 15, 6);
+			}
+
+
+			//Doesnt own it
+			if (SharedData::GetInstance()->Own_Wep3 == false)
+			{
+				RenderTextOnScreen(meshList[TEXT], "Cost : " + std::to_string(SharedData::GetInstance()->WeaponMap.find(3)->second.Cost), Color(1, 0.85, 0), 3, 12, 8);
+				RenderImageOnScreen(meshList[COIN], 3, 21, 7.5, 1, 0, Item_Spin, 0);
+				RenderTextOnScreen(meshList[TEXT], "BUY", Color(0.5, 0.5, 0.5), 5, 9.3, 3.5);
+				if (SharedData::GetInstance()->Buy == true)
+				{
+					if (Character.Coins - SharedData::GetInstance()->WeaponMap.find(3)->second.Cost >= 0)
+					{
+						SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(3)->second;
+						SharedData::GetInstance()->Wep0_Equipped = false;
+						SharedData::GetInstance()->Wep1_Equipped = false;
+						SharedData::GetInstance()->Wep2_Equipped = false;
+						SharedData::GetInstance()->Wep3_Equipped = true;
+						Character.Coins -= SharedData::GetInstance()->WeaponMap.find(3)->second.Cost;
+						SharedData::GetInstance()->Own_Wep3 = true;
+					}
+				}
+			}
+		}
+	}
+	if (UI::UI_ShopItem == true)
+	{
+		RenderImageOnScreen(meshList[UI_SHOP], 80, .5f, -.1f, 0, 0, 0, 0);
+		RenderImageOnScreen(meshList[COIN], 4, 10, 13, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 4, 12, 14);
+		RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 3);
+
+		RenderImageOnScreen(meshList[LARGE_HEALTH_KIT], 13, 1, 2.6, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.large_health_kit_amount), Color(1, 1, 1), 3, 2, 5);
+		RenderImageOnScreen(meshList[HEALTH_KIT], 13, 1, 1.1, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.health_kit_amount), Color(1, 1, 1), 3, 2, 4);
+
+	}
 }
 
 void SP2Scene::RenderPlanet1()
@@ -1629,10 +1974,21 @@ void SP2Scene::RenderPlanet3()
 
 void SP2Scene::RenderBoss1()
 {
+    if (boss1.isDead() == false && SharedData::GetInstance()->BOSS1_Splits == 1) {
+        modelStack.PushMatrix();
+        modelStack.Translate(SharedData::GetInstance()->Boss1PositionSplit1.x, SharedData::GetInstance()->Boss1PositionSplit1.y, SharedData::GetInstance()->Boss1PositionSplit1.z);
+        modelStack.Scale(200, 200, 200);
+        RenderMesh(meshList[SLIME_BOSS], false);
+        modelStack.PopMatrix();
+    }
+    else if (boss1.isDead() == false && SharedData::GetInstance()->BOSS1_Splits == 2) {
+
+    }
+
     modelStack.PushMatrix();
     modelStack.Translate(SharedData::GetInstance()->Boss1PositionSplit1.x, SharedData::GetInstance()->Boss1PositionSplit1.y, SharedData::GetInstance()->Boss1PositionSplit1.z);
-    modelStack.Scale(200, 200, 200);
-    RenderMesh(meshList[SLIME_BOSS], false);
+    modelStack.Scale(SharedData::GetInstance()->Boss1Hitbox.x, SharedData::GetInstance()->Boss1Hitbox.y, SharedData::GetInstance()->Boss1Hitbox.z);
+    RenderMesh(meshList[Hitbox], false);
     modelStack.PopMatrix();
 }
 
@@ -1870,7 +2226,7 @@ void SP2Scene::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, flo
 void SP2Scene::RenderImageOnScreen(Mesh* mesh, float size, float x, float y , float z, float rotateX, float rotateY, float rotateZ)
 {
     Mtx44 ortho;
-    ortho.SetToOrtho(0, 80, 0, 60, -50, 50); //size of screen UI
+    ortho.SetToOrtho(0, 80, 0, 60, -100, 100); //size of screen UI
     projectionStack.PushMatrix();
     projectionStack.LoadMatrix(ortho);
     viewStack.PushMatrix();
@@ -2048,7 +2404,6 @@ void SP2Scene::renderReturnShip()
 		modelStack.PopMatrix();
 	}
 }
-
 
 void SP2Scene::Exit()
 {

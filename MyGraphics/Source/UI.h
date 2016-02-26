@@ -22,7 +22,6 @@ public:
 
     static bool UI_Shop;
     static bool UI_ShopGun;
-    static bool UI_ShopMelee;
     static bool UI_ShopItem;
 
     static int MenuUI_ID;
@@ -31,7 +30,6 @@ public:
 
     static int ShopUI_ID;
     static int ShopGunUI_ID;
-    static int ShopMeleeUI_ID;
     static int ShopItemUI_ID;
 
     static bool MenuUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int MenuUI_ID);
@@ -42,7 +40,6 @@ public:
 
     static bool ShopUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ShopUI_ID);
     static bool ShopGunUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ShopGunUI_ID);
-    static bool ShopMeleeUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ShopMeleeUI_ID);
     static bool ShopItemUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ShopItemUI_ID);
 
     virtual void Update(double dt);

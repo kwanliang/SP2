@@ -25,6 +25,7 @@ class SP2Scene : public Scene
     {
         AXES = 0,
         LIGHTBALL,
+        Hitbox,
 
         //Menu
         UI_MENU,
@@ -150,6 +151,7 @@ class SP2Scene : public Scene
 		GOLEM_FEET,
 
         //Character & Weapon
+		GUN_0,
 		GUN_1,
 		GUN_2,
 		GUN_3,
@@ -220,11 +222,17 @@ public:
 
     float LSPEED;
 
+	float Wait = 0.f;
+
     std::string FPS;
 
     static float UI_Human_Rotate;
     static float UI_Robot_Rotate;
 	static float UI_Infested_Rotate;
+
+	//Reloading
+	bool reloading;
+	float reload_delay;
 
 	//Planet Nav Animation
     static bool UI_PlanetNav_Animation;
@@ -259,7 +267,6 @@ public:
 	bool arrowdown;
 	float arrowsignrotate;
 	
-
     virtual void Init();
     virtual void Update(double dt);
     virtual void Render();
@@ -275,7 +282,9 @@ private:
     void RenderMenu();
     void RenderRaceSelection();
     void RenderNameInput();
+	void RenderHUD();
 	void RenderShip();
+	void RenderShop();
     void RenderPlanet1();
     void RenderPlanet2();
     void RenderPlanet3();
@@ -285,11 +294,10 @@ private:
     void RenderImageOnScreen(Mesh* mesh, float size, float x, float y, float z, float rotateX, float rotateY, float rotateZ);
 	void Renderlegs();
 	void moveRobotBosssleg();
-	//void turnleg(Vector3 Player);
+	void turnleg(Vector3 Player);
 	void renderReturnShip();
 
 	Character Character;
-	Weapon* Equipped;
 
 	//BOSSES
 	Boss1 Slime;

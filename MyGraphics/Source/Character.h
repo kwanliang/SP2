@@ -11,7 +11,6 @@
 #define CHARACTER_H
 
 #include "Race.h"
-#include "Weapon.h"
 #include "SharedData.h"
 
 /******************************************************************************/
@@ -24,7 +23,6 @@ Class Character:
 class Character
 {
 private:
-	Weapon* Weapon_;
 	Race_Type Race;
 
 public:
@@ -38,11 +36,8 @@ public:
 	Character();
 	~Character();
 	void SetRace(int i);
-	Weapon* assignWeapon(Weapon* NewWeapon);
 	void recieveDamage(int Damage);
-	void addHealth_kit(const int Health_kit_Gained);
 	void useHealth_kit(void);
-	void addLarge_Health_kit(const int Large_Health_kit_Gained);
 	void useLarge_Health_kit(void);
 	bool isDead(void);
 };

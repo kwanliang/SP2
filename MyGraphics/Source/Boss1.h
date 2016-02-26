@@ -13,6 +13,7 @@ public:
 
     Boss1();
     ~Boss1();
+    virtual void Init();
     virtual void Update(double dt);
     virtual void Reset();
 

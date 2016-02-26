@@ -55,6 +55,7 @@ void Mouse::MouseButtonCallback(GLFWwindow* window, int button, int action, int 
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
     {
         SharedData::GetInstance()->Left_Clicked = true;
+		Projectile::ProjectileCount.push_back(new Projectile(SharedData::GetInstance()->PlayerPosition, SharedData::GetInstance()->PlayerTarget - SharedData::GetInstance()->PlayerPosition));
     }
     else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) 
     {
@@ -102,14 +103,14 @@ void Application::Init()
 
 	//Create a window and create its OpenGL context
 	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    m_window = glfwCreateWindow(800, 600, "Computer Graphics", NULL , NULL);
+    m_window = glfwCreateWindow(800, 600, "Computer Graphics", NULL, NULL);
     SharedData::GetInstance()->MonitorWidth = mode->width;
     SharedData::GetInstance()->MonitorHeight = mode->height;
 
     //Resize objects according to window
     glfwSetWindowSizeCallback(m_window, resize_callback);
 
-    //Mouse Clicks
+    //Mouse Clicks0
     glfwSetMouseButtonCallback(m_window, Mouse::MouseButtonCallback);
 
     //Keyboard Input

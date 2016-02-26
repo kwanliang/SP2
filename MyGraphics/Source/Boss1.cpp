@@ -9,7 +9,7 @@ Boss1::Boss1()
     BOSS1_Attack = 4;
     BOSS1_MoveSpd = 200.0f;
 
-    Vector3 SetBossPosition(0, -50, 100);
+    Vector3 SetBossPosition(-300, -50, 100);
 
     SharedData::GetInstance()->Boss1PositionSplit1 = SetBossPosition;
 }
@@ -18,19 +18,26 @@ Boss1::~Boss1()
 {
 }
 
+void Boss1::Init()
+{
+    Vector3 Boss1HitboxSize(150, 300, 150);
+
+    SharedData::GetInstance()->Boss1Hitbox = Boss1HitboxSize;
+}
+
 void Boss1::Update(double dt)
 {
-    Vector3 Boss1HitboxSize(100, 200, 100);
+    //if (Collision::BossHitbox(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->Boss1PositionSplit1, Boss1HitboxSize) == true)
+    //{
+    //    receiveDamage(10);
+    //}
 
-    if (Collision::BossHitbox(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->Boss1PositionSplit1, Boss1HitboxSize) == true)
-    {
-        receiveDamage(10);
-    }
+    //std::cout << Boss1HitboxSize << std::endl;
 
-    if (BOSS1_HP <= 0) 
-    {
-        SlimeSplit();
-    }
+    //if (BOSS1_HP <= 0) 
+    //{
+        //SlimeSplit();
+    //}
 
     Boss1::isDead();
 
@@ -56,7 +63,7 @@ void Boss1::receiveDamage(int Damage)
 
 bool Boss1::isDead()
 {
-    if (SharedData::GetInstance()->BOSS1_Splits == 8) {
+    if (SharedData::GetInstance()->BOSS1_Splits == 4) {
         return true;
     }
     else {
