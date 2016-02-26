@@ -22,11 +22,11 @@ float SP2Scene::UI_Infested_Rotate = 0;
 
 SP2Scene::SP2Scene()
 {
-    SharedData::GetInstance()->renderMenu = true;
+    SharedData::GetInstance()->renderMenu = false;
     SharedData::GetInstance()->renderRaceSelection = false;
     SharedData::GetInstance()->renderNameInput = false;
 	SharedData::GetInstance()->renderShip = false;
-	SharedData::GetInstance()->renderPlanet1 = false;
+	SharedData::GetInstance()->renderPlanet1 = true;
 	SharedData::GetInstance()->renderPlanet2 = false;
 	SharedData::GetInstance()->renderPlanet3 = false;
 	moveupLeftleg = false;
@@ -134,6 +134,7 @@ void SP2Scene::Init()
 	//Initialize camera settings
 	camera.Init(Vector3(0, 0, -200), Vector3(0, 0, 0), Vector3(0, 1, 0));
     projectile.Init(camera.position);
+    boss1.Init();
 
 	// Get a handle for our "colorTexture" uniform
 	m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
@@ -151,6 +152,8 @@ void SP2Scene::Init()
 
 	meshList[TEXT] = MeshBuilder::GenerateText("text", 16, 16);
 	meshList[TEXT]->textureID = LoadTGA("Image//calibri.tga");
+
+    meshList[Hitbox] = MeshBuilder::GenerateCube("hitbox wireframe", (1, 0, 0));
 
     //<<<<<<<<<<<<<<<<<<<<<<<MENU UI<<<<<<<<<<<<<<<<<<<<<<<<<<
     meshList[UI_MENU] = MeshBuilder::GenerateOBJ("UI menu plane", "OBJ//UI_Plane.obj");
@@ -273,6 +276,11 @@ void SP2Scene::Init()
 	meshList[SLIME_MOUNTAIN]->textureID = LoadTGA("Image//planet1//slimemountain.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET1<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS1<<<<<<<<<<<<<<<<<<<<<<<<<<
+    meshList[SLIME_BOSS] = MeshBuilder::GenerateOBJ("boss slime", "OBJ//planet1//Boss_Slime.obj");
+    meshList[SLIME_BOSS]->textureID = LoadTGA("Image//planet1//slimes//Boss_Slime.tga");
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS1<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET2<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[PLANET2_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
 	meshList[PLANET2_FRONT]->textureID = LoadTGA("Image//planet2//planet2_front.tga");
@@ -303,7 +311,7 @@ void SP2Scene::Init()
 	meshList[ROBOT_BACKLEFTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p1.tga");
 	meshList[ROBOT_BACKRIGHTLEG] = MeshBuilder::GenerateOBJ("robot's back right legs", "OBJ//planet2//boss2_backrightleg.obj");
 	meshList[ROBOT_BACKRIGHTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p1.tga");
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS3<<<<<<<<<<<<<<<<<<<<<<<<<
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS2<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET3<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[PLANET3_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
@@ -329,11 +337,6 @@ void SP2Scene::Init()
 	meshList[PLANET3_DARKTREE] = MeshBuilder::GenerateOBJ("darkmountain", "OBJ//planet3//darktree.obj");
 	meshList[PLANET3_DARKTREE]->textureID = LoadTGA("Image//planet3//darktree.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET3<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS1<<<<<<<<<<<<<<<<<<<<<<<<<<
-    meshList[SLIME_BOSS] = MeshBuilder::GenerateOBJ("boss slime", "OBJ//planet1//Boss_Slime.obj");
-    meshList[SLIME_BOSS]->textureID = LoadTGA("Image//planet1//slimes//Boss_Slime.tga");
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS1<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS3<<<<<<<<<<<<<<<<<<<<<<<<<<
 	GLuint Golem = LoadTGA("Image//planet3//planet3_monster//Night Knight Golem.tga");
@@ -368,12 +371,6 @@ void SP2Scene::Init()
     meshList[BULLET]->textureID = LoadTGA("Image//bullet.tga");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    ////<<<<<<<<<<<<<<<<<<<<<<<<<<<BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    //meshList[CHARACTER_BODY] = MeshBuilder::GenerateCube("character", Color(1, 1, 1));
-    //meshList[CHARACTER_HAND] = MeshBuilder::GenerateOBJ("hand", "OBJ//hand.obj");
-    //meshList[CHARACTER_HAND]->textureID = LoadTGA("Image//hand.tga");
-    ////<<<<<<<<<<<<<<<<<<<<<<<<<<<BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<ITEMS<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[COIN] = MeshBuilder::GenerateOBJ("Coins", "OBJ//items//Coin.obj");
 	meshList[COIN]->textureID = LoadTGA("Image//items//SadPepeCoin.tga");
@@ -392,7 +389,7 @@ void SP2Scene::Init()
 	meshList[HUD_CHARACTER]->textureID = LoadTGA("Image//HUD//Character.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<HUD<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<Character legs<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[HUMAN_LEFTLEG] = MeshBuilder::GenerateOBJ("humanlegs", "OBJ//characterleg//Human_leftleg.obj");
 	meshList[HUMAN_LEFTLEG]->textureID = LoadTGA("Image//character//Human.tga");
 	meshList[HUMAN_RIGHTLEG] = MeshBuilder::GenerateOBJ("humanlegs", "OBJ//characterleg//Human_rightleg.obj");
@@ -407,14 +404,14 @@ void SP2Scene::Init()
 	meshList[INFESTED_LEFTLEG]->textureID = LoadTGA("Image//character//Infested.tga");
 	meshList[INFESTED_RIGHTLEG] = MeshBuilder::GenerateOBJ("infested legs", "OBJ//characterleg//Infested_rightleg.obj");
 	meshList[INFESTED_RIGHTLEG]->textureID = LoadTGA("Image//character//Infested.tga");
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<Character legs<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<return ship<<<<<<<<<<<<<<<<<<<<<<<<<<
-	meshList[RETURN_SHIP] = MeshBuilder::GenerateOBJ("return ship ", "OBJ//returnship.obj");
-	meshList[RETURN_SHIP]->textureID = LoadTGA("Image//returnship.tga");
+	//<<<<<<<<<<<<<<<<<<<<<<<<RETURN SHIP<<<<<<<<<<<<<<<<<<<<<<<
+	//meshList[RETURN_SHIP] = MeshBuilder::GenerateOBJ("return ship ", "OBJ//returnship.obj");
+	//meshList[RETURN_SHIP]->textureID = LoadTGA("Image//returnship.tga");
 	meshList[ARROW_SIGN] = MeshBuilder::GenerateOBJ("return ship ", "OBJ//arrowsign.obj");
 	meshList[ARROW_SIGN]->textureID = LoadTGA("Image//arrowsign.tga");
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<return ship<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //<<<<<<<<<<<<<<<<<<<<<<<<RETURN SHIP<<<<<<<<<<<<<<<<<<<<<<<
 
     //<<<<<<<<<<<<<<<<<<<<<<<<<<PAUSE<<<<<<<<<<<<<<<<<<<<<<<<<<
     meshList[UI_PAUSE] = MeshBuilder::GenerateOBJ("UI pause plane", "OBJ//UI_Plane.obj");
@@ -514,12 +511,74 @@ void SP2Scene::Update(double dt)
 	if (Application::IsKeyPressed('4'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
 
-    //if (UI.MenuUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int MenuUI_ID) == true) {
-    //    meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start_S.tga");
-    //}
-    //else {
-    //    meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start.tga");
-    //}
+    //<<<<<<<<<<<<<<<<<<<<<<HOVER CHECK<<<<<<<<<<<<<<<<<<<<<<<<
+    //Menu
+    if (SharedData::GetInstance()->Menu_Start_Hovered == true) {
+        meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start_S.tga");
+    } else {
+        meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start.tga");
+    }
+
+    if (SharedData::GetInstance()->Menu_Exit_Hovered == true) {
+        meshList[UI_MENU_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit_S.tga");
+    } else {
+        meshList[UI_MENU_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
+    }
+
+    //Race
+    if (SharedData::GetInstance()->Race_Name_Hovered == true) {
+        meshList[UI_RACE_SELECT]->textureID = LoadTGA("Image//UI//UI_Race_Select_S.tga");
+    } else {
+        meshList[UI_RACE_SELECT]->textureID = LoadTGA("Image//UI//UI_Race_Select.tga");
+    }
+
+    if (SharedData::GetInstance()->Race_Back_Hovered == true) {
+        meshList[UI_RACE_BACK]->textureID = LoadTGA("Image//UI//UI_Race_Back_S.tga");
+    } else {
+        meshList[UI_RACE_BACK]->textureID = LoadTGA("Image//UI//UI_Race_Back.tga");
+    }
+
+    //Name
+    if (SharedData::GetInstance()->Name_Start_Hovered == true) {
+        meshList[UI_NAME_ACCEPT]->textureID = LoadTGA("Image//UI//UI_Name_Accept_S.tga");
+    } else {
+        meshList[UI_NAME_ACCEPT]->textureID = LoadTGA("Image//UI//UI_Name_Accept.tga");
+    }
+
+    if (SharedData::GetInstance()->Name_Back_Hovered == true) {
+        meshList[UI_NAME_BACK]->textureID = LoadTGA("Image//UI//UI_Name_Back_S.tga");
+    } else {
+        meshList[UI_NAME_BACK]->textureID = LoadTGA("Image//UI//UI_Name_Back.tga");
+    }
+
+    if (SharedData::GetInstance()->Name_Menu_Hovered == true) {
+        meshList[UI_NAME_MENU]->textureID = LoadTGA("Image//UI//UI_Name_Menu_S.tga");
+    } else {
+        meshList[UI_NAME_MENU]->textureID = LoadTGA("Image//UI//UI_Name_Menu.tga");
+    }
+
+    //Pause
+    if (SharedData::GetInstance()->Pause_Resume_Hovered == true) {
+        meshList[UI_PAUSE_SELECT_RESUME]->textureID = LoadTGA("Image//UI//UI_Resume_S.tga");
+    }
+    else {
+        meshList[UI_PAUSE_SELECT_RESUME]->textureID = LoadTGA("Image//UI//UI_Resume.tga");
+    }
+
+    if (SharedData::GetInstance()->Pause_Menu_Hovered == true) {
+        meshList[UI_PAUSE_SELECT_MENU]->textureID = LoadTGA("Image//UI//UI_Pause_BTMM_S.tga");
+    }
+    else {
+        meshList[UI_PAUSE_SELECT_MENU]->textureID = LoadTGA("Image//UI//UI_Pause_BTMM.tga");
+    }
+
+    if (SharedData::GetInstance()->Pause_Exit_Hovered == true) {
+        meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit_S.tga");
+    }
+    else {
+        meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
+    }
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     if (SharedData::GetInstance()->UI_Human_Selected == true) {
         UI_Human_Rotate += (float)(50 * dt);
@@ -549,9 +608,6 @@ void SP2Scene::Update(double dt)
 		SharedData::GetInstance()->renderRobotlegs = false;
 	}
 
-	/*turnleg(camera.position);*/
-
-	//Check if player is dead
 	if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true || SharedData::GetInstance()->renderPlanet3 == true)
 	{
 		Character.isDead();
@@ -880,20 +936,6 @@ void SP2Scene::Update(double dt)
     boss1.Update(dt);
 }
 
-//void SP2Scene::turnleg(Vector3 PlayerView)
-//{
-//	Vector3 target(0, 0, 1);
-//	Vector3 wantView(PlayerView - Vector3(0, -40, -2));
-//	wantView.Normalize();
-//	Vector3 normal(0, 1, 0);
-//	DegreeOfleg = Math::RadianToDegree(acos(initView.Dot(wantView)));
-//	Vector3 Crossed = initView.Cross(wantView);
-//	if (Crossed.Dot(normal) < 0)
-//	{
-//		DegreeOfleg *= -1;
-//	}
-//}
-
 void SP2Scene::Render()
 {
     // Render VBO here
@@ -1024,12 +1066,30 @@ void SP2Scene::Render()
         RenderImageOnScreen(meshList[UI_PLANET_DARK], 5, 9 + PlanetMove_3_X, 5 + PlanetMove_3_Y, 0, 0, 0, 0);
         RenderImageOnScreen(meshList[UI_PLANET_SUN], 6, 6.7f, 4, 0, 0, 0, 0);
         RenderImageOnScreen(meshList[UI_PLANET_NAVIGATION], 80, .5f, -.1f, 0, 0, 0, 0);
-        RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 2);
         if (UI.UI_PlanetName == true)
         {
-            RenderTextOnScreen(meshList[TEXT], "Planet Slime", Color(1, 1, 1), 2, 16, 19);
-            RenderTextOnScreen(meshList[TEXT], "Planet Robot", Color(1, 1, 1), 2, 8, 6);
-            RenderTextOnScreen(meshList[TEXT], "Planet Dark", Color(1, 1, 1), 2, 24, 6);
+            if (SharedData::GetInstance()->NAV_Slime_Hovered == true) {
+                RenderTextOnScreen(meshList[TEXT], "Planet Slime", Color(1, 0, 0), 2, 16, 19);
+            } else {
+                RenderTextOnScreen(meshList[TEXT], "Planet Slime", Color(1, 1, 1), 2, 16, 19);
+            }
+            if (SharedData::GetInstance()->NAV_Robot_Hovered == true) {
+                RenderTextOnScreen(meshList[TEXT], "Planet Robot", Color(1, 0, 0), 2, 8, 6);
+            } else {
+                RenderTextOnScreen(meshList[TEXT], "Planet Robot", Color(1, 1, 1), 2, 8, 6);
+            }
+            if (SharedData::GetInstance()->NAV_Dark_Hovered == true) {
+                RenderTextOnScreen(meshList[TEXT], "Planet Dark", Color(1, 0, 0), 2, 24, 6);
+            }
+            else {
+                RenderTextOnScreen(meshList[TEXT], "Planet Dark", Color(1, 1, 1), 2, 24, 6);
+            }
+            if (SharedData::GetInstance()->NAV_Back_Hovered == true) {
+                RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 0, 0), 2, 19, 2);
+            }
+            else {
+                RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 2);
+            }
         }
     }
 
@@ -1046,8 +1106,12 @@ void SP2Scene::Render()
     // FPS
 	RenderTextOnScreen(meshList[TEXT], "FPS:" + FPS, Color(1, 1, 1), 3, 1, 19);
 
-    RenderTextOnScreen(meshList[TEXT], std::to_string(SharedData::GetInstance()->MousePos_X), Color(1, 1, 1), 3, 1, 18);
-    RenderTextOnScreen(meshList[TEXT], std::to_string(SharedData::GetInstance()->MousePos_Y), Color(1, 1, 1), 3, 1, 17);
+    RenderTextOnScreen(meshList[TEXT], "MouseX : " + std::to_string(SharedData::GetInstance()->MousePos_X), Color(1, 1, 1), 3, 1, 18);
+    RenderTextOnScreen(meshList[TEXT], "MouseY : " + std::to_string(SharedData::GetInstance()->MousePos_Y), Color(1, 1, 1), 3, 1, 17);
+
+    RenderTextOnScreen(meshList[TEXT], "PosX : " + std::to_string(SharedData::GetInstance()->PlayerPosition.x), Color(1, 1, 1), 3, 1, 16);
+    RenderTextOnScreen(meshList[TEXT], "PosY : " + std::to_string(SharedData::GetInstance()->PlayerPosition.y), Color(1, 1, 1), 3, 1, 15);
+    RenderTextOnScreen(meshList[TEXT], "PosZ : " + std::to_string(SharedData::GetInstance()->PlayerPosition.z), Color(1, 1, 1), 3, 1, 14);
 }
 
 void SP2Scene::RenderMenu()
@@ -1828,10 +1892,21 @@ void SP2Scene::RenderPlanet3()
 
 void SP2Scene::RenderBoss1()
 {
+    if (boss1.isDead() == false && SharedData::GetInstance()->BOSS1_Splits == 1) {
+        modelStack.PushMatrix();
+        modelStack.Translate(SharedData::GetInstance()->Boss1PositionSplit1.x, SharedData::GetInstance()->Boss1PositionSplit1.y, SharedData::GetInstance()->Boss1PositionSplit1.z);
+        modelStack.Scale(200, 200, 200);
+        RenderMesh(meshList[SLIME_BOSS], false);
+        modelStack.PopMatrix();
+    }
+    else if (boss1.isDead() == false && SharedData::GetInstance()->BOSS1_Splits == 2) {
+
+    }
+
     modelStack.PushMatrix();
     modelStack.Translate(SharedData::GetInstance()->Boss1PositionSplit1.x, SharedData::GetInstance()->Boss1PositionSplit1.y, SharedData::GetInstance()->Boss1PositionSplit1.z);
-    modelStack.Scale(200, 200, 200);
-    RenderMesh(meshList[SLIME_BOSS], false);
+    modelStack.Scale(SharedData::GetInstance()->Boss1Hitbox.x, SharedData::GetInstance()->Boss1Hitbox.y, SharedData::GetInstance()->Boss1Hitbox.z);
+    RenderMesh(meshList[Hitbox], false);
     modelStack.PopMatrix();
 }
 
@@ -2220,7 +2295,6 @@ void SP2Scene::renderReturnShip()
 
 	modelStack.PopMatrix();
 }
-
 
 void SP2Scene::Exit()
 {

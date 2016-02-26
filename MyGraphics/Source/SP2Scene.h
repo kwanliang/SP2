@@ -25,6 +25,7 @@ class SP2Scene : public Scene
     {
         AXES = 0,
         LIGHTBALL,
+        Hitbox,
 
         //Menu
         UI_MENU,
@@ -266,7 +267,6 @@ public:
 	bool arrowdown;
 	float arrowsignrotate;
 	
-
     virtual void Init();
     virtual void Update(double dt);
     virtual void Render();
@@ -294,7 +294,7 @@ private:
     void RenderImageOnScreen(Mesh* mesh, float size, float x, float y, float z, float rotateX, float rotateY, float rotateZ);
 	void Renderlegs();
 	void moveRobotBosssleg();
-	//void turnleg(Vector3 Player);
+	void turnleg(Vector3 Player);
 	void renderReturnShip();
 
 	Character Character;

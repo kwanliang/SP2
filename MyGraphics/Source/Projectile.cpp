@@ -19,14 +19,6 @@ void Projectile::Init(const Vector3& pos)
 void Projectile::Update(double dt)
 {
     Vector3 Spread(.1f, .1f, .1f);
-    Vector3 Boss1HitboxSize(100, 200, 100);
-
-    //if (SharedData::GetInstance()->BOSS1_Splits == 2) {
-    //    Vector3 Boss1HitboxSize(50, 100, 50);
-    //}
-    //else if (SharedData::GetInstance()->BOSS1_Splits == 4) {
-    //    Vector3 Boss1HitboxSize(25, 50, 25);
-    //}
 
     int random = rand() % 10 + 1;
 
@@ -57,9 +49,6 @@ void Projectile::Update(double dt)
     }
 
     if (collision.BoundaryCheck(SharedData::GetInstance()->ProjectilePosition) == true &&
-        collision.BossHitbox(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->Boss1PositionSplit1, Boss1HitboxSize) == false &&
-        collision.BossHitbox(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->Boss1PositionSplit2, Boss1HitboxSize) == false &&
-        collision.BossHitbox(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->Boss1PositionSplit3, Boss1HitboxSize) == false &&
         BulletTime < .5 && UI.UI_On == false)
     {
         SharedData::GetInstance()->ProjectilePosition += ProjectileView * dt * 3000;

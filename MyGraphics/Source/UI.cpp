@@ -3,7 +3,7 @@
 #include "SP2Scene.h"
 #include "Application.h"
 
-bool UI::UI_On = true;
+bool UI::UI_On = false;
 bool UI::UI_PlanatNav = false;
 bool UI::UI_PlanetName = false;
 bool UI::UI_Shop = false;
@@ -44,6 +44,20 @@ void UI::Update(double dt)
     if (SharedData::GetInstance()->renderMenu == true) {
         UI::MenuUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Menu_Start_MinX, Menu_Start_MaxX, Menu_Start_MinY, Menu_Start_MaxY, 1);
         UI::MenuUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Menu_Exit_MinX, Menu_Exit_MaxX, Menu_Exit_MinY, Menu_Exit_MaxY, 2);
+
+        if (UI::MenuUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Menu_Start_MinX, Menu_Start_MaxX, Menu_Start_MinY, Menu_Start_MaxY, 1) == true) {
+            SharedData::GetInstance()->Menu_Start_Hovered = true;
+        }
+        else {
+            SharedData::GetInstance()->Menu_Start_Hovered = false;
+        }
+
+        if (UI::MenuUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Menu_Exit_MinX, Menu_Exit_MaxX, Menu_Exit_MinY, Menu_Exit_MaxY, 2) == true) {
+            SharedData::GetInstance()->Menu_Exit_Hovered = true;
+        }
+        else {
+            SharedData::GetInstance()->Menu_Exit_Hovered = false;
+        }
     }
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -80,6 +94,19 @@ void UI::Update(double dt)
         UI::RaceSelectionUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Race_Infested_MinX, Race_Infested_MaxX, Race_Infested_MinY, Race_Infested_MaxY, 3);
         UI::RaceSelectionUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Race_Name_MinX, Race_Name_MaxX, Race_Name_MinY, Race_Name_MaxY, 4);
         UI::RaceSelectionUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Race_Back_MinX, Race_Back_MaxX, Race_Back_MinY, Race_Back_MaxY, 5);
+
+        if (UI::RaceSelectionUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Race_Name_MinX, Race_Name_MaxX, Race_Name_MinY, Race_Name_MaxY, 4) == true) {
+            SharedData::GetInstance()->Race_Name_Hovered = true;
+        }
+        else {
+            SharedData::GetInstance()->Race_Name_Hovered = false;
+        }
+        if (UI::RaceSelectionUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Race_Back_MinX, Race_Back_MaxX, Race_Back_MinY, Race_Back_MaxY, 5) == true) {
+            SharedData::GetInstance()->Race_Back_Hovered = true;
+        }
+        else {
+            SharedData::GetInstance()->Race_Back_Hovered = false;
+        }
     }
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -104,6 +131,25 @@ void UI::Update(double dt)
         UI::NameInputHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Name_Start_MinX, Name_Start_MaxX, Name_Start_MinY, Name_Start_MaxY, 1);
         UI::NameInputHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Name_Back_MinX, Name_Back_MaxX, Name_Back_MinY, Name_Back_MaxY, 2);
         UI::NameInputHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Name_Menu_MinX, Name_Menu_MaxX, Name_Menu_MinY, Name_Menu_MaxY, 3);
+
+        if (UI::NameInputHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Name_Start_MinX, Name_Start_MaxX, Name_Start_MinY, Name_Start_MaxY, 1) == true) {
+            SharedData::GetInstance()->Name_Start_Hovered = true;
+        }
+        else {
+            SharedData::GetInstance()->Name_Start_Hovered = false;
+        }
+        if (UI::NameInputHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Name_Back_MinX, Name_Back_MaxX, Name_Back_MinY, Name_Back_MaxY, 2) == true) {
+            SharedData::GetInstance()->Name_Back_Hovered = true;
+        }
+        else {
+            SharedData::GetInstance()->Name_Back_Hovered = false;
+        }
+        if (UI::NameInputHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Name_Menu_MinX, Name_Menu_MaxX, Name_Menu_MinY, Name_Menu_MaxY, 3) == true) {
+            SharedData::GetInstance()->Name_Menu_Hovered = true;
+        }
+        else {
+            SharedData::GetInstance()->Name_Menu_Hovered = false;
+        }
     }
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -126,7 +172,7 @@ void UI::Update(double dt)
 
     float NAV_Back_MinX = (890.f / MonitorWidth) * Current_MonitorWidth;
     float NAV_Back_MaxX = (1020.f / MonitorWidth) * Current_MonitorWidth;
-    float NAV_Back_MinY = (100.f / MonitorHeight) * Current_MonitorHeight;
+    float NAV_Back_MinY = (1000.f / MonitorHeight) * Current_MonitorHeight;
     float NAV_Back_MaxY = (1015.f / MonitorHeight) * Current_MonitorHeight;
 
     if (UI::UI_PlanatNav == true) {
@@ -134,6 +180,31 @@ void UI::Update(double dt)
         UI::PlanetUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, NAV_Robot_MinX, NAV_Robot_MaxX, NAV_Robot_MinY, NAV_Robot_MaxY, 2);
         UI::PlanetUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, NAV_Dark_MinX, NAV_Dark_MaxX, NAV_Dark_MinY, NAV_Dark_MaxY, 3);
         UI::PlanetUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, NAV_Back_MinX, NAV_Back_MaxX, NAV_Back_MinY, NAV_Back_MaxY, 4);
+
+        if (UI::PlanetUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, NAV_Slime_MinX, NAV_Slime_MaxX, NAV_Slime_MinY, NAV_Slime_MaxY, 1) == true) {
+            SharedData::GetInstance()->NAV_Slime_Hovered = true;
+        }
+        else {
+            SharedData::GetInstance()->NAV_Slime_Hovered = false;
+        }
+        if (UI::PlanetUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, NAV_Robot_MinX, NAV_Robot_MaxX, NAV_Robot_MinY, NAV_Robot_MaxY, 2) == true) {
+            SharedData::GetInstance()->NAV_Robot_Hovered = true;
+        }
+        else {
+            SharedData::GetInstance()->NAV_Robot_Hovered = false;
+        }
+        if (UI::PlanetUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, NAV_Dark_MinX, NAV_Dark_MaxX, NAV_Dark_MinY, NAV_Dark_MaxY, 3) == true) {
+            SharedData::GetInstance()->NAV_Dark_Hovered = true;
+        }
+        else {
+            SharedData::GetInstance()->NAV_Dark_Hovered = false;
+        }
+        if (UI::PlanetUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, NAV_Back_MinX, NAV_Back_MaxX, NAV_Back_MinY, NAV_Back_MaxY, 4) == true) {
+            SharedData::GetInstance()->NAV_Back_Hovered = true;
+        }
+        else {
+            SharedData::GetInstance()->NAV_Back_Hovered = false;
+        }
     }
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -197,21 +268,53 @@ void UI::Update(double dt)
 
 
     //<<<<<<<<<<<<<<<<<<<<<<<PAUSE UI<<<<<<<<<<<<<<<<<<<<<<<<<<
+    float Pause_Resume_MinX = (770.f / MonitorWidth) * Current_MonitorWidth;
+    float Pause_Resume_MaxX = (1150.f / MonitorWidth) * Current_MonitorWidth;
+    float Pause_Resume_MinY = (620.f / MonitorHeight) * Current_MonitorHeight;
+    float Pause_Resume_MaxY = (670.f / MonitorHeight) * Current_MonitorHeight;
+
+    float Pause_Menu_MinX = (660.f / MonitorWidth) * Current_MonitorWidth;
+    float Pause_Menu_MaxX = (1260.f / MonitorWidth) * Current_MonitorWidth;
+    float Pause_Menu_MinY = (775.f / MonitorHeight) * Current_MonitorHeight;
+    float Pause_Menu_MaxY = (810.f / MonitorHeight) * Current_MonitorHeight;
+
+    float Pause_Exit_MinX = (700.f / MonitorWidth) * Current_MonitorWidth;
+    float Pause_Exit_MaxX = (1250.f / MonitorWidth) * Current_MonitorWidth;
+    float Pause_Exit_MinY = (910.f / MonitorHeight) * Current_MonitorHeight;
+    float Pause_Exit_MaxY = (960.f / MonitorHeight) * Current_MonitorHeight;
+
     if (SharedData::GetInstance()->renderShip == true ||
         SharedData::GetInstance()->renderPlanet1 == true ||
         SharedData::GetInstance()->renderPlanet2 == true ||
         SharedData::GetInstance()->renderPlanet3 == true)
     {
-        if (Application::IsKeyPressed(VK_ESCAPE)) {
+        if (Application::IsKeyPressed(VK_ESCAPE) && UI::UI_On == false && SharedData::GetInstance()->renderPause == false) {
             UI::UI_On = true;
             SharedData::GetInstance()->renderPause = true;
+            SharedData::GetInstance()->HoldCharacter = true;
         }
     } 
 
     if (SharedData::GetInstance()->renderPause == true) {
-        UI::PauseUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, 770, 1150, 620, 670, 1);
-        UI::PauseUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, 660, 1260, 775, 810, 2);
-        UI::PauseUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, 700, 1215, 910, 960, 3);
+        UI::PauseUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Pause_Resume_MinX, Pause_Resume_MaxX, Pause_Resume_MinY, Pause_Resume_MaxY, 1);
+        UI::PauseUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Pause_Menu_MinX, Pause_Menu_MaxX, Pause_Menu_MinY, Pause_Menu_MaxY, 2);
+        UI::PauseUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Pause_Exit_MinX, Pause_Exit_MaxX, Pause_Exit_MinY, Pause_Exit_MaxY, 3);
+
+        if (UI::PauseUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Pause_Resume_MinX, Pause_Resume_MaxX, Pause_Resume_MinY, Pause_Resume_MaxY, 1) == true) {
+            SharedData::GetInstance()->Pause_Resume_Hovered = true;
+        } else {
+            SharedData::GetInstance()->Pause_Resume_Hovered = false;
+        }
+        if (UI::PauseUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Pause_Menu_MinX, Pause_Menu_MaxX, Pause_Menu_MinY, Pause_Menu_MaxY, 2) == true) {
+            SharedData::GetInstance()->Pause_Menu_Hovered = true;
+        } else {
+            SharedData::GetInstance()->Pause_Menu_Hovered = false;
+        }
+        if (UI::PauseUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Pause_Exit_MinX, Pause_Exit_MaxX, Pause_Exit_MinY, Pause_Exit_MaxY, 3) == true) {
+            SharedData::GetInstance()->Pause_Exit_Hovered = true;
+        } else {
+            SharedData::GetInstance()->Pause_Exit_Hovered = false;
+        }
     }
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 }
@@ -275,9 +378,6 @@ bool UI::RaceSelectionUIHitbox(double& MousePositionX, double& MousePositionY, i
             SharedData::GetInstance()->Left_Clicked == true &&
             SharedData::GetInstance()->UI_Infested_Selected == true))
         {
-            //if (SharedData::GetInstance()->UI_Infested_Selected == true) {
-            //    SetRace(2);
-            //}
             SharedData::GetInstance()->renderNameInput = true;
             SharedData::GetInstance()->renderMenu = false;
             SharedData::GetInstance()->renderRaceSelection = false;
@@ -511,6 +611,7 @@ bool UI::PauseUIHitbox(double& MousePositionX, double& MousePositionY, int MinX,
             {
                 UI::UI_On = false;
                 SharedData::GetInstance()->renderPause = false;
+                SharedData::GetInstance()->To_Last = true;
             }
             if (PauseUI_ID == 2)
             {
