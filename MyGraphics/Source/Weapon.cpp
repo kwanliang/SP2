@@ -47,6 +47,7 @@ Weapon::Weapon(const string New_Weapon_Name, const int New_Attack_Value, const f
 	: Weapon_Name(New_Weapon_Name), Attack_Value(New_Attack_Value), Fire_Rate(New_Fire_Rate), Ammo_Consumption(New_Ammo_Consumption), MAX_Ammo(New_MAX_Ammo), Cost(New_Cost)
 {
 	Ammo = MAX_Ammo;
+    Reloading = false;
 }
 
 /******************************************************************************/
@@ -67,9 +68,10 @@ Weapon::~Weapon(void)
 /******************************************************************************/
 void Weapon::reload(void)
 {
-	if (Ammo != MAX_Ammo)
+    if (Ammo != MAX_Ammo && Reloading == true)
 	{
 		Ammo = MAX_Ammo;
+        Reloading = false;
 	}
 }
 
@@ -81,8 +83,8 @@ void Weapon::reload(void)
 /******************************************************************************/
 void Weapon::shoot(void)
 {
-	if (Ammo > 0)
-	{
-		Ammo -= Ammo_Consumption;
-	}
+    if (Ammo > 0 )
+    {
+        Ammo -= Ammo_Consumption;
+    }
 }

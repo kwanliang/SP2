@@ -11,8 +11,7 @@ public:
 
     static bool BoundaryCheck(Vector3& CameraPosition);
     static bool ObjCheck(Vector3& CameraPosition, const Vector3& ObjPosition, const Vector3& HitboxSize);
-    static bool BossHitbox(Vector3& ProjectilePosition, Vector3& BossPosition, const Vector3& HitboxSize);
-	static bool CrateHitbox(Vector3& ProjectilePosition, Vector3& BossPosition, const Vector3& HitboxSize);
+    static bool MonsterHitbox(Vector3& ProjectilePosition, Vector3& MonsterPosition, const Vector3& HitboxSize);
 
 };
 

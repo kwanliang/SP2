@@ -23,6 +23,8 @@ Character::Character()
 	Name = "";
 	Race = Race_Type::Human;
 	Coins = 20;
+
+    SetRace(2);
 }
 
 /******************************************************************************/
@@ -53,6 +55,7 @@ void Character::SetRace(int i)
 		MAX_HP = 20;
 		HP = 20;
 		SharedData::GetInstance()->Move_Speed = 400.0f;
+        SharedData::GetInstance()->CharacterID = 0;
 		break;
 	}
 	case Race_Type::Robot:
@@ -60,6 +63,7 @@ void Character::SetRace(int i)
 		MAX_HP = 40;
 		HP = 40;
 		SharedData::GetInstance()->Move_Speed = 200.0f;
+        SharedData::GetInstance()->CharacterID = 1;
 		break;
 	}
 	case Race_Type::Infected:
@@ -67,6 +71,7 @@ void Character::SetRace(int i)
 		MAX_HP = 10;
 		HP = 10;
 		SharedData::GetInstance()->Move_Speed = 800.0f;
+        SharedData::GetInstance()->CharacterID = 2;
 		break;
 	}
 	default: break;

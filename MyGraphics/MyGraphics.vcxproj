@@ -81,6 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Abilities.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\Boss1.cpp" />
     <ClCompile Include="Source\Boss2.cpp" />
@@ -105,6 +106,7 @@
     <ClCompile Include="Source\Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Abilities.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\Boss1.h" />
     <ClInclude Include="Source\Boss2.h" />

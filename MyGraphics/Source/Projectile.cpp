@@ -4,7 +4,7 @@ std::vector<Projectile*> Projectile::ProjectileCount;
 
 Projectile::Projectile(Vector3 pos, Vector3 dir)
 {
-	ProjectilePosition = pos;
+    ProjectilePosition = pos;
 	ProjectileView = dir;
 }
 
@@ -12,68 +12,35 @@ Projectile::~Projectile()
 {
 }
 
-//void Projectile::Init(const Vector3& pos)
-//{
-//    SharedData::GetInstance()->ProjectilePosition = pos;
-//
-//    BulletTime = 0;
-//    time.startTimer();
-//}
-
 void Projectile::Update(double dt)
 {
-    Vector3 Spread(.1f, .1f, .1f);
-	Vector3 Boss1HitboxSize(100, 100, 100);
-
-	Vector3 CrateHitboxsize(50, 50, 50);
-
-    int random = rand() % 10 + 1;
-
-    //if (ProjectileDirChange == true)
-    //{
-    //    ProjectilePosition = SharedData::GetInstance()->PlayerPosition;
-    //    ProjectileTarget = SharedData::GetInstance()->PlayerTarget;
-    //    if (random > 7)
-    //    {
-    //        ProjectileView = ((ProjectileTarget + Spread) - ProjectilePosition).Normalized();
-    //    }
-    //    else if (random > 5 && random < 8)
-    //    {
-    //        ProjectileView = ((ProjectileTarget - Spread) - ProjectilePosition).Normalized();
-    //    }
-    //    else
-    //    {
-    //        ProjectileView = (ProjectileTarget - ProjectilePosition).Normalized();
-    //    }
-    //}
+    Vector3 CrateHitboxsize(50, 50, 50);
 
     BulletTime += time.getElapsedTime();
 
-    if (SharedData::GetInstance()->Left_Clicked == true && BulletTime > .5 && ProjectileDirChange == true && UI.UI_On == false)
+    if (SharedData::GetInstance()->Left_Clicked == true && BulletTime > SharedData::GetInstance()->Equipped->Fire_Rate && UI.UI_On == false && SharedData::GetInstance()->Equipped->Ammo > 0 && SharedData::GetInstance()->Equipped->Reloading == false)
     {
-        ProjectileShot = true;
+        SharedData::GetInstance()->Equipped->shoot();
+        Projectile::ProjectileCount.push_back(new Projectile(SharedData::GetInstance()->PlayerPosition, SharedData::GetInstance()->PlayerTarget - SharedData::GetInstance()->PlayerPosition));
         BulletTime = 0;
     }
 
-    if (collision.BoundaryCheck(ProjectilePosition) == true &&
-        collision.BossHitbox(ProjectilePosition, SharedData::GetInstance()->Boss1PositionSplit1, Boss1HitboxSize) == false &&
+    if (collision.BoundaryCheck(ProjectilePosition) == true) {/* &&
+        collision.MonsterHitbox(ProjectilePosition, SharedData::GetInstance()->Boss1Position, Boss1HitboxSize) == false &&
         BulletTime < .5 && UI.UI_On == false)
     {
-		ProjectilePosition += ProjectileView * dt * 3000;
-        //ProjectileDirChange = false;
+        ProjectilePosition += ProjectileView * dt * 3000;
     }
 
-	    if (collision.BoundaryCheck(ProjectilePosition) == true &&
-			collision.BossHitbox(ProjectilePosition, SharedData::GetInstance()->SetCratePosition, CrateHitboxsize) == false &&
+    if (collision.BoundaryCheck(ProjectilePosition) == true &&
+        collision.ObjCheck(ProjectilePosition, SharedData::GetInstance()->SetCratePosition, CrateHitboxsize) == false &&
         BulletTime < .5 && UI.UI_On == false)
     {
-		ProjectilePosition += ProjectileView * dt * 3000;
-        //ProjectileDirChange = false;
+        ProjectilePosition += ProjectileView * dt * 3000;
     }
     else
-    {
-        //SharedData::GetInstance()->ProjectilePosition = camera.position;
-        ProjectileShot = false;
-        ProjectileDirChange = true;
+    {*/
+        ProjectilePosition += ProjectileView * dt * 500;
+        SharedData::GetInstance()->ProjectilePosition = ProjectilePosition;
     }
 }

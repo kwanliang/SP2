@@ -8,6 +8,7 @@
 #include "UI.h"
 #include "Boss1.h"
 #include "Crate.h"
+#include "Application.h"
 
 class Projectile {
 public:
@@ -17,15 +18,13 @@ public:
 	Vector3 ProjectilePosition;
     Vector3 ProjectileView;
 
-    bool ProjectileDirChange = true;
-    bool ProjectileShot = false;
     bool GunRecoil = false;
 
     double BulletTime;
 
 	Projectile(Vector3 pos = (0, 0, 0), Vector3 dir = (0, 0, 1));
     ~Projectile();
-    //virtual void Init(const Vector3& pos);
+    //virtual void Init();
     virtual void Update(double dt);
 
     StopWatch time;

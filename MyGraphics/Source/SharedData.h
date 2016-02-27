@@ -8,16 +8,15 @@
 #include "Weapon.h"
 #include "MyMath.h"
 //#include "Projectile.h"
-#include "NEnemy.h"
 
 class SharedData
 {
 public:
-	static SharedData* GetInstance()
-	{
-		static SharedData data;
-		return &data;
-	}
+    static SharedData* GetInstance()
+    {
+        static SharedData data;
+        return &data;
+    }
 
     //Screen
     int MonitorWidth;
@@ -36,9 +35,11 @@ public:
     bool Mouse_Race_Start;
     bool Mouse_Race_Back;
 
-	bool renderRobotlegs;
-	bool renderHumanlegs;
-	bool renderInfestedlegs;
+    bool renderRobotlegs;
+    bool renderHumanlegs;
+    bool renderInfestedlegs;
+
+    int CharacterID;
 
     //Name Input
     bool renderNameInput;
@@ -66,34 +67,35 @@ public:
     bool Pause_Menu_Hovered;
     bool Pause_Exit_Hovered;
 
-	//Weapon
-	Weapon* Equipped;
+    //Weapon
+    Weapon* Equipped;
 
-	bool Wep0_Equipped;
-	bool Wep1_Equipped;
-	bool Wep2_Equipped;
-	bool Wep3_Equipped;
+    bool Wep0_Equipped;
+    bool Wep1_Equipped;
+    bool Wep2_Equipped;
+    bool Wep3_Equipped;
 
-	bool Own_Wep0;
-	bool Own_Wep1;
-	bool Own_Wep2;
-	bool Own_Wep3;
-	std::map<int, Weapon> WeaponMap;
+    std::map<int, Weapon> WeaponMap;
 
-	//Shop
-	bool Wep1;
-	bool Wep2;
-	bool Wep3;
-	bool Buy;
+    //Shop
+    bool Own_Wep0;
+    bool Own_Wep1;
+    bool Own_Wep2;
+    bool Own_Wep3;
 
-	bool BuyLarge;
-	bool BuyNormal;
+    bool Wep1;
+    bool Wep2;
+    bool Wep3;
+    bool Buy;
+
+    bool BuyLarge;
+    bool BuyNormal;
 
     //Render Skybox
-	bool renderShip;
-	bool renderPlanet1;
-	bool renderPlanet2;
-	bool renderPlanet3;
+    bool renderShip;
+    bool renderPlanet1;
+    bool renderPlanet2;
+    bool renderPlanet3;
 
     //Mouse
     bool Left_Clicked = false;
@@ -118,30 +120,48 @@ public:
     Vector3 PlayerTarget;
     Vector3 PlayerUp;
     Vector3 PlayerRight;
-	//Vector3 PlayerView;
+    Vector3 PlayerView;
 
     //Projectile Position
-	//std::vector<Projectile*> Projectile::ProjectileCount;
-    //Vector3 ProjectilePosition;
+    Vector3 ProjectilePosition;
+
+    //Monster Position
+    Vector3 MonsterPosition;
+
+    //Monster Hitbox
+    Vector3 GreenSlimeHitbox;
+
+    bool MonsterCollision = false;
+
+    //Abilities
+    Vector3 TurretPosition;
+    double AbilityActiveTime;
+    bool Bombard;
+    bool rocketdamage;
+
+    float rocketdown;
 
     //Boss1 Position
-    Vector3 Boss1PositionSplit1;
+    Vector3 Boss1Position;
     Vector3 Boss1Hitbox;
+    float Boss1Degree;
 
     int BOSS1_Splits;
 
     double MousePos_X;
     double MousePos_Y;
 
-	int Boss2_HP;
-	int Phase;
-	float Move_Speed;
+    int Boss2_HP;
+    int Phase;
+    float Move_Speed;
+
+    bool EraseBullet;
 
 	Vector3 SetCratePosition;
 	Vector3 CrateHitboxsize;
 
 private:
-	SharedData(){};
+    SharedData(){};
 };
 
 #endif

@@ -78,13 +78,6 @@
     <ClCompile Include="Source\Boss2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-<<<<<<< 92f4880eb9d85ab7510a483db0691730d2939b33
-    <ClCompile Include="Source\Crate.cpp">
-=======
-    <ClCompile Include="Source\NEnemy.cpp">
->>>>>>> 6f9c0d876d172b5e39663efe56e0b0bcede78527
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h">
@@ -166,13 +159,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Boss2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-<<<<<<< 92f4880eb9d85ab7510a483db0691730d2939b33
-    <ClInclude Include="Source\Crate.h">
-=======
-    <ClInclude Include="Source\NEnemy.h">
->>>>>>> 6f9c0d876d172b5e39663efe56e0b0bcede78527
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

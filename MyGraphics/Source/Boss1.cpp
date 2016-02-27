@@ -8,10 +8,6 @@ Boss1::Boss1()
     BOSS1_HP = 300;
     BOSS1_Attack = 4;
     BOSS1_MoveSpd = 200.0f;
-
-    Vector3 SetBossPosition(-300, -50, 100);
-
-    SharedData::GetInstance()->Boss1PositionSplit1 = SetBossPosition;
 }
 
 Boss1::~Boss1()
@@ -20,24 +16,35 @@ Boss1::~Boss1()
 
 void Boss1::Init()
 {
-    Vector3 Boss1HitboxSize(150, 300, 150);
+    Vector3 Boss1HitboxSize(150, 150, 150);
+
+    Vector3 SetBossPosition(-300, -50, 100);
+
+    SharedData::GetInstance()->Boss1Position = SetBossPosition;
 
     SharedData::GetInstance()->Boss1Hitbox = Boss1HitboxSize;
 }
 
 void Boss1::Update(double dt)
 {
-    //if (Collision::BossHitbox(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->Boss1PositionSplit1, Boss1HitboxSize) == true)
-    //{
-    //    receiveDamage(10);
-    //}
+    if (Boss1::isDead() == false) {
+        if (Collision::MonsterHitbox(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->Boss1Position, SharedData::GetInstance()->Boss1Hitbox) == true
+            && SharedData::GetInstance()->BOSS1_Splits == 1)
+        {
+            receiveDamage(10);
+            //std::cout << BOSS1_HP << std::endl;
+        }
+        FacePlayer(SharedData::GetInstance()->PlayerPosition);
+        ChasePlayer(dt, SharedData::GetInstance()->PlayerPosition);
+    }
+
+    if (SharedData::GetInstance()->rocketdamage == true) {
+        receiveDamage(10);
+        SharedData::GetInstance()->rocketdamage = false;
+        std::cout << BOSS1_HP << std::endl;
+    }
 
     //std::cout << Boss1HitboxSize << std::endl;
-
-    //if (BOSS1_HP <= 0) 
-    //{
-        //SlimeSplit();
-    //}
 
     Boss1::isDead();
 
@@ -61,21 +68,52 @@ void Boss1::receiveDamage(int Damage)
     BOSS1_HP -= Damage;
 }
 
+void Boss1::FacePlayer(Vector3 Player)
+{
+    Vector3 initView(0, 0, -1);
+    Vector3 wantView(Player - SharedData::GetInstance()->Boss1Position);
+    Vector3 normal(0, 1, 0);
+
+    if (SharedData::GetInstance()->Boss1Position != (0, 0, 0))
+    {
+        wantView.Normalize();
+    }
+
+    SharedData::GetInstance()->Boss1Degree = Math::RadianToDegree(acos(initView.Dot(wantView)));
+    Vector3 Crossed = initView.Cross(wantView);
+    if (Crossed.Dot(normal) < 0)
+    {
+        SharedData::GetInstance()->Boss1Degree *= -1;
+    }
+}
+
+void Boss1::ChasePlayer(double dt, Vector3 Player)
+{
+    if (SharedData::GetInstance()->Boss1Position.x >= Player.x + 150)
+    {
+        SharedData::GetInstance()->Boss1Position.x -= (float)(30 * dt);
+    }
+    else if (SharedData::GetInstance()->Boss1Position.x <= Player.x - 150)
+    {
+        SharedData::GetInstance()->Boss1Position.x += (float)(30 * dt);
+    }
+
+    if (SharedData::GetInstance()->Boss1Position.z >= Player.z + 150)
+    {
+        SharedData::GetInstance()->Boss1Position.z -= (float)(30 * dt);
+    }
+    else if (SharedData::GetInstance()->Boss1Position.z <= Player.z - 150)
+    {
+        SharedData::GetInstance()->Boss1Position.z += (float)(30 * dt);
+    }
+}
+
 bool Boss1::isDead()
 {
-    if (SharedData::GetInstance()->BOSS1_Splits == 4) {
+    if (BOSS1_HP <= 0) {
         return true;
     }
     else {
         return false;
     }
-}
-
-void Boss1::SlimeSplit()
-{
-    SharedData::GetInstance()->BOSS1_Splits *= 2;
-    BOSS1_MAX_HP /= 2;
-    BOSS1_HP = BOSS1_MAX_HP;
-    BOSS1_Attack /= 2;
-    BOSS1_MoveSpd *= 2;
 }

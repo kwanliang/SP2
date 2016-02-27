@@ -106,8 +106,7 @@ void Camera2::Update(double dt)
 
 		if (SharedData::GetInstance()->renderPlanet1 == true)
 		{
-            if (Collision::BoundaryCheck(TestPosition) == true
-                && Collision::ObjCheck(TestPosition, SharedData::GetInstance()->Boss1PositionSplit1, Boss1Size) == false)
+            if (Collision::BoundaryCheck(TestPosition) == true)
 			{
 				position.x += view.x * dt * SharedData::GetInstance()->Move_Speed;
 				position.z += view.z * dt * SharedData::GetInstance()->Move_Speed;
@@ -162,8 +161,7 @@ void Camera2::Update(double dt)
 
 		if (SharedData::GetInstance()->renderPlanet1 == true)
 		{
-			if (Collision::BoundaryCheck(TestPosition) == true
-                && Collision::ObjCheck(TestPosition, SharedData::GetInstance()->Boss1PositionSplit1, Boss1Size) == false)
+			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
 				position.x -= right.x * dt * SharedData::GetInstance()->Move_Speed;
 				position.z -= right.z * dt * SharedData::GetInstance()->Move_Speed;
@@ -217,8 +215,7 @@ void Camera2::Update(double dt)
 
 		if (SharedData::GetInstance()->renderPlanet1 == true)
 		{
-			if (Collision::BoundaryCheck(TestPosition) == true
-                && Collision::ObjCheck(TestPosition, SharedData::GetInstance()->Boss1PositionSplit1, Boss1Size) == false)
+			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
 				position.x -= view.x * dt * SharedData::GetInstance()->Move_Speed;
 				position.z -= view.z * dt * SharedData::GetInstance()->Move_Speed;
@@ -273,8 +270,7 @@ void Camera2::Update(double dt)
 
 		if (SharedData::GetInstance()->renderPlanet1 == true)
 		{
-			if (Collision::BoundaryCheck(TestPosition) == true
-                && Collision::ObjCheck(TestPosition, SharedData::GetInstance()->Boss1PositionSplit1, Boss1Size) == false)
+			if (Collision::BoundaryCheck(TestPosition) == true)
 			{
 				position.x += right.x * dt * SharedData::GetInstance()->Move_Speed;
 				position.z += right.z * dt * SharedData::GetInstance()->Move_Speed;
@@ -345,13 +341,15 @@ void Camera2::Update(double dt)
             view = rotation * view;
             up = rotation * up;
             target = position + view;
-            if (Application::IsKeyPressed('E') && Collision::ObjCheck(target, ControlPanel, ControlPanelSize) == true && SharedData::GetInstance()->renderShip == true)
+            if (Application::IsKeyPressed('E') && Collision::ObjCheck(target, ControlPanel, ControlPanelSize) == true
+                && SharedData::GetInstance()->renderShip == true)
             {
                 UI::UI_PlanatNav = true;
                 UI::UI_On = true;
                 SharedData::GetInstance()->HoldCharacter = true;
             }
-            if (Application::IsKeyPressed('E') && Collision::ObjCheck(target, table, tableSize) == true)
+            if (Application::IsKeyPressed('E') && Collision::ObjCheck(target, table, tableSize) == true
+                && SharedData::GetInstance()->renderShip == true)
             {
                 UI::UI_Shop = true;
                 UI::UI_On = true;
@@ -378,7 +376,7 @@ void Camera2::Update(double dt)
         SharedData::GetInstance()->To_Last = false;
     }
 
-    if (Application::IsKeyPressed('R'))
+    if (Application::IsKeyPressed('Q'))
     {
         Reset();
     }
@@ -388,6 +386,7 @@ void Camera2::Update(double dt)
     SharedData::GetInstance()->PlayerUp = up;
     SharedData::GetInstance()->MousePos_X = mouseXPos;
     SharedData::GetInstance()->MousePos_Y = mouseYPos;
+    SharedData::GetInstance()->PlayerView = view;
 }
 
 void Camera2::Reset()

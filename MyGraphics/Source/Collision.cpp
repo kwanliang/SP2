@@ -88,38 +88,22 @@ bool Collision::ObjCheck(Vector3& CameraPosition, const Vector3& ObjPosition, co
     }
 }
 
-bool Collision::BossHitbox(Vector3& ProjectilePosition, Vector3& BossPosition, const Vector3& HitboxSize)
+bool Collision::MonsterHitbox(Vector3& ProjectilePosition, Vector3& MonsterPosition, const Vector3& HitboxSize)
 {
-    Vector3 MaxPoint = BossPosition + HitboxSize;
-    Vector3 MinPoint = BossPosition - HitboxSize;
+    Vector3 MaxPoint = MonsterPosition + HitboxSize;
+    Vector3 MinPoint = MonsterPosition - HitboxSize;
 
     if (ProjectilePosition.x > MinPoint.x && ProjectilePosition.x < MaxPoint.x &&
         ProjectilePosition.y > MinPoint.y && ProjectilePosition.y < MaxPoint.y &&
         ProjectilePosition.z > MinPoint.z && ProjectilePosition.z < MaxPoint.z)
     {
         return true;
+        std::cout << "always true" << std::endl;
     }
     else
     {
         return false;
+        std::cout << "always false" << std::endl;
     }
 }
-
-bool Collision::CrateHitbox(Vector3& ProjectilePosition, Vector3& BossPosition, const Vector3& HitboxSize)
-{
-	Vector3 MaxPoint = BossPosition + HitboxSize;
-	Vector3 MinPoint = BossPosition - HitboxSize;
-
-	if (ProjectilePosition.x > MinPoint.x && ProjectilePosition.x < MaxPoint.x &&
-		ProjectilePosition.y > MinPoint.y && ProjectilePosition.y < MaxPoint.y &&
-		ProjectilePosition.z > MinPoint.z && ProjectilePosition.z < MaxPoint.z)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
 
