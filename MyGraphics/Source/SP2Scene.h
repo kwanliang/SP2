@@ -223,6 +223,8 @@ public:
     float LSPEED;
 
 	float Wait = 0.f;
+	float Wait1 = 0.f;
+	int test = 0;
 
     std::string FPS;
 
@@ -285,6 +287,7 @@ private:
 	void RenderHUD();
 	void RenderShip();
 	void RenderShop();
+	void RenderEnemies();
     void RenderPlanet1();
     void RenderPlanet2();
     void RenderPlanet3();

@@ -90,7 +90,7 @@ void Character::recieveDamage(int Damage)
 /******************************************************************************/
 /*!
 \brief
-	Recovers 5 health to Character per use.
+	Recovers 10% HP to Character per use.
 	Health cannot exceed max health.
 	Consumes 1 healthkit per use.
 	Prevents healthkit usage if Character have no healthkit.
@@ -100,13 +100,13 @@ void Character::useHealth_kit(void)
 {
 	if (health_kit_amount != 0)
 	{
-		if (HP + 5 >= MAX_HP)
+		if (HP + (MAX_HP * 0.1) >= MAX_HP)
 		{
 			HP = MAX_HP;
 		}
 		else
 		{
-			HP += 5;
+			HP += (MAX_HP * 0.1);
 		}
 		health_kit_amount -= 1;
 	}
@@ -115,7 +115,7 @@ void Character::useHealth_kit(void)
 /******************************************************************************/
 /*!
 \brief
-	Recovers 10 health to Character per use.
+	Recovers 50% HP to Character per use
 	Health cannot exceed max health.
 	Consumes 1 large healthkit per use.
 	Prevents large healthkit usage if Character have no large healthkit.
@@ -125,13 +125,13 @@ void Character::useLarge_Health_kit(void)
 {
 	if (large_health_kit_amount != 0)
 	{
-		if (HP + 10 >= MAX_HP)
+		if (HP + (MAX_HP * 0.5) >= MAX_HP)
 		{
 			HP = MAX_HP;
 		}
 		else
 		{
-			HP += 10;
+			HP += (MAX_HP * 0.5);
 		}
 		large_health_kit_amount -= 1;
 	}

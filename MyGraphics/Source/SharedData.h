@@ -3,10 +3,12 @@
 
 #include <vector>
 #include <map>
+
 #include "Vector3.h"
 #include "Weapon.h"
 #include "MyMath.h"
 //#include "Projectile.h"
+#include "NEnemy.h"
 
 class SharedData
 {
@@ -83,6 +85,9 @@ public:
 	bool Wep2;
 	bool Wep3;
 	bool Buy;
+
+	bool BuyLarge;
+	bool BuyNormal;
 
     //Render Skybox
 	bool renderShip;

@@ -3,7 +3,7 @@
 #include "SP2Scene.h"
 #include "Application.h"
 
-bool UI::UI_On = false;
+bool UI::UI_On = true;
 bool UI::UI_PlanatNav = false;
 bool UI::UI_PlanetName = false;
 bool UI::UI_Shop = false;
@@ -265,11 +265,21 @@ void UI::Update(double dt)
 		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Buy1_MinX, Buy1_MaxX, Buy1_MinY, Buy1_MaxY, 5);
 	}
 
+	float BuyLarge_MinX = (1100.f / MonitorWidth) * Current_MonitorWidth;
+	float BuyLarge_MaxX = (1300.f / MonitorWidth) * Current_MonitorWidth;
+	float BuyLarge_MinY = (380.f / MonitorHeight) * Current_MonitorHeight;
+	float BuyLarge_MaxY = (430.f / MonitorHeight) * Current_MonitorHeight;
+
+	float BuyNormal_MinX = (1100.f / MonitorWidth) * Current_MonitorWidth;
+	float BuyNormal_MaxX = (1300.f / MonitorWidth) * Current_MonitorWidth;
+	float BuyNormal_MinY = (740.f / MonitorHeight) * Current_MonitorHeight;
+	float BuyNormal_MaxY = (790.f / MonitorHeight) * Current_MonitorHeight;
+
 	if (UI::UI_ShopItem == true)
 	{
-		//UI::ShopItemUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun1_MinX, Gun1_MaxX, Gun1_MinY, Gun1_MaxY, 1);
-		//UI::ShopItemUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun2_MinX, Gun2_MaxX, Gun2_MinY, Gun2_MaxY, 2);
-		//UI::ShopItemUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun3_MinX, Gun3_MaxX, Gun3_MinY, Gun3_MaxY, 3);
+		UI::ShopItemUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, BuyLarge_MinX, BuyLarge_MaxX, BuyLarge_MinY, BuyLarge_MaxY, 1);
+		UI::ShopItemUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, BuyNormal_MinX, BuyNormal_MaxX, BuyNormal_MinY, BuyNormal_MaxY, 2);
+		UI::ShopItemUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Back2_MinX, Back2_MaxX, Back2_MinY, Back2_MaxY, 3);
 	}
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -598,15 +608,16 @@ bool UI::ShopItemUIHitbox(double& MousePositionX, double& MousePositionY, int Mi
         MousePositionY >= MinY && MousePositionY <= MaxY) {
         if (ShopItemUI_ID == 1 && SharedData::GetInstance()->Left_Clicked == true)
 		{
+			SharedData::GetInstance()->BuyLarge = true;
         }
 		if (ShopItemUI_ID == 2 && SharedData::GetInstance()->Left_Clicked == true)
 		{
+			SharedData::GetInstance()->BuyNormal = true;
 		}
 		if (ShopItemUI_ID == 3 && SharedData::GetInstance()->Left_Clicked == true)
 		{
-			UI::UI_Shop = false;
 			UI::UI_ShopItem = false;
-			UI::UI_On = false;
+			UI::UI_Shop = true;
 		}
         return true;
     }

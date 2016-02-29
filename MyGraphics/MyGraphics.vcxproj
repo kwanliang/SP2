@@ -88,6 +88,7 @@
     <ClCompile Include="Source\Character.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
     <ClCompile Include="Source\Enemy.cpp" />
+    <ClCompile Include="Source\NEnemy.cpp" />
     <ClCompile Include="Source\Projectile.cpp" />
     <ClCompile Include="Source\SP2Scene.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
@@ -112,6 +113,7 @@
     <ClInclude Include="Source\Enemy.h" />
     <ClInclude Include="Source\Keyboard.h" />
     <ClInclude Include="Source\Mouse.h" />
+    <ClInclude Include="Source\NEnemy.h" />
     <ClInclude Include="Source\Projectile.h" />
     <ClInclude Include="Source\Race.h" />
     <ClInclude Include="Source\SharedData.h" />

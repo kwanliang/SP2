@@ -60,7 +60,7 @@ void Camera2::Update(double dt)
 			SharedData::GetInstance()->Move_Speed = 100.f;
 		}
 	}
-	if (SharedData::GetInstance()->UI_Robot_Selected == true)
+	else if (SharedData::GetInstance()->UI_Robot_Selected == true)
 	{
 		Test.SetRace(1);
 		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999))
@@ -68,7 +68,11 @@ void Camera2::Update(double dt)
 			SharedData::GetInstance()->Move_Speed = 200.f;
 		}
 	}
-	if (SharedData::GetInstance()->UI_Infested_Selected == true)
+	else if (SharedData::GetInstance()->UI_Infested_Selected == true)
+	{
+		Test.SetRace(2);
+	}
+	else
 	{
 		Test.SetRace(2);
 		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999))

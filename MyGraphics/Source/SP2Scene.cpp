@@ -22,11 +22,12 @@ float SP2Scene::UI_Infested_Rotate = 0;
 
 SP2Scene::SP2Scene()
 {
+	UI::UI_On = false;
     SharedData::GetInstance()->renderMenu = false;
     SharedData::GetInstance()->renderRaceSelection = false;
     SharedData::GetInstance()->renderNameInput = false;
-	SharedData::GetInstance()->renderShip = false;
-	SharedData::GetInstance()->renderPlanet1 = true;
+	SharedData::GetInstance()->renderShip = true;
+	SharedData::GetInstance()->renderPlanet1 = false;
 	SharedData::GetInstance()->renderPlanet2 = false;
 	SharedData::GetInstance()->renderPlanet3 = false;
 	moveupLeftleg = false;
@@ -57,7 +58,13 @@ void SP2Scene::Init()
 	reloading = false;
 	reload_delay = 0.f;
 
-	Character.Coins += 9900;
+	Character.Coins += 5980;
+
+	Item_Spin = 0.f;
+
+	nearDoor = false;
+	closeDoor = false;
+	moveDoor = 0;
 
 	//WEAPONS
 	SharedData::GetInstance()->Buy = false;
@@ -78,12 +85,14 @@ void SP2Scene::Init()
 
 	SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(0)->second;
 
-	Item_Spin = 0.f;
+	//ENEMIES
 
-	nearDoor = false;
-	closeDoor = false;
-	moveDoor = 0;
-
+	//SLIMES
+	for (int amount = 0; amount <= 5; amount++)
+	{
+		Enemy::Enemies.push_back(Enemy(5, 2));
+	}
+		
     //Load vertex and fragment shaders
     m_programID = LoadShaders("Shader//Texture.vertexshader", "Shader//Text.fragmentshader");
 
@@ -424,7 +433,6 @@ void SP2Scene::Init()
     meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<PAUSE<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-
     light[0].type = Light::LIGHT_POINT;
     light[0].position.Set(0, 0, 0);
     light[0].color.Set(1, 1, 1);
@@ -512,72 +520,78 @@ void SP2Scene::Update(double dt)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
 
     //<<<<<<<<<<<<<<<<<<<<<<HOVER CHECK<<<<<<<<<<<<<<<<<<<<<<<<
-    //Menu
-    if (SharedData::GetInstance()->Menu_Start_Hovered == true) {
-        meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start_S.tga");
-    } else {
-        meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start.tga");
-    }
+	if (UI::UI_On == true && SharedData::GetInstance()->renderMenu ||
+		UI::UI_On == true && SharedData::GetInstance()->renderRaceSelection ||
+		UI::UI_On == true && SharedData::GetInstance()->renderNameInput ||
+		UI::UI_On == true && SharedData::GetInstance()->renderPause)
+	{
+		//Menu
+		if (SharedData::GetInstance()->Menu_Start_Hovered == true) {
+		    meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start_S.tga");
+		} else {
+		    meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start.tga");
+		}
 
-    if (SharedData::GetInstance()->Menu_Exit_Hovered == true) {
-        meshList[UI_MENU_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit_S.tga");
-    } else {
-        meshList[UI_MENU_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
-    }
+		if (SharedData::GetInstance()->Menu_Exit_Hovered == true) {
+		    meshList[UI_MENU_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit_S.tga");
+		} else {
+		    meshList[UI_MENU_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
+		}
 
-    //Race
-    if (SharedData::GetInstance()->Race_Name_Hovered == true) {
-        meshList[UI_RACE_SELECT]->textureID = LoadTGA("Image//UI//UI_Race_Select_S.tga");
-    } else {
-        meshList[UI_RACE_SELECT]->textureID = LoadTGA("Image//UI//UI_Race_Select.tga");
-    }
+		//Race
+		if (SharedData::GetInstance()->Race_Name_Hovered == true) {
+		    meshList[UI_RACE_SELECT]->textureID = LoadTGA("Image//UI//UI_Race_Select_S.tga");
+		} else {
+		    meshList[UI_RACE_SELECT]->textureID = LoadTGA("Image//UI//UI_Race_Select.tga");
+		}
 
-    if (SharedData::GetInstance()->Race_Back_Hovered == true) {
-        meshList[UI_RACE_BACK]->textureID = LoadTGA("Image//UI//UI_Race_Back_S.tga");
-    } else {
-        meshList[UI_RACE_BACK]->textureID = LoadTGA("Image//UI//UI_Race_Back.tga");
-    }
+		if (SharedData::GetInstance()->Race_Back_Hovered == true) {
+		    meshList[UI_RACE_BACK]->textureID = LoadTGA("Image//UI//UI_Race_Back_S.tga");
+		} else {
+		    meshList[UI_RACE_BACK]->textureID = LoadTGA("Image//UI//UI_Race_Back.tga");
+		}
 
-    //Name
-    if (SharedData::GetInstance()->Name_Start_Hovered == true) {
-        meshList[UI_NAME_ACCEPT]->textureID = LoadTGA("Image//UI//UI_Name_Accept_S.tga");
-    } else {
-        meshList[UI_NAME_ACCEPT]->textureID = LoadTGA("Image//UI//UI_Name_Accept.tga");
-    }
+		//Name
+		if (SharedData::GetInstance()->Name_Start_Hovered == true) {
+		    meshList[UI_NAME_ACCEPT]->textureID = LoadTGA("Image//UI//UI_Name_Accept_S.tga");
+		} else {
+		    meshList[UI_NAME_ACCEPT]->textureID = LoadTGA("Image//UI//UI_Name_Accept.tga");
+		}
 
-    if (SharedData::GetInstance()->Name_Back_Hovered == true) {
-        meshList[UI_NAME_BACK]->textureID = LoadTGA("Image//UI//UI_Name_Back_S.tga");
-    } else {
-        meshList[UI_NAME_BACK]->textureID = LoadTGA("Image//UI//UI_Name_Back.tga");
-    }
+		if (SharedData::GetInstance()->Name_Back_Hovered == true) {
+		    meshList[UI_NAME_BACK]->textureID = LoadTGA("Image//UI//UI_Name_Back_S.tga");
+		} else {
+		    meshList[UI_NAME_BACK]->textureID = LoadTGA("Image//UI//UI_Name_Back.tga");
+		}
 
-    if (SharedData::GetInstance()->Name_Menu_Hovered == true) {
-        meshList[UI_NAME_MENU]->textureID = LoadTGA("Image//UI//UI_Name_Menu_S.tga");
-    } else {
-        meshList[UI_NAME_MENU]->textureID = LoadTGA("Image//UI//UI_Name_Menu.tga");
-    }
+		if (SharedData::GetInstance()->Name_Menu_Hovered == true) {
+		    meshList[UI_NAME_MENU]->textureID = LoadTGA("Image//UI//UI_Name_Menu_S.tga");
+		} else {
+		    meshList[UI_NAME_MENU]->textureID = LoadTGA("Image//UI//UI_Name_Menu.tga");
+		}
 
-    //Pause
-    if (SharedData::GetInstance()->Pause_Resume_Hovered == true) {
-        meshList[UI_PAUSE_SELECT_RESUME]->textureID = LoadTGA("Image//UI//UI_Resume_S.tga");
-    }
-    else {
-        meshList[UI_PAUSE_SELECT_RESUME]->textureID = LoadTGA("Image//UI//UI_Resume.tga");
-    }
+		//Pause
+		if (SharedData::GetInstance()->Pause_Resume_Hovered == true) {
+		    meshList[UI_PAUSE_SELECT_RESUME]->textureID = LoadTGA("Image//UI//UI_Resume_S.tga");
+		}
+		else {
+		    meshList[UI_PAUSE_SELECT_RESUME]->textureID = LoadTGA("Image//UI//UI_Resume.tga");
+		}
 
-    if (SharedData::GetInstance()->Pause_Menu_Hovered == true) {
-        meshList[UI_PAUSE_SELECT_MENU]->textureID = LoadTGA("Image//UI//UI_Pause_BTMM_S.tga");
-    }
-    else {
-        meshList[UI_PAUSE_SELECT_MENU]->textureID = LoadTGA("Image//UI//UI_Pause_BTMM.tga");
-    }
+		if (SharedData::GetInstance()->Pause_Menu_Hovered == true) {
+		    meshList[UI_PAUSE_SELECT_MENU]->textureID = LoadTGA("Image//UI//UI_Pause_BTMM_S.tga");
+		}
+		else {
+		    meshList[UI_PAUSE_SELECT_MENU]->textureID = LoadTGA("Image//UI//UI_Pause_BTMM.tga");
+		}
 
-    if (SharedData::GetInstance()->Pause_Exit_Hovered == true) {
-        meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit_S.tga");
-    }
-    else {
-        meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
-    }
+		if (SharedData::GetInstance()->Pause_Exit_Hovered == true) {
+		    meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit_S.tga");
+		}
+		else {
+		    meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
+		}
+	}
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     if (SharedData::GetInstance()->UI_Human_Selected == true) {
@@ -640,6 +654,47 @@ void SP2Scene::Update(double dt)
 	{
 		Item_Spin = 0;
 	}
+
+	//Shop
+	if (SharedData::GetInstance()->BuyLarge == true && Character.Coins - 50 >= 0 && Character.large_health_kit_amount <= 9 && Wait1 >= 0.5f && test != 1)
+	{
+		Wait1 = 0.f;
+		Character.Coins -= 50;
+		Character.large_health_kit_amount++;
+		SharedData::GetInstance()->BuyLarge = false;
+		test += 1;
+	}
+
+	cout << test << endl;
+
+	if (SharedData::GetInstance()->BuyNormal == true && Character.Coins - 10 >= 0 && Character.health_kit_amount <= 9 && Wait1 >= 0.5f)
+	{
+		Wait1 = 0.f;
+		Character.Coins -= 10;
+		Character.health_kit_amount++;
+		SharedData::GetInstance()->BuyNormal = false;
+	}
+
+	if (Wait1 < 0.5f)
+	{
+		test = 0;
+		Wait1 += dt;
+	}
+
+	//ENEMIES
+	for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end();)
+	{
+		if ((*it).IsDead() == false)
+		{
+			(*it).EnemyUpdate(dt);
+			++it;
+		}
+		else
+		{
+			it = Enemy::Enemies.erase(it);
+		}
+	}
+
 
 	//PLANET 3
 	if (SharedData::GetInstance()->renderPlanet3 == true)
@@ -1011,6 +1066,7 @@ void SP2Scene::Render()
     }
     else if (SharedData::GetInstance()->renderPlanet1 == true) {
         RenderPlanet1();
+		RenderEnemies();
 		RenderBoss1();
 		Renderlegs();
 		if (enemydefeated >= 10)
@@ -1044,7 +1100,6 @@ void SP2Scene::Render()
 
 	if (UI::UI_On == false) 
 	{
-		RenderHUD();
 		RenderTextOnScreen(meshList[TEXT], "+", Color(1, 0, 0), 3, 13.7f, 10);
 		if (SharedData::GetInstance()->Wep0_Equipped == true)
 		{
@@ -1072,6 +1127,8 @@ void SP2Scene::Render()
 		modelStack.PopMatrix();
 	}
 
+	RenderHUD();
+
 	if (reloading == true)
 	{
 		RenderTextOnScreen(meshList[TEXT], "RELOADING...", Color(1, 0.5, 0.5), 4, 6.5, 8);
@@ -1083,7 +1140,7 @@ void SP2Scene::Render()
         && SharedData::GetInstance()->renderNameInput == false
         && SharedData::GetInstance()->renderPause == false)
 	{
-		RenderHUD();
+
 	}
 
     if (UI.UI_PlanatNav == true)
@@ -1551,18 +1608,46 @@ void SP2Scene::RenderShop()
 			}
 		}
 	}
+
+	//ITEM
 	if (UI::UI_ShopItem == true)
 	{
 		RenderImageOnScreen(meshList[UI_SHOP], 80, .5f, -.1f, 0, 0, 0, 0);
 		RenderImageOnScreen(meshList[COIN], 4, 10, 13, 1, 0, Item_Spin, 0);
 		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 4, 12, 14);
 		RenderTextOnScreen(meshList[TEXT], "Back", Color(1, 1, 1), 2, 19, 3);
-
+		
+		RenderTextOnScreen(meshList[TEXT], "Large Health Kit", Color(0.5, 0.7, 1), 2, 12, 22);
+		RenderTextOnScreen(meshList[TEXT], "Restores 50% HP on use.", Color(0.5, 0.7, 1), 2, 12, 21);
 		RenderImageOnScreen(meshList[LARGE_HEALTH_KIT], 13, 1, 2.6, 1, 0, Item_Spin, 0);
-		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.large_health_kit_amount), Color(1, 1, 1), 3, 2, 5);
-		RenderImageOnScreen(meshList[HEALTH_KIT], 13, 1, 1.1, 1, 0, Item_Spin, 0);
-		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.health_kit_amount), Color(1, 1, 1), 3, 2, 4);
+		RenderTextOnScreen(meshList[TEXT], "You have " + std::to_string(Character.large_health_kit_amount), Color(1, 1, 1), 2, 12, 20);
+		RenderTextOnScreen(meshList[TEXT], "Cost : 50", Color(1, 0.85, 0), 2, 12, 18);
+		RenderImageOnScreen(meshList[COIN], 2, 20, 17, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], "BUY", Color(1, 1, 1), 4, 12, 9);
 
+		RenderTextOnScreen(meshList[TEXT], "Health Kit", Color(0.5, 0.7, 1), 2, 12, 12);
+		RenderTextOnScreen(meshList[TEXT], "Restores 10% HP on use.", Color(0.5, 0.7, 1), 2, 12, 11);
+		RenderImageOnScreen(meshList[HEALTH_KIT], 13, 1, 1.1, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], "You have " + std::to_string(Character.health_kit_amount), Color(1, 1, 1), 2, 12, 10);
+		RenderTextOnScreen(meshList[TEXT], "Cost : 10", Color(1, 0.85, 0), 2, 12, 8);
+		RenderImageOnScreen(meshList[COIN], 2, 20, 7, 1, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], "BUY", Color(1, 1, 1), 4, 12, 4);
+	}
+}
+
+void SP2Scene::RenderEnemies()
+{
+	for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it)
+	{
+		if ((*it).IsDead() == false)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(it->Pos.x, -10, it->Pos.z);
+			modelStack.Rotate(it->Degree, 0, 1, 0);
+			modelStack.Scale(200, 200, 200);
+			RenderMesh(meshList[SLIME_BOSS], false);
+			modelStack.PopMatrix();
+		}
 	}
 }
 
