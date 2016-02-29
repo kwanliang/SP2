@@ -16,6 +16,7 @@
 #include "Boss1.h"
 #include "Boss2.h"
 #include "Boss3.h"
+#include "Crate.h"
 
 class SP2Scene : public Scene
 {
@@ -182,6 +183,10 @@ class SP2Scene : public Scene
         UI_PAUSE_SELECT_MENU,
         UI_PAUSE_SELECT_EXIT,
 
+		//CRATE
+		CRATE,
+		LOOT,
+
         NUM_GEOMETRY,
     };
     enum UNIFORM_TYPE
@@ -299,6 +304,7 @@ private:
 	void moveRobotBosssleg();
 	void turnleg(Vector3 Player);
 	void renderReturnShip();
+	void renderCrate();
 
 	Character Character;
 
@@ -311,6 +317,10 @@ private:
 
 	Boss3 Golem;
 	void RenderBoss3();
+
+	//Crate
+	Crate Crate;
+	void RenderCrate();
 
     Camera2 camera;
 

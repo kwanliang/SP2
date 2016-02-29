@@ -104,3 +104,22 @@ bool Collision::BossHitbox(Vector3& ProjectilePosition, Vector3& BossPosition, c
         return false;
     }
 }
+
+bool Collision::CrateHitbox(Vector3& ProjectilePosition, Vector3& BossPosition, const Vector3& HitboxSize)
+{
+	Vector3 MaxPoint = BossPosition + HitboxSize;
+	Vector3 MinPoint = BossPosition - HitboxSize;
+
+	if (ProjectilePosition.x > MinPoint.x && ProjectilePosition.x < MaxPoint.x &&
+		ProjectilePosition.y > MinPoint.y && ProjectilePosition.y < MaxPoint.y &&
+		ProjectilePosition.z > MinPoint.z && ProjectilePosition.z < MaxPoint.z)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+

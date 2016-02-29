@@ -25,6 +25,8 @@ void Projectile::Update(double dt)
     Vector3 Spread(.1f, .1f, .1f);
 	Vector3 Boss1HitboxSize(100, 100, 100);
 
+	Vector3 CrateHitboxsize(50, 50, 50);
+
     int random = rand() % 10 + 1;
 
     //if (ProjectileDirChange == true)
@@ -55,6 +57,14 @@ void Projectile::Update(double dt)
 
     if (collision.BoundaryCheck(ProjectilePosition) == true &&
         collision.BossHitbox(ProjectilePosition, SharedData::GetInstance()->Boss1PositionSplit1, Boss1HitboxSize) == false &&
+        BulletTime < .5 && UI.UI_On == false)
+    {
+		ProjectilePosition += ProjectileView * dt * 3000;
+        //ProjectileDirChange = false;
+    }
+
+	    if (collision.BoundaryCheck(ProjectilePosition) == true &&
+			collision.BossHitbox(ProjectilePosition, SharedData::GetInstance()->SetCratePosition, CrateHitboxsize) == false &&
         BulletTime < .5 && UI.UI_On == false)
     {
 		ProjectilePosition += ProjectileView * dt * 3000;

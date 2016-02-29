@@ -87,6 +87,7 @@
     <ClCompile Include="Source\Boss3.cpp" />
     <ClCompile Include="Source\Character.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
+    <ClCompile Include="Source\Crate.cpp" />
     <ClCompile Include="Source\Enemy.cpp" />
     <ClCompile Include="Source\NEnemy.cpp" />
     <ClCompile Include="Source\Projectile.cpp" />
@@ -110,6 +111,7 @@
     <ClInclude Include="Source\Boss3.h" />
     <ClInclude Include="Source\Character.h" />
     <ClInclude Include="Source\Collision.h" />
+    <ClInclude Include="Source\Crate.h" />
     <ClInclude Include="Source\Enemy.h" />
     <ClInclude Include="Source\Keyboard.h" />
     <ClInclude Include="Source\Mouse.h" />

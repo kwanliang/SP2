@@ -7,6 +7,7 @@
 #include "Collision.h"
 #include "UI.h"
 #include "Boss1.h"
+#include "Crate.h"
 
 class Projectile {
 public:

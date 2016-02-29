@@ -38,7 +38,7 @@ SP2Scene::SP2Scene()
 	movingRightleg = 0;
 	enemydefeated = 0;
 	flydown = false;
-	flyingdown = 1000;
+	flyingdown = 500;
 	flyup = false;
 	arrowsignmove = 0;
 	arrowsignrotate = 0;
@@ -374,8 +374,8 @@ void SP2Scene::Init()
 	meshList[GUN_1]->textureID = LoadTGA("Image//Weapon//P_Rifle.tga");
 	meshList[GUN_2] = MeshBuilder::GenerateOBJ("Heavy Pulse Rifle", "OBJ//Weapon//H_Rifle.obj");
 	meshList[GUN_2]->textureID = LoadTGA("Image//Weapon//H_Rifle.tga");
-	meshList[GUN_3] = MeshBuilder::GenerateOBJ("minigun", "OBJ//Weapon//minigun.obj");
-	meshList[GUN_3]->textureID = LoadTGA("Image//Weapon//minigun.tga");
+	//meshList[GUN_3] = MeshBuilder::GenerateOBJ("minigun", "OBJ//Weapon//minigun.obj");
+	//meshList[GUN_3]->textureID = LoadTGA("Image//Weapon//minigun.tga");
     meshList[BULLET] = MeshBuilder::GenerateOBJ("bullet", "OBJ//bullet.obj");
     meshList[BULLET]->textureID = LoadTGA("Image//bullet.tga");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<GUN<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -416,8 +416,8 @@ void SP2Scene::Init()
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<BODY<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<RETURN SHIP<<<<<<<<<<<<<<<<<<<<<<<
-	//meshList[RETURN_SHIP] = MeshBuilder::GenerateOBJ("return ship ", "OBJ//returnship.obj");
-	//meshList[RETURN_SHIP]->textureID = LoadTGA("Image//returnship.tga");
+	meshList[RETURN_SHIP] = MeshBuilder::GenerateOBJ("return ship ", "OBJ//returnship.obj");
+	meshList[RETURN_SHIP]->textureID = LoadTGA("Image//returnship.tga");
 	meshList[ARROW_SIGN] = MeshBuilder::GenerateOBJ("return ship ", "OBJ//arrowsign.obj");
 	meshList[ARROW_SIGN]->textureID = LoadTGA("Image//arrowsign.tga");
     //<<<<<<<<<<<<<<<<<<<<<<<<RETURN SHIP<<<<<<<<<<<<<<<<<<<<<<<
@@ -432,6 +432,11 @@ void SP2Scene::Init()
     meshList[UI_PAUSE_SELECT_EXIT] = MeshBuilder::GenerateOBJ("UI pause plane", "OBJ//UI_Menu_Select.obj");
     meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<PAUSE<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<CRATE<<<<<<<<<<<<<<<<<<<<<<<<<<
+	meshList[CRATE] = MeshBuilder::GenerateOBJ("crate", "OBJ//crate.obj");
+	meshList[CRATE]->textureID = LoadTGA("Image//crate.tga");
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<CRATE<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     light[0].type = Light::LIGHT_POINT;
     light[0].position.Set(0, 0, 0);
@@ -510,6 +515,7 @@ void SP2Scene::RenderMesh(Mesh *mesh, bool enableLight) {
 
 void SP2Scene::Update(double dt)
 {
+	cout << enemydefeated << endl;
 	if (Application::IsKeyPressed('1')) //enable back face culling
 		glEnable(GL_CULL_FACE);
 	if (Application::IsKeyPressed('2')) //disable back face culling
@@ -769,6 +775,12 @@ void SP2Scene::Update(double dt)
 		}
 	}
 
+	Crate.Update(dt);
+	if (Application::IsKeyPressed('B'))
+	{
+		SharedData::GetInstance()->Crate_HP--;
+	}
+
 	// Show FPS
 	FPS = std::to_string(toupper(1 / dt));
 
@@ -948,7 +960,7 @@ void SP2Scene::Update(double dt)
 
 	if (flyup == true)
 	{
-		arrowsignrotate += (float)(100 * dt);
+		arrowsignrotate += (float)(300 * dt);
 	}
 
 	if (arrowdown == true)
@@ -970,14 +982,14 @@ void SP2Scene::Update(double dt)
 		}
 	}
 	//return to ship for planet 1 and 2
-	if ((camera.position.z <= 85 && camera.position.z >= -70) && (camera.position.x <= 1450 && camera.position.x >= 1400) 
+	if ((camera.position.z <= 85 && camera.position.z >= -50) && (camera.position.x <= 1500 && camera.position.x >= 1400) 
 	&& (flyup == true) 
 	&& (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true))
 	{
 		RenderTextOnScreen(meshList[TEXT], "return back to ship", Color(1, 0, 0), 10, 13.7f, 10);
 	}
 
-	if (Application::IsKeyPressed('E') && (camera.position.z <= 85 && camera.position.z >= -70) && (camera.position.x <= 1450 && camera.position.x >= 1400) 
+	if (Application::IsKeyPressed('E') && (camera.position.z <= 85 && camera.position.z >= -50) && (camera.position.x <= 1500 && camera.position.x >= 1400) 
 		&& (flyup == true)
 		&& (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true))
 	{
@@ -987,17 +999,18 @@ void SP2Scene::Update(double dt)
 		SharedData::GetInstance()->renderPlanet3 = false;
 		camera.position = (0, 0, 0);
 		enemydefeated = 0;
+		flyingdown = 500;
 	}
 
 	//return to shiup for planet 3
-	if ((camera.position.x <= 85 && camera.position.x >= -70) && (camera.position.z <= 1450 && camera.position.z >= 1400) 
+	if ((camera.position.x <= 85 && camera.position.x >= -50) && (camera.position.z <= 1500 && camera.position.z >= 1400)
 		&& (flyup == true)
 		&& (SharedData::GetInstance()->renderPlanet3 == true ))
 	{
 		RenderTextOnScreen(meshList[TEXT], "return back to ship", Color(1, 0, 0), 10, 13.7f, 10);
 	}
 
-	if (Application::IsKeyPressed('E') && (camera.position.x <= 85 && camera.position.x >= -70) && (camera.position.z <= 1450 && camera.position.z >= 1400) 
+	if (Application::IsKeyPressed('E') && (camera.position.x <= 85 && camera.position.x >= -50) && (camera.position.z <= 1500 && camera.position.z >= 1400) 
 		&& (flyup == true)
 		&& (SharedData::GetInstance()->renderPlanet3 == true))
 	{
@@ -1007,6 +1020,7 @@ void SP2Scene::Update(double dt)
 		SharedData::GetInstance()->renderPlanet3 = false;
 		camera.position = (0, 0, 0);
 		enemydefeated = 0;
+		flyingdown = 500;
 	}
 
     camera.Update(dt);
@@ -1069,6 +1083,7 @@ void SP2Scene::Render()
 		RenderEnemies();
 		RenderBoss1();
 		Renderlegs();
+		RenderCrate();
 		if (enemydefeated >= 10)
 		{
 			renderReturnShip();
@@ -1078,6 +1093,7 @@ void SP2Scene::Render()
         RenderPlanet2();
 		RenderBoss2();
 		Renderlegs();
+		RenderCrate();
 		if (enemydefeated >= 10)
 		{
 			renderReturnShip();
@@ -1087,6 +1103,7 @@ void SP2Scene::Render()
         RenderPlanet3();
 		RenderBoss3();
 		Renderlegs();
+		RenderCrate();
 		if (enemydefeated >= 10)
 		{
 			renderReturnShip();
@@ -2054,6 +2071,33 @@ void SP2Scene::RenderPlanet3()
 	modelStack.Translate(900, -5, 1150);
 	modelStack.Scale(155, 158, 155);
 	RenderMesh(meshList[PLANET3_DARKTREE], true);
+	modelStack.PopMatrix();
+}
+
+void SP2Scene::RenderCrate()
+{
+	if (Crate.isBroken() == false)
+	{
+		modelStack.PushMatrix();
+		modelStack.Scale(20, 20, 20);
+		RenderMesh(meshList[CRATE], false);
+		modelStack.PopMatrix();
+	}
+
+	if (Crate.isBroken() == true)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(0, -50, 0);
+		modelStack.Rotate(Item_Spin, 0, 1, 0);
+		modelStack.Scale(30, 30, 30);
+		RenderMesh(meshList[LARGE_HEALTH_KIT], false);
+		modelStack.PopMatrix();
+	}
+
+	modelStack.PushMatrix();
+	modelStack.Translate(SharedData::GetInstance()->SetCratePosition.x, SharedData::GetInstance()->SetCratePosition.y, SharedData::GetInstance()->SetCratePosition.z);
+	modelStack.Scale(SharedData::GetInstance()->CrateHitboxsize.x, SharedData::GetInstance()->CrateHitboxsize.y, SharedData::GetInstance()->CrateHitboxsize.z);
+	RenderMesh(meshList[Hitbox], false);
 	modelStack.PopMatrix();
 }
 
