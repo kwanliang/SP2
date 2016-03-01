@@ -45,6 +45,7 @@ SP2Scene::SP2Scene()
 	arrowup = false;
 	arrowdown = false;
     SharedData::GetInstance()->renderPause = false;
+	distancefrom_Item = 0;
 }
 
 SP2Scene::~SP2Scene()
@@ -91,6 +92,12 @@ void SP2Scene::Init()
 	for (int amount = 0; amount <= 5; amount++)
 	{
 		Enemy::Enemies.push_back(Enemy(5, 2));
+	}
+
+	//Crate
+	for (int totalCrate = 0; totalCrate <= 1; totalCrate++)
+	{
+		Crate::Crates.push_back(Crate(1, false));
 	}
 		
     //Load vertex and fragment shaders
@@ -515,7 +522,6 @@ void SP2Scene::RenderMesh(Mesh *mesh, bool enableLight) {
 
 void SP2Scene::Update(double dt)
 {
-	cout << enemydefeated << endl;
 	if (Application::IsKeyPressed('1')) //enable back face culling
 		glEnable(GL_CULL_FACE);
 	if (Application::IsKeyPressed('2')) //disable back face culling
@@ -671,8 +677,6 @@ void SP2Scene::Update(double dt)
 		test += 1;
 	}
 
-	cout << test << endl;
-
 	if (SharedData::GetInstance()->BuyNormal == true && Character.Coins - 10 >= 0 && Character.health_kit_amount <= 9 && Wait1 >= 0.5f)
 	{
 		Wait1 = 0.f;
@@ -775,11 +779,43 @@ void SP2Scene::Update(double dt)
 		}
 	}
 
-	Crate.Update(dt);
-	if (Application::IsKeyPressed('B'))
+	Vector3 bob(100, 100, 100);
+
+	for (std::vector<Crate>::iterator manyCrate = Crate::Crates.begin(); manyCrate != Crate::Crates.end();)
 	{
-		SharedData::GetInstance()->Crate_HP--;
+
+		(*manyCrate).crateUpdate(dt);
+		if (Application::IsKeyPressed('B'))
+		{
+			(*manyCrate).Crate_HP--;
+		}
+
+		//if ((*manyCrate).isBroken() == true)
+		//{
+			float magnitude = (camera.position - (*manyCrate).Pos).Length();
+			/*float total_x = 0.f;
+			float total_y = 0.f;
+			float total_z = 0.f;
+			float magnitude = 0.f;
+			total_x = camera.position.x - (*manyCrate).Pos.x;
+			total_y = camera.position.z - (*manyCrate).Pos.y;
+			total_z = camera.position.z - (*manyCrate).Pos.z;
+			magnitude = sqrt((total_x*total_x) + (total_y*total_y) + (total_z*total_z));*/
+			if (Collision::ObjCheck(SharedData::GetInstance()->PlayerPosition, (manyCrate)->Pos, bob) == true && (manyCrate)->pickItem == false)
+			{
+				Character.large_health_kit_amount++;
+				(manyCrate)->Crate::pickItem = true;
+				std::cout << (manyCrate)->pickItem << std::endl;
+				//cout << (manyCrate)->pickItem << endl;
+			}
+			else {
+				manyCrate++;
+			}
+		//}
+		//cout << (manyCrate)->pickItem << endl;
+
 	}
+
 
 	// Show FPS
 	FPS = std::to_string(toupper(1 / dt));
@@ -2076,29 +2112,33 @@ void SP2Scene::RenderPlanet3()
 
 void SP2Scene::RenderCrate()
 {
-	if (Crate.isBroken() == false)
+	for (std::vector<Crate>::iterator manymanycrate = Crate::Crates.begin(); manymanycrate != Crate::Crates.end(); manymanycrate++)
 	{
+		if ((*manymanycrate).isBroken() == false)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(manymanycrate->Pos.x, manymanycrate->Pos.y, manymanycrate->Pos.z);
+			modelStack.Scale(20, 20, 20);
+			RenderMesh(meshList[CRATE], false);
+			modelStack.PopMatrix();
+		}
+
+		if ((*manymanycrate).isBroken() == true && (manymanycrate)->pickItem == false)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(manymanycrate->Pos.x, manymanycrate->Pos.y-50, manymanycrate->Pos.z);
+			modelStack.Rotate(Item_Spin, 0, 1, 0);
+			modelStack.Scale(30, 30, 30);
+			RenderMesh(meshList[LARGE_HEALTH_KIT], false);
+			modelStack.PopMatrix();
+		}
+
 		modelStack.PushMatrix();
-		modelStack.Scale(20, 20, 20);
-		RenderMesh(meshList[CRATE], false);
+		modelStack.Translate(SharedData::GetInstance()->SetCratePosition.x, SharedData::GetInstance()->SetCratePosition.y, SharedData::GetInstance()->SetCratePosition.z);
+		modelStack.Scale(SharedData::GetInstance()->CrateHitboxsize.x, SharedData::GetInstance()->CrateHitboxsize.y, SharedData::GetInstance()->CrateHitboxsize.z);
+		RenderMesh(meshList[Hitbox], false);
 		modelStack.PopMatrix();
 	}
-
-	if (Crate.isBroken() == true)
-	{
-		modelStack.PushMatrix();
-		modelStack.Translate(0, -50, 0);
-		modelStack.Rotate(Item_Spin, 0, 1, 0);
-		modelStack.Scale(30, 30, 30);
-		RenderMesh(meshList[LARGE_HEALTH_KIT], false);
-		modelStack.PopMatrix();
-	}
-
-	modelStack.PushMatrix();
-	modelStack.Translate(SharedData::GetInstance()->SetCratePosition.x, SharedData::GetInstance()->SetCratePosition.y, SharedData::GetInstance()->SetCratePosition.z);
-	modelStack.Scale(SharedData::GetInstance()->CrateHitboxsize.x, SharedData::GetInstance()->CrateHitboxsize.y, SharedData::GetInstance()->CrateHitboxsize.z);
-	RenderMesh(meshList[Hitbox], false);
-	modelStack.PopMatrix();
 }
 
 void SP2Scene::RenderBoss1()

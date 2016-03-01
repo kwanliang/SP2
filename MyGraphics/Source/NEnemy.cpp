@@ -20,7 +20,7 @@ Enemy::~Enemy()
 
 void Enemy::RandomPos(void)
 {
-	srand(rand());
+	srand(time(0));
 	float X = (rand() % (800 - (-800))) + -800;
 	float Z = (rand() % 800);
 	Pos = Vector3(X, 0, Z);

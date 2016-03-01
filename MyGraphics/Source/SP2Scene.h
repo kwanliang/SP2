@@ -273,6 +273,7 @@ public:
 	bool arrowup;
 	bool arrowdown;
 	float arrowsignrotate;
+	float distancefrom_Item;
 	
     virtual void Init();
     virtual void Update(double dt);
@@ -319,7 +320,7 @@ private:
 	void RenderBoss3();
 
 	//Crate
-	Crate Crate;
+	
 	void RenderCrate();
 
     Camera2 camera;

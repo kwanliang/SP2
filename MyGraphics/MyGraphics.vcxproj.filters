@@ -78,7 +78,6 @@
     <ClCompile Include="Source\Boss2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\NEnemy.cpp">
     <ClCompile Include="Source\Crate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -165,11 +164,7 @@
     <ClInclude Include="Source\Boss2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-<<<<<<< Updated upstream
-    <ClInclude Include="Source\NEnemy.h">
-=======
     <ClInclude Include="Source\Crate.h">
->>>>>>> Stashed changes
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

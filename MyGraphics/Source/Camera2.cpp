@@ -22,7 +22,7 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 	Vector3 tableSize(200, 800, 800);
 
 	Vector3 boss2Hitbox(0, 0, 1000);
-	Vector3 boss2Hitboxsize(375, 200, 375);
+	Vector3 boss2Hitboxsize(0, 0, 0);
 
     Vector3 Boss1Size(200, 200, 200);
 

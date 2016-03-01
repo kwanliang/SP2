@@ -1,16 +1,33 @@
 #include "Crate.h"
 
+std::vector<Crate> Crate::Crates;
+
 Crate::Crate()
 {
-	SharedData::GetInstance()->Crate_HP = 1;
-	Vector3 SetCratePosition(100, -50, 100);
-	SharedData::GetInstance()->SetCratePosition = SetCratePosition;
-	Item_Drop = false;
+	Crate_HP = 0;
+	totalCrate = 0;
+	pickItem = false;
+	RandomPos();
+}
 
+Crate::Crate(int HP, bool pickItem)
+{
+	this->Crate_HP = HP;
+	this->pickItem = pickItem;
+	RandomPos();
 }
 
 Crate::~Crate()
 {
+}
+
+void Crate::RandomPos(void)
+{
+
+		srand(rand());
+		float X = (rand() % (1200 - (-1200))) + -1200;
+		float Z = (rand() % (1200 - (-1200))) + -1200;
+		Pos = Vector3(X, 0, Z);
 }
 
 void Crate::Init()
@@ -20,7 +37,7 @@ void Crate::Init()
 	SharedData::GetInstance()->CrateHitboxsize = CrateHitboxsize;
 }
 
-void Crate::Update(double dt)
+void Crate::crateUpdate(double dt)
 {
 	//if (Collision::CrateHitbox(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->SetCratePosition, CrateHitboxsize) == true)
 	//{
@@ -30,19 +47,18 @@ void Crate::Update(double dt)
 
 void Crate::takeDamage(int Damage)
 {
-	SharedData::GetInstance()->Crate_HP -= Damage;
+	Crate_HP -= Damage;
 }
 
 bool Crate::isBroken(void)
 {
-	if (SharedData::GetInstance()->Crate_HP <=0) 
+	if (Crate_HP <=0) 
 	{
 		return true;
 	}
 	else 
 	{
 		return false;
-		Item_Drop = true;
 	}
 }
 

@@ -137,7 +137,6 @@ public:
 	int Phase;
 	float Move_Speed;
 
-	int Crate_HP;
 	Vector3 SetCratePosition;
 	Vector3 CrateHitboxsize;
 
