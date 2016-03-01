@@ -81,8 +81,8 @@ void SP2Scene::Init()
     SharedData::GetInstance()->Own_Wep3 = false;
 
     SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(0, Weapon("Energy Pistol", 1, 0.5f, 1, 20, 0)));
-    SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(1, Weapon("Pulse Rifle", 2, 0.3, 1, 30, 200)));
-    SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(2, Weapon("Heavy Pulse Rifle", 4, 1.f, 2, 10, 500)));
+    SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(1, Weapon("Pulse Rifle", 1, 0.3f, 1, 30, 200)));
+    SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(2, Weapon("Heavy Pulse Rifle", 10, 1.f, 2, 10, 500)));
     SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(3, Weapon("Minigun", 1, 0.1f, 1, 100, 1000)));
 
     SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(0)->second;
@@ -530,8 +530,7 @@ void SP2Scene::RenderMesh(Mesh *mesh, bool enableLight) {
 }
 
 void SP2Scene::Update(double dt)
-{
-	//if (Application::IsKeyPressed('1')) //enable back face culling
+{	//if (Application::IsKeyPressed('1')) //enable back face culling
 	//	glEnable(GL_CULL_FACE);
 	//if (Application::IsKeyPressed('2')) //disable back face culling
 	//	glDisable(GL_CULL_FACE);
@@ -540,11 +539,12 @@ void SP2Scene::Update(double dt)
 	if (Application::IsKeyPressed('4'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
 
-    //<<<<<<<<<<<<<<<<<<<<<<HOVER CHECK<<<<<<<<<<<<<<<<<<<<<<<<
-    if (UI::UI_On == true && SharedData::GetInstance()->renderMenu == true ||
-        UI::UI_On == true && SharedData::GetInstance()->renderRaceSelection == true ||
-        UI::UI_On == true && SharedData::GetInstance()->renderNameInput == true ||
-        UI::UI_On == true && SharedData::GetInstance()->renderPause == true)
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//								HOVER CHECK
+    if (UI::UI_On == true && (SharedData::GetInstance()->renderMenu == true ||
+        SharedData::GetInstance()->renderRaceSelection == true ||
+        SharedData::GetInstance()->renderNameInput == true ||
+        SharedData::GetInstance()->renderPause == true))
     {
         //Menu
         if (SharedData::GetInstance()->Menu_Start_Hovered == true) {
@@ -622,6 +622,8 @@ void SP2Scene::Update(double dt)
     }
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//								UI RELATED
 	if (SharedData::GetInstance()->renderRaceSelection == true)
 	{
 		if (SharedData::GetInstance()->UI_Human_Selected == true) {
@@ -653,241 +655,7 @@ void SP2Scene::Update(double dt)
 		}
 	}
 
-	if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true || SharedData::GetInstance()->renderPlanet3 == true)
-	{
-		Character.isDead();
-	}
-
-	//Reloads the gun
-	if (Application::IsKeyPressed('Q') && Wait >= 5 && SharedData::GetInstance()->Equipped->Ammo != SharedData::GetInstance()->Equipped->MAX_Ammo)
-	{
-		Wait = 0;
-        SharedData::GetInstance()->Equipped->Reloading = false;
-	}
-    else if (Wait < 5 && SharedData::GetInstance()->Equipped->Reloading == false)
-	{
-		reload_delay = 0;
-		Wait += (float)(10 * dt);
-	}
-    if (SharedData::GetInstance()->Equipped->Reloading == true)
-	{
-		reload_delay += (float)(10 * dt);
-		if (reload_delay >= 20)
-		{
-			SharedData::GetInstance()->Equipped->reload();
-		}
-	}
-
-	//Use Item
-	if (Application::IsKeyPressed('1') && UseL <= 0 && Character.large_health_kit_amount != 0 && Character.HP != Character.MAX_HP && UseL <= 0)
-	{
-		UseL = 10;
-		Character.useLarge_Health_kit();
-	}
-	else if (UseL >= 0)
-	{
-		UseL -= dt;
-	}
-
-    if (Application::IsKeyPressed('2') && UseN <= 0 && Character.health_kit_amount != 0 && Character.HP != Character.MAX_HP && UseN <= 0)
-	{
-		UseN = 10;
-		Character.useHealth_kit();
-	}
-	else if (UseN >= 0)
-	{
-		UseN -= dt;
-	}
-
-	//Spin item
-	Item_Spin += (float)(120 * dt);
-	if (Item_Spin >= 360)
-	{
-		Item_Spin = 0;
-	}
-
-	//Shop
-	if (SharedData::GetInstance()->BuyLarge == true && Character.Coins - 50 >= 0 && Character.large_health_kit_amount <= 9 && Wait1 >= 0.5f)
-	{
-		Wait1 = 0.f;
-		Character.Coins -= 50;
-		Character.large_health_kit_amount++;
-		SharedData::GetInstance()->BuyLarge = false;
-	}
-
-	if (SharedData::GetInstance()->BuyNormal == true && Character.Coins - 10 >= 0 && Character.health_kit_amount <= 9 && Wait1 >= 0.5f)
-	{
-		Wait1 = 0.f;
-		Character.Coins -= 10;
-		Character.health_kit_amount++;
-		SharedData::GetInstance()->BuyNormal = false;
-	}
-
-	if (Wait1 < 0.5f)
-	{
-		Wait1 += dt;
-	}
-
-
-    for (auto pc : Projectile::ProjectileCount) {
-    for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it)
-    {
-
-            //for (std::vector<Projectile*>::iterator pc = Projectile::ProjectileCount.begin(); pc != Projectile::ProjectileCount.end();) {
-            if ( !(it)->IsDead() &&
-                Collision::MonsterHitbox((pc)->ProjectilePosition, (it)->Pos, SharedData::GetInstance()->GreenSlimeHitbox)
-                /*&& SharedData::GetInstance()->MonsterCollision == false*/) {
-                (it)->ReceiveDamage(SharedData::GetInstance()->Equipped->Attack_Value);
-                std::cout << (it)->HP << " ";
-            }
-        }
-        //    std::cout << (it)->HP << std::endl;
-        //    delete *pc;
-        //    pc = Projectile::ProjectileCount.erase(pc);
-        //}
-        //else {
-        //    ++pc;
-        //}
-        //}
-        //SharedData::GetInstance()->MonsterCollision = false;
-    }
-
-	//PLANET 3
-	if (SharedData::GetInstance()->renderPlanet3 == true)
-	{
-		light[0].type = Light::LIGHT_SPOT;
-		glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
-		Vector3 view = (camera.target - camera.position).Normalized();
-		light[0].position.Set(camera.position.x, camera.position.y, camera.position.z);
-		light[0].spotDirection.Set(-view.x, -view.y, -view.z);
-	}
-
-	//PLANET 2 BOSS
-	Robot.updates(dt);
-
-	if (Application::IsKeyPressed('E') && SharedData::GetInstance()->renderPlanet2 == true)
-	{
-		Robot.moveleftforward = true;
-		Robot.moverightforward = true;
-
-		Robot.moveleftBacklegup = true;
-		Robot.moverightBacklegup = true;
-	}
-
-	if (SharedData::GetInstance()->Boss2_HP <= 400 && SharedData::GetInstance()->Phase == 0)
-	{
-		SharedData::GetInstance()->Phase = 1;
-	}
-	if (SharedData::GetInstance()->Boss2_HP <= 400 && SharedData::GetInstance()->Phase == 1)
-	{
-		meshList[ROBOT_LEFTPAIR]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
-		meshList[ROBOT_RIGHTPAIR]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
-		meshList[ROBOT_BACKLEFTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
-		meshList[ROBOT_BACKRIGHTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
-		meshList[PLANET2_GROUND]->textureID = LoadTGA("Image//planet2//planet2_groundweb.tga");
-		SharedData::GetInstance()->Phase = 9;
-		Robot.growbig = true;
-	}
-
-	if (SharedData::GetInstance()->Boss2_HP <= 100 && SharedData::GetInstance()->Phase == 9)
-	{
-		SharedData::GetInstance()->Phase = 99;
-	}
-
-	if (SharedData::GetInstance()->Phase == 99)
-	{
-		meshList[ROBOT_MAINBODY]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p3.tga");
-		SharedData::GetInstance()->Phase = 999;
-	}
-
-
-	//PLANET 3 BOSS
-	if (Golem.isDead() == false)
-	{
-		Golem.updates(dt);
-		Golem.faceme(camera.position);
-		if (Application::IsKeyPressed(VK_NUMPAD1))
-		{
-			Golem.stompLeft = true;
-		}
-		if (Application::IsKeyPressed(VK_NUMPAD2))
-		{
-			Golem.stompRight = true;
-		}
-		if (Application::IsKeyPressed('V'))
-		{
-			Golem.recieveDamage(100);
-			Robot.recieveDamage(100);
-		}
-		if (Golem.Phase2 == true)
-		{
-			Golem.slap(dt, camera.position);
-		}
-	}
-
-	Vector3 bob(100, 100, 100);
-
-	for (std::vector<Crate>::iterator manyCrate = Crate::Crates.begin(); manyCrate != Crate::Crates.end();)
-	{
-
-		(*manyCrate).crateUpdate(dt);
-		if (Application::IsKeyPressed('B'))
-		{
-			(*manyCrate).Crate_HP--;
-		}
-
-		//if ((*manyCrate).isBroken() == true)
-		//{
-			float magnitude = (camera.position - (*manyCrate).Pos).Length();
-			/*float total_x = 0.f;
-			float total_y = 0.f;
-			float total_z = 0.f;
-			float magnitude = 0.f;
-			total_x = camera.position.x - (*manyCrate).Pos.x;
-			total_y = camera.position.z - (*manyCrate).Pos.y;
-			total_z = camera.position.z - (*manyCrate).Pos.z;
-			magnitude = sqrt((total_x*total_x) + (total_y*total_y) + (total_z*total_z));*/
-			if (Collision::ObjCheck(SharedData::GetInstance()->PlayerPosition, (manyCrate)->Pos, bob) == true && (manyCrate)->pickItem == false)
-			{
-				Character.large_health_kit_amount++;
-				(manyCrate)->Crate::pickItem = true;
-			}
-			else {
-				manyCrate++;
-			}
-	}
-
-
-	// Show FPS
-	FPS = std::to_string(toupper(1 / dt));
-
-	// Charcter Door
-
-	if ((camera.position.x <= 1360 && camera.position.x >= 110) && (camera.position.z <= 670 && camera.position.z >= -670) && (nearDoor == false))
-	{
-		nearDoor = true;
-	}
-
-	if (nearDoor == true)
-	{
-		if (moveDoor <= 100)
-		{
-			moveDoor += (float)(200 * dt);
-
-		}
-		if (moveDoor >= 100){
-
-			nearDoor = false;
-		}
-	}
-
-	if (nearDoor == false && moveDoor >= 0)
-	{
-		moveDoor -= (float)(200 * dt);
-	}
-
-	// Planet Animation
-
+	// PLANET SELECTION UI
 	if (UI_PlanetNav_Animation == true)
 	{
 		if (PlanetMove_1_Y < 2) {
@@ -919,16 +687,17 @@ void SP2Scene::Update(double dt)
 
 		UI.UI_PlanetName = false;
 	}
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	// Gun Recoil
-	if (SharedData::GetInstance()->Left_Clicked == true && GunBounceBack < 5 && UI.UI_On == false && projectile.BulletTime > .5) {
-		GunBounceBack += (float)(100 * dt);
-	}
-	else {
-		GunBounceBack = 0;
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//								CHARACTER RELATED
+	// CHECK IF CHARACTER IS ALIVE
+	if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true || SharedData::GetInstance()->renderPlanet3 == true)
+	{
+		Character.isDead();
 	}
 
-	//character legs
+	// CHARACTER LEGS ANIMATION
 	moveupLeftleg = false;
 	moveupRightleg = false;
 	if (Application::IsKeyPressed('W') || Application::IsKeyPressed('S'))
@@ -1012,182 +781,212 @@ void SP2Scene::Update(double dt)
 		movingRightleg = 0.f;
 
 	}
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	//if (Application::IsKeyPressed('P'))
-	//{
-	//	enemydefeated++;
-	//}
-
-	//returnship
-	if (enemydefeated >= 10 && flyup == false)
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//								WEAPON RELATED
+	// RELOAD
+	if (Application::IsKeyPressed('R') && Wait >= 5 && SharedData::GetInstance()->Equipped->Ammo != SharedData::GetInstance()->Equipped->MAX_Ammo)
 	{
-		flydown = true;
+		Wait = 0;
+		SharedData::GetInstance()->Equipped->Reloading = true;
 	}
-
-	if (flydown == true)
+	else if (Wait < 5 && SharedData::GetInstance()->Equipped->Reloading == false)
 	{
-		flyingdown -= (float)(300 * dt);
-			if (flyingdown <= -50)
-			{
-				flydown = false;
-				flyup = true;
-				arrowdown = true;
-			}
+		reload_delay = 0;
+		Wait += (float)(10 * dt);
 	}
-
-	if (flyup == true)
+	if (SharedData::GetInstance()->Equipped->Reloading == true)
 	{
-		arrowsignrotate += (float)(300 * dt);
-	}
-
-	if (arrowdown == true)
-	{
-		arrowsignmove -= (float)(50 * dt);
-			if (arrowsignmove <= -30)
-			{
-				arrowdown = false;
-				arrowup = true;
-			}
-	}
-	if (arrowup == true)
-	{
-		arrowsignmove += (float)(50 * dt);
-		if (arrowsignmove >= 30)
+		reload_delay += (float)(10 * dt);
+		if (reload_delay >= 20)
 		{
-			arrowdown = true;
-			arrowup = false;
+			SharedData::GetInstance()->Equipped->reload();
 		}
 	}
-	//return to ship for planet 1 and 2
-	if ((camera.position.z <= 85 && camera.position.z >= -50) && (camera.position.x <= 1500 && camera.position.x >= 1400) 
-	&& (flyup == true) 
-	&& (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true))
-	{
-		RenderTextOnScreen(meshList[TEXT], "return back to ship", Color(1, 0, 0), 10, 13.7f, 10);
+
+	// Gun Recoil
+	if (SharedData::GetInstance()->Left_Clicked == true && GunBounceBack < 5 && UI.UI_On == false && projectile.BulletTime > SharedData::GetInstance()->Equipped->Fire_Rate) {
+		GunBounceBack += (float)(100 * dt);
+	}
+	else {
+		GunBounceBack = 0;
 	}
 
-	if (Application::IsKeyPressed('E') && (camera.position.z <= 85 && camera.position.z >= -50) && (camera.position.x <= 1500 && camera.position.x >= 1400) 
-		&& (flyup == true)
-		&& (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true))
+	// BULLET DESPAWN
+	for (std::vector<Projectile*>::iterator it = Projectile::ProjectileCount.begin(); it != Projectile::ProjectileCount.end();) {
+		if (collision.BoundaryCheck((*it)->ProjectilePosition) == false) {
+			delete *it;
+			it = Projectile::ProjectileCount.erase(it);
+		}
+		else{
+			(*it)->Update(dt);
+			++it;
+		}
+	}
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//								ITEM/SHOP RELATED
+	// SPIN ITEM
+	Item_Spin += (float)(120 * dt);
+	if (Item_Spin >= 360)
 	{
-		SharedData::GetInstance()->renderShip = true;
-		SharedData::GetInstance()->renderPlanet1 = false;
-		SharedData::GetInstance()->renderPlanet2 = false;
-		SharedData::GetInstance()->renderPlanet3 = false;
-		camera.position = (0, 0, 0);
-		enemydefeated = 0;
-		flyingdown = 500;
+		Item_Spin = 0;
 	}
 
-	//return to shiup for planet 3
-	if ((camera.position.x <= 85 && camera.position.x >= -50) && (camera.position.z <= 1500 && camera.position.z >= 1400)
-		&& (flyup == true)
-		&& (SharedData::GetInstance()->renderPlanet3 == true ))
+	// USE ITEM
+	if (Application::IsKeyPressed('1') && UseL <= 0 && Character.large_health_kit_amount != 0 && Character.HP != Character.MAX_HP && UseL <= 0)
 	{
-		RenderTextOnScreen(meshList[TEXT], "return back to ship", Color(1, 0, 0), 10, 13.7f, 10);
+		UseL = 10;
+		Character.useLarge_Health_kit();
+	}
+	else if (UseL >= 0)
+	{
+		UseL -= dt;
 	}
 
-	if (Application::IsKeyPressed('E') && (camera.position.x <= 85 && camera.position.x >= -50) && (camera.position.z <= 1500 && camera.position.z >= 1400) 
-		&& (flyup == true)
-		&& (SharedData::GetInstance()->renderPlanet3 == true))
+    if (Application::IsKeyPressed('2') && UseN <= 0 && Character.health_kit_amount != 0 && Character.HP != Character.MAX_HP && UseN <= 0)
 	{
-		SharedData::GetInstance()->renderShip = true;
-		SharedData::GetInstance()->renderPlanet1 = false;
-		SharedData::GetInstance()->renderPlanet2 = false;
-		SharedData::GetInstance()->renderPlanet3 = false;
-		camera.position = (0, 0, 0);
-		enemydefeated = 0;
-		flyingdown = 500;
+		UseN = 10;
+		Character.useHealth_kit();
+	}
+	else if (UseN >= 0)
+	{
+		UseN -= dt;
 	}
 
-    if (Application::IsKeyPressed('Z'))
-    {
-        Character.recieveDamage(1);
-    }
+	// SHOP
+	if (SharedData::GetInstance()->BuyLarge == true && Character.Coins - 50 >= 0 && Character.large_health_kit_amount <= 9 && Wait1 >= 0.5f)
+	{
+		Wait1 = 0.f;
+		Character.Coins -= 50;
+		Character.large_health_kit_amount++;
+		SharedData::GetInstance()->BuyLarge = false;
+	}
 
-    if (SharedData::GetInstance()->UI_Human_Selected == true) {
-        UI_Human_Rotate += (float)(50 * dt);
-        UI_Robot_Rotate = 0;
-        UI_Infested_Rotate = 0;
-        Character.SetRace(0);
-        SharedData::GetInstance()->renderHumanlegs = true;
-        SharedData::GetInstance()->renderInfestedlegs = false;
-        SharedData::GetInstance()->renderRobotlegs = false;
-    }
-    else if (SharedData::GetInstance()->UI_Robot_Selected == true) {
-        UI_Robot_Rotate += (float)(50 * dt);
-        UI_Human_Rotate = 0;
-        UI_Infested_Rotate = 0;
-        Character.SetRace(1);
-        SharedData::GetInstance()->renderRobotlegs = true;
-        SharedData::GetInstance()->renderInfestedlegs = false;
-        SharedData::GetInstance()->renderHumanlegs = false;
-    }
-    else if (SharedData::GetInstance()->UI_Infested_Selected == true) {
-        UI_Infested_Rotate += (float)(50 * dt);
-        UI_Human_Rotate = 0;
-        UI_Robot_Rotate = 0;
-        Character.SetRace(2);
-        SharedData::GetInstance()->renderInfestedlegs = true;
-        SharedData::GetInstance()->renderHumanlegs = false;
-        SharedData::GetInstance()->renderRobotlegs = false;
-    }
+	if (SharedData::GetInstance()->BuyNormal == true && Character.Coins - 10 >= 0 && Character.health_kit_amount <= 9 && Wait1 >= 0.5f)
+	{
+		Wait1 = 0.f;
+		Character.Coins -= 10;
+		Character.health_kit_amount++;
+		SharedData::GetInstance()->BuyNormal = false;
+	}
+	if (Wait1 < 0.5f)
+	{
+		Wait1 += dt;
+	}
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true || SharedData::GetInstance()->renderPlanet3 == true)
-    {
-        Character.isDead();
-    }
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//								PLANETS RELATED
 
-    //Reloads the gun
-    if (Application::IsKeyPressed('R') && Wait >= 5 && SharedData::GetInstance()->Equipped->Ammo != SharedData::GetInstance()->Equipped->MAX_Ammo)
-    {
-        Wait = 0;
-        SharedData::GetInstance()->Equipped->Reloading = true;
-    }
-    else if (Wait < 5 && SharedData::GetInstance()->Equipped->Reloading == false)
-    {
-        reload_delay = 0;
-        Wait += (float)(10 * dt);
-    }
-    if (SharedData::GetInstance()->Equipped->Reloading == true)
-    {
-        reload_delay += (float)(10 * dt);
-        if (reload_delay >= 20)
-        {
-            SharedData::GetInstance()->Equipped->reload();
-        }
-    }
+	//PLANET 2 BOSS
+	Robot.updates(dt);
 
-    //Spin item
-    Item_Spin += (float)(120 * dt);
-    if (Item_Spin >= 360)
-    {
-        Item_Spin = 0;
-    }
+	if (Application::IsKeyPressed('E') && SharedData::GetInstance()->renderPlanet2 == true)
+	{
+		Robot.moveleftforward = true;
+		Robot.moverightforward = true;
 
-    //Shop
-    if (SharedData::GetInstance()->BuyLarge == true && Character.Coins - 50 >= 0 && Character.large_health_kit_amount <= 9 && Wait1 >= 0.5f)
-    {
-        Wait1 = 0.f;
-        Character.Coins -= 50;
-        Character.large_health_kit_amount++;
-        SharedData::GetInstance()->BuyLarge = false;
-    }
+		Robot.moveleftBacklegup = true;
+		Robot.moverightBacklegup = true;
+	}
 
-    if (SharedData::GetInstance()->BuyNormal == true && Character.Coins - 10 >= 0 && Character.health_kit_amount <= 9 && Wait1 >= 0.5f)
-    {
-        Wait1 = 0.f;
-        Character.Coins -= 10;
-        Character.health_kit_amount++;
-        SharedData::GetInstance()->BuyNormal = false;
-    }
+	if (SharedData::GetInstance()->Boss2_HP <= 400 && SharedData::GetInstance()->Phase == 0)
+	{
+		SharedData::GetInstance()->Phase = 1;
+	}
+	if (SharedData::GetInstance()->Boss2_HP <= 400 && SharedData::GetInstance()->Phase == 1)
+	{
+		meshList[ROBOT_LEFTPAIR]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
+		meshList[ROBOT_RIGHTPAIR]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
+		meshList[ROBOT_BACKLEFTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
+		meshList[ROBOT_BACKRIGHTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
+		meshList[PLANET2_GROUND]->textureID = LoadTGA("Image//planet2//planet2_groundweb.tga");
+		SharedData::GetInstance()->Phase = 9;
+		Robot.growbig = true;
+	}
 
-    if (Wait1 < 0.5f)
-    {
-        Wait1 += dt;
-    }
+	if (SharedData::GetInstance()->Boss2_HP <= 100 && SharedData::GetInstance()->Phase == 9)
+	{
+		SharedData::GetInstance()->Phase = 99;
+	}
 
-    //ENEMIES
+	if (SharedData::GetInstance()->Phase == 99)
+	{
+		meshList[ROBOT_MAINBODY]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p3.tga");
+		SharedData::GetInstance()->Phase = 999;
+	}
+
+
+	//PLANET 3
+	if (SharedData::GetInstance()->renderPlanet3 == true)
+	{
+		light[0].type = Light::LIGHT_SPOT;
+		glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
+		Vector3 view = (camera.target - camera.position).Normalized();
+		light[0].position.Set(camera.position.x, camera.position.y, camera.position.z);
+		light[0].spotDirection.Set(-view.x, -view.y, -view.z);
+		
+		//PLANET 3 BOSS
+		if (Golem.isDead() == false)
+		{
+			Golem.updates(dt);
+			Golem.faceme(camera.position);
+			if (Application::IsKeyPressed(VK_NUMPAD1))
+			{
+				Golem.stompLeft = true;
+			}
+			if (Application::IsKeyPressed(VK_NUMPAD2))
+			{
+				Golem.stompRight = true;
+			}
+			if (Application::IsKeyPressed('V'))
+			{
+				Golem.recieveDamage(100);
+				Robot.recieveDamage(100);
+			}
+			if (Golem.Phase2 == true)
+			{
+				Golem.slap(dt, camera.position);
+			}
+		}
+	}
+
+	// CRATES
+    Vector3 CrateHitbox(100, 100, 100);
+	for (std::vector<Crate>::iterator manyCrate = Crate::Crates.begin(); manyCrate != Crate::Crates.end();)
+	{
+
+		(*manyCrate).crateUpdate(dt);
+		if (Application::IsKeyPressed('B'))
+		{
+			(*manyCrate).Crate_HP--;
+		}
+
+		//if ((*manyCrate).isBroken() == true)
+		//{
+			float magnitude = (camera.position - (*manyCrate).Pos).Length();
+			/*float total_x = 0.f;
+			float total_y = 0.f;
+			float total_z = 0.f;
+			float magnitude = 0.f;
+			total_x = camera.position.x - (*manyCrate).Pos.x;
+			total_y = camera.position.z - (*manyCrate).Pos.y;
+			total_z = camera.position.z - (*manyCrate).Pos.z;
+			magnitude = sqrt((total_x*total_x) + (total_y*total_y) + (total_z*total_z));*/
+            if (Collision::ObjCheck(SharedData::GetInstance()->PlayerPosition, (manyCrate)->Pos, CrateHitbox) == true && (manyCrate)->pickItem == false)
+			{
+				Character.large_health_kit_amount++;
+				(manyCrate)->Crate::pickItem = true;
+			}
+			else {
+				manyCrate++;
+			}
+	}
+
+	// SPAWNING AND DESPAWNING OF ENEMIES 
     if (SharedData::GetInstance()->renderPlanet1 == true && Wave <= 0)
     {
         Wave = 5;
@@ -1202,7 +1001,7 @@ void SP2Scene::Update(double dt)
     }
     for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end();)
     {
-        if (!(it)->IsDead())
+        if ((it)->IsDead() == false)
         {
             it->EnemyUpdate(dt);
             ++it;
@@ -1214,344 +1013,148 @@ void SP2Scene::Update(double dt)
             it = Enemy::Enemies.erase(it);
         }
     }
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//								SHIP RELATED
+	// SHIP DOOR
+	if ((camera.position.x <= 1360 && camera.position.x >= 110) && (camera.position.z <= 670 && camera.position.z >= -670) && (nearDoor == false))
+	{
+		nearDoor = true;
+	}
 
-    //PLANET 3
-    if (SharedData::GetInstance()->renderPlanet3 == true)
-    {
-        light[0].type = Light::LIGHT_SPOT;
-        glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
-        Vector3 view = (camera.target - camera.position).Normalized();
-        light[0].position.Set(camera.position.x, camera.position.y, camera.position.z);
-        light[0].spotDirection.Set(-view.x, -view.y, -view.z);
-    }
+	if (nearDoor == true)
+	{
+		if (moveDoor <= 100)
+		{
+			moveDoor += (float)(200 * dt);
 
-    //PLANET 2 BOSS
-    Robot.updates(dt);
+		}
+		if (moveDoor >= 100){
 
-    if (Application::IsKeyPressed('E') && SharedData::GetInstance()->renderPlanet2 == true)
-    {
-        Robot.moveleftforward = true;
-        Robot.moverightforward = true;
+			nearDoor = false;
+		}
+	}
 
-        Robot.moveleftBacklegup = true;
-        Robot.moverightBacklegup = true;
-    }
+	if (nearDoor == false && moveDoor >= 0)
+	{
+		moveDoor -= (float)(200 * dt);
+	}
 
-    if (SharedData::GetInstance()->Boss2_HP <= 400 && SharedData::GetInstance()->Phase == 0)
-    {
-        SharedData::GetInstance()->Phase = 1;
-    }
-    if (SharedData::GetInstance()->Boss2_HP <= 400 && SharedData::GetInstance()->Phase == 1)
-    {
-        meshList[ROBOT_LEFTPAIR]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
-        meshList[ROBOT_RIGHTPAIR]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
-        meshList[ROBOT_BACKLEFTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
-        meshList[ROBOT_BACKRIGHTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
-        meshList[PLANET2_GROUND]->textureID = LoadTGA("Image//planet2//planet2_groundweb.tga");
-        SharedData::GetInstance()->Phase = 9;
-        Robot.growbig = true;
-    }
+	// RETURN TO SHIP
+	if (enemydefeated >= 10 && flyup == false)
+	{
+		flydown = true;
+	}
 
-    if (SharedData::GetInstance()->Boss2_HP <= 100 && SharedData::GetInstance()->Phase == 9)
-    {
-        SharedData::GetInstance()->Phase = 99;
-    }
+	if (flydown == true)
+	{
+		flyingdown -= (float)(300 * dt);
+		if (flyingdown <= -50)
+		{
+			flydown = false;
+			flyup = true;
+			arrowdown = true;
+		}
+	}
 
-    if (SharedData::GetInstance()->Phase == 99)
-    {
-        meshList[ROBOT_MAINBODY]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p3.tga");
-        SharedData::GetInstance()->Phase = 999;
-    }
+	if (flyup == true)
+	{
+		arrowsignrotate += (float)(100 * dt);
+	}
 
+	if (arrowdown == true)
+	{
+		arrowsignmove -= (float)(50 * dt);
+		if (arrowsignmove <= -30)
+		{
+			arrowdown = false;
+			arrowup = true;
+		}
+	}
+	if (arrowup == true)
+	{
+		arrowsignmove += (float)(50 * dt);
+		if (arrowsignmove >= 30)
+		{
+			arrowdown = true;
+			arrowup = false;
+		}
+	}
+	//return to ship for planet 1 and 2
+	if ((camera.position.z <= 85 && camera.position.z >= -70) && (camera.position.x <= 1450 && camera.position.x >= 1400)
+		&& (flyup == true)
+		&& (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true))
+	{
+		RenderTextOnScreen(meshList[TEXT], "return back to ship", Color(1, 0, 0), 10, 13.7f, 10);
+	}
 
-    //PLANET 3 BOSS
-    if (Golem.isDead() == false)
-    {
-        Golem.updates(dt);
-        Golem.faceme(camera.position);
-        if (Application::IsKeyPressed(VK_NUMPAD1))
-        {
-            Golem.stompLeft = true;
-        }
-        if (Application::IsKeyPressed(VK_NUMPAD2))
-        {
-            Golem.stompRight = true;
-        }
-        if (Application::IsKeyPressed('V'))
-        {
-            Golem.recieveDamage(100);
-            Robot.recieveDamage(100);
-        }
-        if (Golem.Phase2 == true)
-        {
-            Golem.slap(dt, camera.position);
-        }
-    }
+	if (Application::IsKeyPressed('E') && (camera.position.z <= 85 && camera.position.z >= -70) && (camera.position.x <= 1450 && camera.position.x >= 1400)
+		&& (flyup == true)
+		&& (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true))
+	{
+		SharedData::GetInstance()->renderShip = true;
+		SharedData::GetInstance()->renderPlanet1 = false;
+		SharedData::GetInstance()->renderPlanet2 = false;
+		SharedData::GetInstance()->renderPlanet3 = false;
+		camera.position = (0, 0, 0);
+		enemydefeated = 0;
+	}
 
+	//return to ship for planet 3
+	if ((camera.position.x <= 85 && camera.position.x >= -70) && (camera.position.z <= 1450 && camera.position.z >= 1400)
+		&& (flyup == true)
+		&& (SharedData::GetInstance()->renderPlanet3 == true))
+	{
+		RenderTextOnScreen(meshList[TEXT], "return back to ship", Color(1, 0, 0), 10, 13.7f, 10);
+	}
+
+	if (Application::IsKeyPressed('E') && (camera.position.x <= 85 && camera.position.x >= -70) && (camera.position.z <= 1450 && camera.position.z >= 1400)
+		&& (flyup == true)
+		&& (SharedData::GetInstance()->renderPlanet3 == true))
+	{
+		SharedData::GetInstance()->renderShip = true;
+		SharedData::GetInstance()->renderPlanet1 = false;
+		SharedData::GetInstance()->renderPlanet2 = false;
+		SharedData::GetInstance()->renderPlanet3 = false;
+		camera.position = (0, 0, 0);
+		enemydefeated = 0;
+	}
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//								UTILITY RELATED
     // Show FPS
     FPS = std::to_string(toupper(1 / dt));
-
-    // Charcter Door
-
-    if ((camera.position.x <= 1360 && camera.position.x >= 110) && (camera.position.z <= 670 && camera.position.z >= -670) && (nearDoor == false))
-    {
-        nearDoor = true;
-    }
-
-    if (nearDoor == true)
-    {
-        if (moveDoor <= 100)
-        {
-            moveDoor += (float)(200 * dt);
-
-        }
-        if (moveDoor >= 100){
-
-            nearDoor = false;
-        }
-    }
-
-    if (nearDoor == false && moveDoor >= 0)
-    {
-        moveDoor -= (float)(200 * dt);
-    }
-
-    // Planet Animation
-
-    if (UI_PlanetNav_Animation == true)
-    {
-        if (PlanetMove_1_Y < 2) {
-            PlanetMove_1_Y += (float)(10 * dt);
-        }
-
-        if (PlanetMove_2_X > -2) {
-            PlanetMove_2_X -= (float)(10 * dt);
-            PlanetMove_2_Y -= (float)(10 * dt);
-        }
-
-        if (PlanetMove_3_X < 2) {
-            PlanetMove_3_X += (float)(10 * dt);
-            PlanetMove_3_Y -= (float)(10 * dt);
-        }
-        else {
-            UI.UI_PlanetName = true;
-        }
-    }
-    else
-    {
-        PlanetMove_1_Y = 0;
-
-        PlanetMove_2_X = 0;
-        PlanetMove_2_Y = 0;
-
-        PlanetMove_3_X = 0;
-        PlanetMove_3_Y = 0;
-
-        UI.UI_PlanetName = false;
-    }
-
-    // Gun Recoil
-    if (SharedData::GetInstance()->Left_Clicked == true && GunBounceBack < 5 && UI.UI_On == false && projectile.BulletTime > .5) {
-        GunBounceBack += (float)(100 * dt);
-    }
-    else {
-        GunBounceBack = 0;
-    }
-
-    //character legs
-    moveupLeftleg = false;
-    moveupRightleg = false;
-    if (Application::IsKeyPressed('W') || Application::IsKeyPressed('S'))
-    {
-        moveupLeftleg = true;
-        moveupRightleg = true;
-    }
-
-    if (moveupLeftleg == true && movedownLeftleg == false)
-    {
-        movingLeftleg += (float)(100 * dt);
-        if (movingLeftleg >= 48)
-        {
-            moveupLeftleg = false;
-            movedownLeftleg = true;
-            moveupRightleg = true;
-        }
-    }
-
-    if (movedownLeftleg == true && moveupLeftleg == true)
-    {
-        movingLeftleg -= (float)(100 * dt);
-        if (movingLeftleg <= -50)
-        {
-            moveupLeftleg = true;
-            movedownLeftleg = false;
-        }
-    }
-
-    if (moveupRightleg == true && movedownLeftleg == true)
-    {
-        movingRightleg += (float)(100 * dt);
-        if (movingRightleg >= 48)
-        {
-            moveupLeftleg = true;
-            movedownRightleg = true;
-            moveupRightleg = false;
-        }
-    }
-
-    if (movedownRightleg == true && moveupLeftleg == true)
-    {
-        movingRightleg -= (float)(100 * dt);
-        if (movingRightleg <= -50)
-        {
-            moveupRightleg = true;
-            movedownRightleg = false;
-        }
-    }
-
-    if (moveupLeftleg == false && moveupRightleg == false)
-    {
-        if (movingLeftleg > 0)
-        {
-            movingLeftleg -= (float)(100 * dt);
-        }
-
-        if (movingLeftleg < 0)
-        {
-            movingLeftleg += (float)(100 * dt);
-        }
-
-        if (movingRightleg > 0)
-        {
-            movingRightleg -= (float)(100 * dt);
-        }
-
-        if (movingRightleg < 0)
-        {
-            movingRightleg += (float)(100 * dt);
-        }
-    }
-
-    if (movingLeftleg <= 1 && movingLeftleg >= 1)
-    {
-        movingLeftleg = 0.f;
-    }
-
-    if (movingRightleg <= 1 && movingRightleg >= 1)
-    {
-        movingRightleg = 0.f;
-
-    }
-
+	
+	// For return ship
     if (Application::IsKeyPressed('P'))
     {
         enemydefeated++;
     }
 
-    //returnship
-    if (enemydefeated >= 10 && flyup == false)
-    {
-        flydown = true;
-    }
-
-    if (flydown == true)
-    {
-        flyingdown -= (float)(300 * dt);
-        if (flyingdown <= -50)
-        {
-            flydown = false;
-            flyup = true;
-            arrowdown = true;
-        }
-    }
-
-    if (flyup == true)
-    {
-        arrowsignrotate += (float)(100 * dt);
-    }
-
-    if (arrowdown == true)
-    {
-        arrowsignmove -= (float)(50 * dt);
-        if (arrowsignmove <= -30)
-        {
-            arrowdown = false;
-            arrowup = true;
-        }
-    }
-    if (arrowup == true)
-    {
-        arrowsignmove += (float)(50 * dt);
-        if (arrowsignmove >= 30)
-        {
-            arrowdown = true;
-            arrowup = false;
-        }
-    }
-    //return to ship for planet 1 and 2
-    if ((camera.position.z <= 85 && camera.position.z >= -70) && (camera.position.x <= 1450 && camera.position.x >= 1400)
-        && (flyup == true)
-        && (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true))
-    {
-        RenderTextOnScreen(meshList[TEXT], "return back to ship", Color(1, 0, 0), 10, 13.7f, 10);
-    }
-
-    if (Application::IsKeyPressed('E') && (camera.position.z <= 85 && camera.position.z >= -70) && (camera.position.x <= 1450 && camera.position.x >= 1400)
-        && (flyup == true)
-        && (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true))
-    {
-        SharedData::GetInstance()->renderShip = true;
-        SharedData::GetInstance()->renderPlanet1 = false;
-        SharedData::GetInstance()->renderPlanet2 = false;
-        SharedData::GetInstance()->renderPlanet3 = false;
-        camera.position = (0, 0, 0);
-        enemydefeated = 0;
-    }
-
-    //return to shiup for planet 3
-    if ((camera.position.x <= 85 && camera.position.x >= -70) && (camera.position.z <= 1450 && camera.position.z >= 1400)
-        && (flyup == true)
-        && (SharedData::GetInstance()->renderPlanet3 == true))
-    {
-        RenderTextOnScreen(meshList[TEXT], "return back to ship", Color(1, 0, 0), 10, 13.7f, 10);
-    }
-
-    if (Application::IsKeyPressed('E') && (camera.position.x <= 85 && camera.position.x >= -70) && (camera.position.z <= 1450 && camera.position.z >= 1400)
-        && (flyup == true)
-        && (SharedData::GetInstance()->renderPlanet3 == true))
-    {
-        SharedData::GetInstance()->renderShip = true;
-        SharedData::GetInstance()->renderPlanet1 = false;
-        SharedData::GetInstance()->renderPlanet2 = false;
-        SharedData::GetInstance()->renderPlanet3 = false;
-        camera.position = (0, 0, 0);
-        enemydefeated = 0;
-    }
-
+	//KL STUFF
     if (SharedData::GetInstance()->Bombard == true) {
         SharedData::GetInstance()->rocketdown -= (float)(700 * dt);
     }
     if (SharedData::GetInstance()->rocketdown < 50) {
         SharedData::GetInstance()->Bombard = false;
         SharedData::GetInstance()->rocketdamage = true;
+       // SharedData::GetInstance()->rocketdamage_Slime = true;
         SharedData::GetInstance()->rocketdown = 1000.f;
+       // SharedData::GetInstance()->explode = true;
     }
 
-    Vector3 no(50, 50, 50);
-
+  /*  if (SharedData::GetInstance()->explode == true) {
+        SharedData::GetInstance()->expandExplosion += (float)(100 * dt);
+        std::cout << SharedData::GetInstance()->expandExplosion << std::endl;
+        if (SharedData::GetInstance()->expandExplosion > 1000) {
+            SharedData::GetInstance()->explode = false;
+            SharedData::GetInstance()->expandExplosion = 1.f;
+        }
+    }*/
 
     camera.Update(dt);
-    for (std::vector<Projectile*>::iterator it = Projectile::ProjectileCount.begin(); it != Projectile::ProjectileCount.end();) {
-        if (collision.BoundaryCheck((*it)->ProjectilePosition) == false) {
-            delete *it;
-            it = Projectile::ProjectileCount.erase(it);
-        }
-        else{
-            (*it)->Update(dt);
-            ++it;
-        }
-    }
     projectile.Update(dt);
     UI.Update(dt);
     abilities.Update(dt);
@@ -1675,11 +1278,6 @@ void SP2Scene::Render()
 
     RenderHUD();
 
-    if (SharedData::GetInstance()->Equipped->Reloading == true)
-    {
-        RenderTextOnScreen(meshList[TEXT], "RELOADING...", Color(1, 0.5, 0.5), 4, 6.5, 8);
-    }
-
     if (UI.UI_PlanatNav == false && UI.UI_Shop == false
         && SharedData::GetInstance()->renderMenu == false
         && SharedData::GetInstance()->renderRaceSelection == false
@@ -1731,12 +1329,12 @@ void SP2Scene::Render()
     // FPS
     RenderTextOnScreen(meshList[TEXT], "FPS:" + FPS, Color(1, 1, 1), 3, 1, 19);
 
-    RenderTextOnScreen(meshList[TEXT], "MouseX : " + std::to_string(SharedData::GetInstance()->MousePos_X), Color(1, 1, 1), 3, 1, 18);
-    RenderTextOnScreen(meshList[TEXT], "MouseY : " + std::to_string(SharedData::GetInstance()->MousePos_Y), Color(1, 1, 1), 3, 1, 17);
+    //RenderTextOnScreen(meshList[TEXT], "MouseX : " + std::to_string(SharedData::GetInstance()->MousePos_X), Color(1, 1, 1), 3, 1, 18);
+    //RenderTextOnScreen(meshList[TEXT], "MouseY : " + std::to_string(SharedData::GetInstance()->MousePos_Y), Color(1, 1, 1), 3, 1, 17);
 
-    RenderTextOnScreen(meshList[TEXT], "PosX : " + std::to_string(SharedData::GetInstance()->PlayerPosition.x), Color(1, 1, 1), 3, 1, 16);
-    RenderTextOnScreen(meshList[TEXT], "PosY : " + std::to_string(SharedData::GetInstance()->PlayerPosition.y), Color(1, 1, 1), 3, 1, 15);
-    RenderTextOnScreen(meshList[TEXT], "PosZ : " + std::to_string(SharedData::GetInstance()->PlayerPosition.z), Color(1, 1, 1), 3, 1, 14);
+    //RenderTextOnScreen(meshList[TEXT], "PosX : " + std::to_string(SharedData::GetInstance()->PlayerPosition.x), Color(1, 1, 1), 3, 1, 16);
+    //RenderTextOnScreen(meshList[TEXT], "PosY : " + std::to_string(SharedData::GetInstance()->PlayerPosition.y), Color(1, 1, 1), 3, 1, 15);
+    //RenderTextOnScreen(meshList[TEXT], "PosZ : " + std::to_string(SharedData::GetInstance()->PlayerPosition.z), Color(1, 1, 1), 3, 1, 14);
 }
 
 void SP2Scene::RenderMenu()
@@ -1758,24 +1356,36 @@ void SP2Scene::RenderRaceSelection()
     RenderImageOnScreen(meshList[UI_RACE_SELECT], 4, 4.5f, 1, 1, 0, 0, 0);
     RenderImageOnScreen(meshList[UI_RACE_BACK], 4, 15, 1, 1, 0, 0, 0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    RenderTextOnScreen(meshList[TEXT], "Choose your race!", Color(1, 1, 1), 3, 7, 19);
+	RenderTextOnScreen(meshList[TEXT], "Choose your race!", Color(0.5, 0.7, 1), 3, 7, 19);
     if (SharedData::GetInstance()->UI_Human_Selected == false) {
         RenderTextOnScreen(meshList[TEXT], "Human", Color(1, 1, 1), 2, 6.5f, 11);
+		RenderTextOnScreen(meshList[TEXT], "HP=20", Color(0.5, 0.7, 1), 2, 6.5f, 10);
+		RenderTextOnScreen(meshList[TEXT], "Speed=Normal", Color(0.5, 0.7, 1), 2, 4.5f, 9);
     }
     else {
         RenderTextOnScreen(meshList[TEXT], "Human", Color(1, 0, 0), 2, 6.5f, 11);
+		RenderTextOnScreen(meshList[TEXT], "HP=20", Color(0.5, 0.7, 1), 2, 6.5f, 10);
+		RenderTextOnScreen(meshList[TEXT], "Speed=Normal", Color(0.5, 0.7, 1), 2, 4.5f, 9);
     }
     if (SharedData::GetInstance()->UI_Robot_Selected == false) {
         RenderTextOnScreen(meshList[TEXT], "Robot", Color(1, 1, 1), 2, 18, 11);
+		RenderTextOnScreen(meshList[TEXT], "HP=40", Color(0.5, 0.7, 1), 2, 18, 10);
+		RenderTextOnScreen(meshList[TEXT], "Speed=Slow", Color(0.5, 0.7, 1), 2, 16, 9);
     }
     else {
         RenderTextOnScreen(meshList[TEXT], "Robot", Color(1, 0, 0), 2, 18, 11);
+		RenderTextOnScreen(meshList[TEXT], "HP=40", Color(0.5, 0.7, 1), 2, 18, 10);
+		RenderTextOnScreen(meshList[TEXT], "Speed=Slow", Color(0.5, 0.7, 1), 2, 16, 9);
     }
     if (SharedData::GetInstance()->UI_Infested_Selected == false) {
         RenderTextOnScreen(meshList[TEXT], "Infested", Color(1, 1, 1), 2, 28.5f, 11);
+		RenderTextOnScreen(meshList[TEXT], "HP=10", Color(0.5, 0.7, 1), 2, 30, 10);
+		RenderTextOnScreen(meshList[TEXT], "Speed=Fast", Color(0.5, 0.7, 1), 2, 28, 9);
     }
     else {
         RenderTextOnScreen(meshList[TEXT], "Infested", Color(1, 0, 0), 2, 28.5f, 11);
+		RenderTextOnScreen(meshList[TEXT], "HP=10", Color(0.5, 0.7, 1), 2, 30, 10);
+		RenderTextOnScreen(meshList[TEXT], "Speed=Fast", Color(0.5, 0.7, 1), 2, 28, 9);
     }
 }
 
@@ -1847,6 +1457,15 @@ void SP2Scene::RenderHUD()
 
 		RenderImageOnScreen(meshList[HUD_AMMO], 30, 2.4, -0.5, 0.01, 0, 0, 0);
 		RenderTextOnScreen(meshList[TEXT], std::to_string(SharedData::GetInstance()->Equipped->Ammo) + "/" + std::to_string(SharedData::GetInstance()->Equipped->MAX_Ammo), Color(1, 1, 1), 2.5, 27, 1);
+
+		if (SharedData::GetInstance()->Equipped->Reloading == true)
+		{
+			RenderTextOnScreen(meshList[TEXT], "RELOADING...", Color(1, 0.3, 0.3), 4, 6.5, 8);
+		}
+		if (SharedData::GetInstance()->Equipped->Reloading == false && SharedData::GetInstance()->Equipped->Ammo <= 0)
+		{
+			RenderTextOnScreen(meshList[TEXT], "NO AMMO.....", Color(1, 0.3, 0.3), 4, 6.5, 8);
+		}
 	}
 }
 
