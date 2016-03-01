@@ -814,6 +814,27 @@ void SP2Scene::Update(double dt)
 	}
 
 	// BULLET DESPAWN
+	for (auto pc : Projectile::ProjectileCount) {
+		for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it)
+		{
+			if (!(it)->IsDead() &&
+				Collision::MonsterHitbox((pc)->ProjectilePosition, (it)->Pos, SharedData::GetInstance()->GreenSlimeHitbox))
+			{
+				(it)->ReceiveDamage(SharedData::GetInstance()->Equipped->Attack_Value);
+			}
+		}
+	}
+
+	for (auto cr_pc : Projectile::ProjectileCount) {
+		for (std::vector<Crate>::iterator it = Crate::Crates.begin(); it != Crate::Crates.end(); ++it)
+		{
+			if (!(it)->isBroken() &&
+				Collision::MonsterHitbox((cr_pc)->ProjectilePosition, (it)->Pos, SharedData::GetInstance()->GreenSlimeHitbox))
+			{
+				(it)->takeDamage(SharedData::GetInstance()->Equipped->Attack_Value);
+			}
+		}
+	}
 	for (std::vector<Projectile*>::iterator it = Projectile::ProjectileCount.begin(); it != Projectile::ProjectileCount.end();) {
 		if (collision.BoundaryCheck((*it)->ProjectilePosition) == false) {
 			delete *it;
@@ -1155,8 +1176,8 @@ void SP2Scene::Update(double dt)
     }*/
 
     camera.Update(dt);
-    projectile.Update(dt);
     UI.Update(dt);
+	projectile.Update(dt);
     abilities.Update(dt);
     boss1.Update(dt);
     enemy.EnemyUpdate(dt);
