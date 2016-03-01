@@ -522,10 +522,10 @@ void SP2Scene::RenderMesh(Mesh *mesh, bool enableLight) {
 
 void SP2Scene::Update(double dt)
 {
-	if (Application::IsKeyPressed('1')) //enable back face culling
-		glEnable(GL_CULL_FACE);
-	if (Application::IsKeyPressed('2')) //disable back face culling
-		glDisable(GL_CULL_FACE);
+	//if (Application::IsKeyPressed('1')) //enable back face culling
+	//	glEnable(GL_CULL_FACE);
+	//if (Application::IsKeyPressed('2')) //disable back face culling
+	//	glDisable(GL_CULL_FACE);
 	if (Application::IsKeyPressed('3'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); //default fill mode
 	if (Application::IsKeyPressed('4'))
@@ -605,33 +605,35 @@ void SP2Scene::Update(double dt)
 		}
 	}
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-    if (SharedData::GetInstance()->UI_Human_Selected == true) {
-        UI_Human_Rotate += (float)(50 * dt);
-        UI_Robot_Rotate = 0;
-        UI_Infested_Rotate = 0;
-		Character.SetRace(0);
-		SharedData::GetInstance()->renderHumanlegs = true;
-		SharedData::GetInstance()->renderInfestedlegs = false;
-		SharedData::GetInstance()->renderRobotlegs = false;
-	}
-	else if (SharedData::GetInstance()->UI_Robot_Selected == true) {
-		UI_Robot_Rotate += (float)(50 * dt);
-		UI_Human_Rotate = 0;
-		UI_Infested_Rotate = 0;
-		Character.SetRace(1);
-		SharedData::GetInstance()->renderRobotlegs = true;
-		SharedData::GetInstance()->renderInfestedlegs = false;
-		SharedData::GetInstance()->renderHumanlegs = false;
-	}
-	else if (SharedData::GetInstance()->UI_Infested_Selected == true) {
-		UI_Infested_Rotate += (float)(50 * dt);
-		UI_Human_Rotate = 0;
-		UI_Robot_Rotate = 0;
-		Character.SetRace(2);
-		SharedData::GetInstance()->renderInfestedlegs = true;
-		SharedData::GetInstance()->renderHumanlegs = false;
-		SharedData::GetInstance()->renderRobotlegs = false;
+	if (SharedData::GetInstance()->renderRaceSelection == true)
+	{
+		if (SharedData::GetInstance()->UI_Human_Selected == true) {
+			UI_Human_Rotate += (float)(50 * dt);
+			UI_Robot_Rotate = 0;
+			UI_Infested_Rotate = 0;
+			Character.SetRace(0);
+			SharedData::GetInstance()->renderHumanlegs = true;
+			SharedData::GetInstance()->renderInfestedlegs = false;
+			SharedData::GetInstance()->renderRobotlegs = false;
+		}
+		else if (SharedData::GetInstance()->UI_Robot_Selected == true) {
+			UI_Robot_Rotate += (float)(50 * dt);
+			UI_Human_Rotate = 0;
+			UI_Infested_Rotate = 0;
+			Character.SetRace(1);
+			SharedData::GetInstance()->renderRobotlegs = true;
+			SharedData::GetInstance()->renderInfestedlegs = false;
+			SharedData::GetInstance()->renderHumanlegs = false;
+		}
+		else if (SharedData::GetInstance()->UI_Infested_Selected == true) {
+			UI_Infested_Rotate += (float)(50 * dt);
+			UI_Human_Rotate = 0;
+			UI_Robot_Rotate = 0;
+			Character.SetRace(2);
+			SharedData::GetInstance()->renderInfestedlegs = true;
+			SharedData::GetInstance()->renderHumanlegs = false;
+			SharedData::GetInstance()->renderRobotlegs = false;
+		}
 	}
 
 	if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true || SharedData::GetInstance()->renderPlanet3 == true)
@@ -660,6 +662,27 @@ void SP2Scene::Update(double dt)
 		}
 	}
 
+	//Use Item
+	if (Application::IsKeyPressed('1') && UseL <= 0 && Character.large_health_kit_amount != 0 && Character.HP != Character.MAX_HP)
+	{
+		UseL = 10;
+		Character.useLarge_Health_kit();
+	}
+	else if (UseL >= 0)
+	{
+		UseL -= dt;
+	}
+
+	if (Application::IsKeyPressed('2') && UseN <= 0 && Character.health_kit_amount != 0 && Character.HP != Character.MAX_HP)
+	{
+		UseN = 10;
+		Character.useHealth_kit();
+	}
+	else if (UseN >= 0)
+	{
+		UseN -= dt;
+	}
+
 	//Spin item
 	Item_Spin += (float)(120 * dt);
 	if (Item_Spin >= 360)
@@ -668,13 +691,12 @@ void SP2Scene::Update(double dt)
 	}
 
 	//Shop
-	if (SharedData::GetInstance()->BuyLarge == true && Character.Coins - 50 >= 0 && Character.large_health_kit_amount <= 9 && Wait1 >= 0.5f && test != 1)
+	if (SharedData::GetInstance()->BuyLarge == true && Character.Coins - 50 >= 0 && Character.large_health_kit_amount <= 9 && Wait1 >= 0.5f)
 	{
 		Wait1 = 0.f;
 		Character.Coins -= 50;
 		Character.large_health_kit_amount++;
 		SharedData::GetInstance()->BuyLarge = false;
-		test += 1;
 	}
 
 	if (SharedData::GetInstance()->BuyNormal == true && Character.Coins - 10 >= 0 && Character.health_kit_amount <= 9 && Wait1 >= 0.5f)
@@ -687,7 +709,6 @@ void SP2Scene::Update(double dt)
 
 	if (Wait1 < 0.5f)
 	{
-		test = 0;
 		Wait1 += dt;
 	}
 
@@ -1303,20 +1324,54 @@ void SP2Scene::RenderHUD()
 {
 	if (UI.UI_On == false)
 	{
-		RenderImageOnScreen(meshList[HUD_INVENTORY], 40, 0.35, 0.06, 0, 0, 0, 0);
-		RenderImageOnScreen(meshList[COIN], 2, 1, 8.8, 1, 0, Item_Spin, 0);
-		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 3, 2, 6.3);
-		RenderImageOnScreen(meshList[LARGE_HEALTH_KIT], 2.5, 0.8, 5.5, 1, 0, Item_Spin, 0);
-		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.large_health_kit_amount), Color(1, 1, 1), 3, 2, 5);
-		RenderImageOnScreen(meshList[HEALTH_KIT], 2, 1, 5.5, 1, 0, Item_Spin, 0);
-		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.health_kit_amount), Color(1, 1, 1), 3, 2, 4);
+		//INJURED
+		if (Character.HP <= Character.MAX_HP * 0.4)
+		{
+			if (SharedData::GetInstance()->UI_Human_Selected == true)
+			{
+				RenderImageOnScreen(meshList[HUD_H_INJURED], 80, .5f, -.1f, 0, 0, 0, 0);
+			}
+			else if (SharedData::GetInstance()->UI_Robot_Selected == true)
+			{
+				RenderImageOnScreen(meshList[HUD_R_INJURED], 80, .5f, -.1f, 0, 0, 0, 0);
+			}
+			else if (SharedData::GetInstance()->UI_Infested_Selected == true)
+			{
+				RenderImageOnScreen(meshList[HUD_I_INJURED], 80, .5f, -.1f, 0, 0, 0, 0);
+			}
+		}
 
-		RenderImageOnScreen(meshList[HUD_CHARACTER], 40, 0.35, -0.3, 0.1, 0, 0, 0);
+		RenderImageOnScreen(meshList[HUD_INVENTORY], 40, 0.35, 0.06, 0.01, 0, 0, 0);
+		RenderImageOnScreen(meshList[COIN], 2, 1, 8.8, 5, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.Coins), Color(1, 0.85, 0), 3, 2, 6.3);
+		RenderImageOnScreen(meshList[LARGE_HEALTH_KIT], 2.5, 0.8, 5.5, 5, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.large_health_kit_amount), Color(1, 1, 1), 3, 2, 5);
+		if (UseL <= 0)
+		{
+			RenderTextOnScreen(meshList[TEXT], "READY", Color(1, 1, 1), 2, 5, 7.5);
+		}
+		else
+		{
+			RenderTextOnScreen(meshList[TEXT], " Cooldown:" + std::to_string(toupper(UseL)) + "s", Color(0.5, 0.7, 1), 2, 4, 7.5);
+		}
+
+		RenderImageOnScreen(meshList[HEALTH_KIT], 2, 1, 5.5, 5, 0, Item_Spin, 0);
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Character.health_kit_amount), Color(1, 1, 1), 3, 2, 4);
+		if (UseN <= 0)
+		{
+			RenderTextOnScreen(meshList[TEXT], "READY", Color(1, 1, 1), 2, 5, 6);
+		}
+		else
+		{
+			RenderTextOnScreen(meshList[TEXT], " Cooldown:" + std::to_string(toupper(UseN)) + "s", Color(0.5, 0.7, 1), 2, 4, 6);
+		}
+
+		RenderImageOnScreen(meshList[HUD_CHARACTER], 40, 0.35, -0.3, 0.011, 0, 0, 0);
 		RenderTextOnScreen(meshList[TEXT], Character.Name, Color(1, 1, 1), 3, 1, 2);
 		RenderTextOnScreen(meshList[TEXT], "HP:", Color(1, 1, 1), 3, 1, 1);
-		RenderTextOnScreen(meshList[TEXT], "   " + std::to_string(Character.HP) + "/" + std::to_string(Character.MAX_HP), Color(1, 0.2, 0.2), 3, 1, 1);
+		RenderTextOnScreen(meshList[TEXT], "   " + std::to_string(Character.HP) + "/" + std::to_string(Character.MAX_HP), Color(1, 1, 1), 3, 1, 1);
 
-		RenderImageOnScreen(meshList[HUD_AMMO], 30, 2.4, -0.5, 0, 0, 0, 0);
+		RenderImageOnScreen(meshList[HUD_AMMO], 30, 2.4, -0.5, 0.01, 0, 0, 0);
 		RenderTextOnScreen(meshList[TEXT], std::to_string(SharedData::GetInstance()->Equipped->Ammo) + "/" + std::to_string(SharedData::GetInstance()->Equipped->MAX_Ammo), Color(1, 1, 1), 2.5, 27, 1);
 	}
 }

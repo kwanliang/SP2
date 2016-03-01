@@ -124,7 +124,6 @@ class SP2Scene : public Scene
 		PLANET3_DARKMOUNTAIN,
 		PLANET3_DARKTREE,
 
-
 		//BOSS 2
 		ROBOT_MAINBODY,
 		ROBOT_LEFTPAIR,
@@ -139,7 +138,6 @@ class SP2Scene : public Scene
 
         //BOSS 1
         SLIME_BOSS,
-
 
 		//BOSS 3
 		GOLEM_HEAD,
@@ -176,6 +174,9 @@ class SP2Scene : public Scene
 		HUD_AMMO,
 		HUD_INVENTORY,
 		HUD_CHARACTER,
+		HUD_H_INJURED,
+		HUD_R_INJURED,
+		HUD_I_INJURED,
 
         //Pause
         UI_PAUSE,
@@ -229,7 +230,6 @@ public:
 
 	float Wait = 0.f;
 	float Wait1 = 0.f;
-	int test = 0;
 
     std::string FPS;
 
@@ -240,6 +240,10 @@ public:
 	//Reloading
 	bool reloading;
 	float reload_delay;
+
+	//Use Item
+	float UseL = 0.f;
+	float UseN = 0.f;
 
 	//Planet Nav Animation
     static bool UI_PlanetNav_Animation;
