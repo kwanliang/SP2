@@ -104,8 +104,7 @@ void Application::Init()
 
 	//Create a window and create its OpenGL context
 	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    //m_window = glfwCreateWindow(mode->width, mode->height, "Computer Graphics", glfwGetPrimaryMonitor(), NULL);
-	m_window = glfwCreateWindow(800, 600, "Computer Graphics", NULL, NULL);
+    m_window = glfwCreateWindow(800, 600, "Computer Graphics", NULL, NULL);
     SharedData::GetInstance()->MonitorWidth = mode->width;
     SharedData::GetInstance()->MonitorHeight = mode->height;
 

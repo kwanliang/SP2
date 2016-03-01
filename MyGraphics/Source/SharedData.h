@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 
+#include "Vector3.h"
 #include "Weapon.h"
 #include "MyMath.h"
 #include <irrKlang.h>
@@ -54,6 +55,9 @@ public:
     //Pause Menu
     bool renderPause;
 
+	//return ship
+	bool renderReturn;
+
     //Selection Hovered
     bool Menu_Start_Hovered;
     bool Menu_Exit_Hovered;
@@ -73,6 +77,10 @@ public:
     bool Pause_Resume_Hovered;
     bool Pause_Menu_Hovered;
     bool Pause_Exit_Hovered;
+
+	//returnship
+	bool Leaveplanet_Hovered;
+	bool Fightboss_Hovered;
 
     //Weapon
     Weapon* Equipped;
@@ -169,6 +177,12 @@ public:
 
 	Vector3 SetCratePosition;
 	Vector3 CrateHitboxsize;
+
+	int enemydefeated ;
+	int flyingdown;
+	bool returnship_UI;
+	bool flydown;
+	bool flyup;
 
 private:
     SharedData(){};

@@ -20,6 +20,7 @@
 #include "Boss2.h"
 #include "Boss3.h"
 #include "Crate.h"
+#include "timer.h"
 
 class SP2Scene : public Scene
 {
@@ -205,6 +206,11 @@ class SP2Scene : public Scene
 		CRATE,
 		LOOT,
 
+		//return ship
+		UI_RETURNPLANE,
+		UI_FIGHTBOSS,
+		UI_LEAVEPLANET,
+
         NUM_GEOMETRY,
     };
     enum UNIFORM_TYPE
@@ -296,15 +302,18 @@ public:
 	float movingLeftleg;
 	float movingRightleg;
 
-	int enemydefeated;
-	bool flydown;
-	bool flyup;
-	float flyingdown;
+	float legSpeed;
+	int legsheight;
+	int legsize;
+	int legP;
+	
 	float arrowsignmove;
 	bool arrowup;
 	bool arrowdown;
 	float arrowsignrotate;
 	float distancefrom_Item;
+
+    bool reloading;
 
     virtual void Init();
     virtual void Update(double dt);
@@ -340,6 +349,7 @@ private:
 	void renderReturnShip();
 	void renderCrate();
     void RenderAbilities();
+	void renderReturnUI();
 
     Character Character;
 
@@ -369,11 +379,16 @@ private:
 
     Abilities abilities;
 
+    Boss1 boss1;
+
     Enemy enemy;
 
     Mesh *meshList[NUM_GEOMETRY];
 
     Light light[1];
+
+	StopWatch time;
+	double Crate_Time;
 
     bool nearDoor;
     float moveDoor;

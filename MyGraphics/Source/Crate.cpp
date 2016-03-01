@@ -15,6 +15,7 @@ Crate::Crate(int HP, bool pickItem)
 	this->Crate_HP = HP;
 	this->pickItem = pickItem;
 	RandomPos();
+	
 }
 
 Crate::~Crate()
@@ -39,10 +40,7 @@ void Crate::Init()
 
 void Crate::crateUpdate(double dt)
 {
-	//if (Collision::CrateHitbox(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->SetCratePosition, CrateHitboxsize) == true)
-	//{
-	//	takeDamage(1);
-	//}
+
 }
 
 void Crate::takeDamage(int Damage)
