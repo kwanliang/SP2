@@ -351,7 +351,7 @@ void Camera2::Update(double dt)
             if (Application::IsKeyPressed('E') && Collision::ObjCheck(target, table, tableSize) == true
                 && SharedData::GetInstance()->renderShip == true)
             {
-                UI::UI_Shop = true;
+                UI::UI_Pepe = true;
                 UI::UI_On = true;
                 SharedData::GetInstance()->HoldCharacter = true;
             }

@@ -19,7 +19,7 @@ public:
 
     static bool UI_PlanatNav;
     static bool UI_PlanetName;
-
+	static bool UI_Pepe;
     static bool UI_Shop;
     static bool UI_ShopGun;
     static bool UI_ShopItem;
@@ -27,7 +27,7 @@ public:
     static int MenuUI_ID;
     static int RaceSelectionUI_ID;
     static int PlanetUI_ID;
-
+	static int PepeUI_ID;
     static int ShopUI_ID;
     static int ShopGunUI_ID;
     static int ShopItemUI_ID;
@@ -37,7 +37,7 @@ public:
     static bool NameInputHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int NameInput_ID);
     static bool PlanetUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int PlanetUI_ID);
     static bool PauseUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int PauseUI_ID);
-
+	static bool PepeUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int PepeUI_ID);
     static bool ShopUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ShopUI_ID);
     static bool ShopGunUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ShopGunUI_ID);
     static bool ShopItemUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ShopItemUI_ID);

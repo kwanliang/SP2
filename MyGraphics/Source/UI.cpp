@@ -6,6 +6,7 @@
 bool UI::UI_On = true;
 bool UI::UI_PlanatNav = false;
 bool UI::UI_PlanetName = false;
+bool UI::UI_Pepe = false;
 bool UI::UI_Shop = false;
 bool UI::UI_ShopGun = false;
 bool UI::UI_ShopItem = false;
@@ -208,6 +209,28 @@ void UI::Update(double dt)
     }
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+	//<<<<<<<<<<<<<<<<<<<<<<<PEPE UI<<<<<<<<<<<<<<<<<<<<<<<<<<
+	float Talk_MinX = (750.f / MonitorWidth) * Current_MonitorWidth;
+	float Talk_MaxX = (1050.f / MonitorWidth) * Current_MonitorWidth;
+	float Talk_MinY = (300.f / MonitorHeight) * Current_MonitorHeight;
+	float Talk_MaxY = (350.f / MonitorHeight) * Current_MonitorHeight;
+
+	float Buying_MinX = (750.f / MonitorWidth) * Current_MonitorWidth;
+	float Buying_MaxX = (1050.f / MonitorWidth) * Current_MonitorWidth;
+	float Buying_MinY = (480.f / MonitorHeight) * Current_MonitorHeight;
+	float Buying_MaxY = (530.f / MonitorHeight) * Current_MonitorHeight;
+
+	float Backing_MinX = (750.f / MonitorWidth) * Current_MonitorWidth;
+	float Backing_MaxX = (1050.f / MonitorWidth) * Current_MonitorWidth;
+	float Backing_MinY = (660.f / MonitorHeight) * Current_MonitorHeight;
+	float Backing_MaxY = (710.f / MonitorHeight) * Current_MonitorHeight;
+
+	if (UI::UI_Pepe == true) {
+		UI::PepeUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Talk_MinX, Talk_MaxX, Talk_MinY, Talk_MaxY, 1);
+		UI::PepeUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Buying_MinX, Buying_MaxX, Buying_MinY, Buying_MaxY, 2);
+		UI::PepeUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Backing_MinX, Backing_MaxX, Backing_MinY, Backing_MaxY, 3);
+	}
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     //<<<<<<<<<<<<<<<<<<<<<<<SHOP UI<<<<<<<<<<<<<<<<<<<<<<<<<<
 	float Weapon_MinX = (680.f / MonitorWidth) * Current_MonitorWidth;
@@ -231,20 +254,25 @@ void UI::Update(double dt)
 		UI::ShopUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Back1_MinX, Back1_MaxX, Back1_MinY, Back1_MaxY, 3);
 	}
 
+	float Gun0_MinX = (40.f / MonitorWidth) * Current_MonitorWidth;
+	float Gun0_MaxX = (700.f / MonitorWidth) * Current_MonitorWidth;
+	float Gun0_MinY = (250.f / MonitorHeight) * Current_MonitorHeight;
+	float Gun0_MaxY = (310.f / MonitorHeight) * Current_MonitorHeight;
+
 	float Gun1_MinX = (40.f / MonitorWidth) * Current_MonitorWidth;
 	float Gun1_MaxX = (700.f / MonitorWidth) * Current_MonitorWidth;
-	float Gun1_MinY = (235.f / MonitorHeight) * Current_MonitorHeight;
-	float Gun1_MaxY = (350.f / MonitorHeight) * Current_MonitorHeight;
+	float Gun1_MinY = (420.f / MonitorHeight) * Current_MonitorHeight;
+	float Gun1_MaxY = (520.f / MonitorHeight) * Current_MonitorHeight;
 				
 	float Gun2_MinX = (40.f / MonitorWidth) * Current_MonitorWidth;
 	float Gun2_MaxX = (700.f / MonitorWidth) * Current_MonitorWidth;
-	float Gun2_MinY = (540.f / MonitorHeight) * Current_MonitorHeight;
-	float Gun2_MaxY = (640.f / MonitorHeight) * Current_MonitorHeight;
+	float Gun2_MinY = (640.f / MonitorHeight) * Current_MonitorHeight;
+	float Gun2_MaxY = (750.f / MonitorHeight) * Current_MonitorHeight;
 			
 	float Gun3_MinX = (40.f / MonitorWidth) * Current_MonitorWidth;
 	float Gun3_MaxX = (700.f / MonitorWidth) * Current_MonitorWidth;
-	float Gun3_MinY = (800.f / MonitorHeight) * Current_MonitorHeight;
-	float Gun3_MaxY = (930.f / MonitorHeight) * Current_MonitorHeight;
+	float Gun3_MinY = (830.f / MonitorHeight) * Current_MonitorHeight;
+	float Gun3_MaxY = (940.f / MonitorHeight) * Current_MonitorHeight;
 
 	float Back2_MinX = (880.f / MonitorWidth) * Current_MonitorWidth;
 	float Back2_MaxX = (1020.f / MonitorWidth) * Current_MonitorWidth;
@@ -258,11 +286,12 @@ void UI::Update(double dt)
 
 	if (UI::UI_ShopGun == true)
 	{
-		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun1_MinX, Gun1_MaxX, Gun1_MinY, Gun1_MaxY, 1);
-		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun2_MinX, Gun2_MaxX, Gun2_MinY, Gun2_MaxY, 2);
-		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun3_MinX, Gun3_MaxX, Gun3_MinY, Gun3_MaxY, 3);
-		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Back2_MinX, Back2_MaxX, Back2_MinY, Back2_MaxY, 4);
-		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Buy1_MinX, Buy1_MaxX, Buy1_MinY, Buy1_MaxY, 5);
+		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun0_MinX, Gun0_MaxX, Gun0_MinY, Gun0_MaxY, 1);
+		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun1_MinX, Gun1_MaxX, Gun1_MinY, Gun1_MaxY, 2);
+		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun2_MinX, Gun2_MaxX, Gun2_MinY, Gun2_MaxY, 3);
+		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Gun3_MinX, Gun3_MaxX, Gun3_MinY, Gun3_MaxY, 4);
+		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Back2_MinX, Back2_MaxX, Back2_MinY, Back2_MaxY, 5);
+		UI::ShopGunUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Buy1_MinX, Buy1_MaxX, Buy1_MinY, Buy1_MaxY, 6);
 	}
 
 	float BuyLarge_MinX = (1100.f / MonitorWidth) * Current_MonitorWidth;
@@ -531,6 +560,39 @@ bool UI::PlanetUIHitbox(double& MousePositionX, double& MousePositionY, int MinX
     }
 }
 
+bool UI::PepeUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int PepeUI_ID)
+{
+	if (MousePositionX >= MinX && MousePositionX <= MaxX &&
+		MousePositionY >= MinY && MousePositionY <= MaxY) {
+		if (PepeUI_ID == 1 && SharedData::GetInstance()->Left_Clicked == true)
+		{
+			SharedData::GetInstance()->TextBox = true;
+			UI::UI_Pepe = false;
+			//if (SharedData::GetInstance()->TextBox == true && SharedData::GetInstance()->Left_Clicked == true)
+			//{
+			//	SharedData::GetInstance()->TextBox = false;
+			//	UI::UI_Pepe = true;
+			//}
+		}
+		if (PepeUI_ID == 2 && SharedData::GetInstance()->Left_Clicked == true)
+		{
+			UI::UI_Pepe = false;
+			UI::UI_Shop = true;
+
+		}
+		//Back
+		if (PepeUI_ID == 3 && SharedData::GetInstance()->Left_Clicked == true)
+		{
+			UI::UI_Pepe = false;
+			UI::UI_On = false;
+		}
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 bool UI::ShopUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ShopUI_ID)
 {
 	if (MousePositionX >= MinX && MousePositionX <= MaxX &&
@@ -548,9 +610,8 @@ bool UI::ShopUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, 
 		//Back
 		if (ShopUI_ID == 3 && SharedData::GetInstance()->Left_Clicked == true)
 		{
+			UI::UI_Pepe = true;
 			UI::UI_Shop = false;
-			UI::UI_ShopGun = false;
-			UI::UI_On = false;
 		}
 		return true;
 	}
@@ -565,32 +626,43 @@ bool UI::ShopGunUIHitbox(double& MousePositionX, double& MousePositionY, int Min
 		MousePositionY >= MinY && MousePositionY <= MaxY) {
 		if (ShopGunUI_ID == 1 && SharedData::GetInstance()->Left_Clicked == true)
 		{
-			SharedData::GetInstance()->Wep1 = true;
+			SharedData::GetInstance()->Wep0 = true;
+			SharedData::GetInstance()->Wep1 = false;
 			SharedData::GetInstance()->Wep2 = false;
 			SharedData::GetInstance()->Wep3 = false;
 		}
 		if (ShopGunUI_ID == 2 && SharedData::GetInstance()->Left_Clicked == true)
 		{
-			SharedData::GetInstance()->Wep1 = false;
-			SharedData::GetInstance()->Wep2 = true;
+			SharedData::GetInstance()->Wep0 = false;
+			SharedData::GetInstance()->Wep1 = true;
+			SharedData::GetInstance()->Wep2 = false;
 			SharedData::GetInstance()->Wep3 = false;
 		}
 		if (ShopGunUI_ID == 3 && SharedData::GetInstance()->Left_Clicked == true)
 		{
+			SharedData::GetInstance()->Wep0 = false;
+			SharedData::GetInstance()->Wep1 = false;
+			SharedData::GetInstance()->Wep2 = true;
+			SharedData::GetInstance()->Wep3 = false;
+		}
+		if (ShopGunUI_ID == 4 && SharedData::GetInstance()->Left_Clicked == true)
+		{
+			SharedData::GetInstance()->Wep0 = false;
 			SharedData::GetInstance()->Wep1 = false;
 			SharedData::GetInstance()->Wep2 = false;
 			SharedData::GetInstance()->Wep3 = true;
 		}
 		//Back
-		if (ShopGunUI_ID == 4 && SharedData::GetInstance()->Left_Clicked == true)
+		if (ShopGunUI_ID == 5 && SharedData::GetInstance()->Left_Clicked == true)
 		{
+			SharedData::GetInstance()->Wep0 = false;
 			SharedData::GetInstance()->Wep1 = false;
 			SharedData::GetInstance()->Wep2 = false;
 			SharedData::GetInstance()->Wep3 = false;
 			UI::UI_ShopGun = false;
 			UI::UI_Shop = true;
 		}
-		if (ShopGunUI_ID == 5 && SharedData::GetInstance()->Left_Clicked == true)
+		if (ShopGunUI_ID == 6 && SharedData::GetInstance()->Left_Clicked == true)
 		{
 			SharedData::GetInstance()->Buy = true;
 		}

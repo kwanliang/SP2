@@ -38,8 +38,6 @@ Boss3::Boss3()
 
 	slap_time = 0.f;
 	slap_wait = 0.f;
-	slap_X = true;
-	slap_Z = true;
 
 	slapX = 0.f;
 	slapY = 0.f;
@@ -85,8 +83,6 @@ Boss3::~Boss3()
 /******************************************************************************/
 void Boss3::updates(double dt)
 {
-
-
 	PhaseShift(dt);
 	StompL(dt);
 	StompR(dt);
@@ -172,6 +168,10 @@ void Boss3::PhaseShift(double dt)
 /*!
 \brief
 	Checks if Boss is dead
+
+\return
+	Returns true if Boss is dead.
+	Returns false if Boss is alive.
 */
 /******************************************************************************/
 bool Boss3::isDead(void)
@@ -216,8 +216,6 @@ void Boss3::reset(void)
 
 	slap_time = 0.f;
 	slap_wait = 0.f;
-	slap_X = true;
-	slap_Z = true;
 
 	slapX = 0.f;
 	slapY = 0.f;
@@ -418,8 +416,6 @@ void Boss3::slapDown(double dt)
 			slapY += (float)(1200 * dt);
 			if (slapY >= 0)
 			{
-				slap_X = true;
-				slap_Z = true;
 				slap_time = 0;
 				slapping = true;
 			}
@@ -441,34 +437,26 @@ void Boss3::slapDown(double dt)
 /******************************************************************************/
 void Boss3::slap(double dt, Vector3 Player)
 {
+	Vector3 Hand(
+		slapX,
+		slapY,
+		slapZ
+		);
+	Vector3 DirVec = Player - Hand;
+	if (Player != Hand)
+	{
+		DirVec.Normalize();
+	}
+
 	slap_time += (float)(100 * dt);
 	if (slap_time >= 500)
 	{
-		slap_X = false;
-		slap_Z = false;
 		slapDown(dt);
 	}
-	if (slap_X == true)
+	else
 	{
-		if (slapX >= Player.x + 100)
-		{
-			slapX -= (float)(1000 * dt);
-		}
-		else if (slapX <= Player.x + 100)
-		{
-			slapX += (float)(1000 * dt);
-		}
-	}
-	if (slap_Z == true)
-	{
-		if (slapZ >= Player.z - 500)
-		{
-			slapZ -= (float)(500 * dt);
-		}
-		else if (slapZ <= Player.z - 500)
-		{
-			slapZ += (float)(500 * dt);
-		}
+		slapX += DirVec.x * 600.f * dt;
+		slapZ += DirVec.z * 600.f * dt;
 	}
 }
 

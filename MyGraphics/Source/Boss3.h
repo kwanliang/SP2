@@ -40,8 +40,6 @@ public:
 
 	bool slapping;
 
-	bool slap_X;
-	bool slap_Z;
 	float slapX;
 	float slapZ;
 	float slap_time;

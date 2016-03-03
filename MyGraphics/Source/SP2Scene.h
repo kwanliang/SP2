@@ -13,7 +13,8 @@
 #include "Collision.h"
 #include "Projectile.h"
 #include "Abilities.h"
-#include "NEnemy.h"
+#include "Enemy.h"
+#include "Dialogue.h"
 
 #include "Boss1.h"
 #include "Boss2.h"
@@ -58,6 +59,7 @@ class SP2Scene : public Scene
         UI_PLANET_SUN,
 
         //Shop
+		UI_SELECT,
         UI_SHOP,
         UI_SHOP_SELECT,
         UI_SHOP_GUN,
@@ -126,13 +128,6 @@ class SP2Scene : public Scene
 		PLANET3_DARKMOUNTAIN,
 		PLANET3_DARKTREE,
 
-		//BOSS 2
-		ROBOT_MAINBODY,
-		ROBOT_LEFTPAIR,
-		ROBOT_RIGHTPAIR,
-		ROBOT_BACKLEFTLEG,
-		ROBOT_BACKRIGHTLEG,
-
         //Planet 1 Monsters
         SLIME_GREEN,
         SLIME_PINK,
@@ -140,6 +135,13 @@ class SP2Scene : public Scene
 
         //BOSS 1
         SLIME_BOSS,
+
+		//BOSS 2
+		ROBOT_MAINBODY,
+		ROBOT_LEFTPAIR,
+		ROBOT_RIGHTPAIR,
+		ROBOT_BACKLEFTLEG,
+		ROBOT_BACKRIGHTLEG,
 
 		//BOSS 3
 		GOLEM_HEAD,
@@ -150,6 +152,10 @@ class SP2Scene : public Scene
 		GOLEM_LOWER_BODY,
 		GOLEM_KNEE,
 		GOLEM_FEET,
+
+		//ENEMIES
+		HP_BAR,
+		BOSS_BAR,
 
         //Character & Weapon
         GUN_0,
@@ -175,6 +181,10 @@ class SP2Scene : public Scene
         COIN,
         HEALTH_KIT,
         LARGE_HEALTH_KIT,
+		CROWN,
+		BROKEN,
+		CRYSTAL,
+		BASE,
 
 		//HUD
 		HUD_AMMO,
@@ -183,6 +193,7 @@ class SP2Scene : public Scene
 		HUD_H_INJURED,
 		HUD_R_INJURED,
 		HUD_I_INJURED,
+		HUD_TEXTBOX,
 
         //Pause
         UI_PAUSE,
@@ -237,6 +248,9 @@ public:
 	float Wait = 0.f;
 	float Wait1 = 0.f;
 
+	bool PlaySFX = false;
+	bool PlayBGM = true;
+
     std::string FPS;
 
     static float UI_Human_Rotate;
@@ -249,6 +263,11 @@ public:
 	//Use Item
 	float UseL = 0.f;
 	float UseN = 0.f;
+
+	//Trophy
+	bool Trophy_1 = false;
+	bool Trophy_2 = false;
+	bool Trophy_3 = false;
 
 	//Planet Nav Animation
     static bool UI_PlanetNav_Animation;
@@ -287,8 +306,6 @@ public:
 	float arrowsignrotate;
 	float distancefrom_Item;
 
-    bool reloading;
-
     virtual void Init();
     virtual void Update(double dt);
     virtual void Render();
@@ -307,6 +324,7 @@ private:
     void RenderHUD();
     void RenderShip();
     void RenderShop();
+	void RenderDialogue();
     void RenderEnemies();
     void RenderPlanet1();
     void RenderPlanet2();
@@ -315,6 +333,7 @@ private:
     void RenderText(Mesh* mesh, std::string text, Color color);
     void RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y);
     void RenderImageOnScreen(Mesh* mesh, float size, float x, float y, float z, float rotateX, float rotateY, float rotateZ);
+	void RenderImageOnScreen(Mesh* mesh, Vector3 Scale,  Vector3 Translate, Vector3 Rotate);
 	void Renderlegs();
 	void moveRobotBosssleg();
 	void turnleg(Vector3 Player);
@@ -346,9 +365,9 @@ private:
 
     UI UI;
 
-    Abilities abilities;
+	Dialogue Dialogue;
 
-    Boss1 boss1;
+    Abilities abilities;
 
     Enemy enemy;
 

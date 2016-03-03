@@ -31,8 +31,7 @@ void Boss1::Update(double dt)
         if (Collision::MonsterHitbox(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->Boss1Position, SharedData::GetInstance()->Boss1Hitbox) == true
             && SharedData::GetInstance()->BOSS1_Splits == 1)
         {
-            receiveDamage(10);
-            //std::cout << BOSS1_HP << std::endl;
+            receiveDamage(SharedData::GetInstance()->Equipped->Attack_Value);
         }
         FacePlayer(SharedData::GetInstance()->PlayerPosition);
         ChasePlayer(dt, SharedData::GetInstance()->PlayerPosition);
@@ -41,10 +40,7 @@ void Boss1::Update(double dt)
     if (SharedData::GetInstance()->rocketdamage == true) {
         receiveDamage(10);
         SharedData::GetInstance()->rocketdamage = false;
-        std::cout << BOSS1_HP << std::endl;
     }
-
-    //std::cout << Boss1HitboxSize << std::endl;
 
     Boss1::isDead();
 

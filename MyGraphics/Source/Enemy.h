@@ -1,51 +1,51 @@
 /******************************************************************************/
 /*!
 \file	Enemy.h
-\author Teo Kai Jie
-\par	email: 142538M@mymail.nyp.edu.sg
+\author Chuan Guang Zhe
+\par	email: 152104G@mymail.nyp.edu.sg
 \brief
-Class to define an Enemy
+	Class to define an Enemy
 */
 /******************************************************************************/
-#pragma once
-#include "Mesh.h"
+#ifndef ENEMY_H
+#define ENEMY_H
+
+#include "SharedData.h"
 #include "Collision.h"
-#include "Camera2.h"
+#include "Projectile.h"
 
-//class Enemy
-//{
-//public:
-//	Enemy();
-//	virtual ~Enemy();
-//
-//	//void addEnemy(Enemy newGuy);
-//	void Update(double dt); //outsource to SP2Scene
-//	
-//	int getHealth(void);
-//	int getDamage(void);
-//	void setHealth(int HP);
-//	void setDamage(int DMG);
-//	bool isDead(Enemy testSubject);
-//
-//	/*enum ENEMY_STATES
-//	{
-//		ENEMY_IDLE,
-//		ENEMY_CHASE,
-//		ENEMY_ATTACK,
-//		ENEMY_DIE,
-//		TOTAL,
-//	};
-//	ENEMY_STATES eState;*/
-//
-//	Vector3 playerPos;
-//	Vector3 position;
-//	Vector3 distToPlayer;
-//	Collision collision;
-//
-//private:
-//	bool enemyLiving;
-//	int health;
-//	int damage;
-//	
-//};
+/******************************************************************************/
+/*!
+Class Enemy:
+\brief
+	Defines an Enemy and its methods
+*/
+/******************************************************************************/
+class Enemy
+{
+public:
+	int MAX_HP;
+    int HP;
+    int Attack;
+    float Degree;
+    Vector3 Pos;
+    int Drop;
+	float HPbar;
 
+    Enemy();
+    Enemy(int HP, int Attack, int Drop);
+    Enemy& operator=(const Enemy& rhs);
+    virtual ~Enemy();
+
+    static std::vector<Enemy> Enemies;
+
+    void RandomPos(void);
+    void EnemyUpdate(double dt);
+    void ReceiveDamage(const int Dmg);
+    void FacePlayer(Vector3 Player);
+    void ChasePlayer(double dt, Vector3 Player);
+    void DamagePlayer(Vector3 Player);
+    bool IsDead(void);
+};
+
+#endif

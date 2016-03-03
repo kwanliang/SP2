@@ -4,9 +4,9 @@
 #include <vector>
 #include <map>
 
-#include "Vector3.h"
 #include "Weapon.h"
 #include "MyMath.h"
+#include <irrKlang.h>
 //#include "Projectile.h"
 
 class SharedData
@@ -23,6 +23,13 @@ public:
     int MonitorHeight;
     int Current_MonitorWidth;
     int Current_MonitorHeight;
+
+	//Sound (IrrKlang)
+	irrklang::ISoundEngine* Injured = irrklang::createIrrKlangDevice();
+	irrklang::ISoundEngine* BGM = irrklang::createIrrKlangDevice();
+	irrklang::ISoundEngine* Gun = irrklang::createIrrKlangDevice();
+
+	irrklang::ISoundEngine* Ability = irrklang::createIrrKlangDevice();
 
     //Menu
     bool renderMenu;
@@ -78,11 +85,14 @@ public:
     std::map<int, Weapon> WeaponMap;
 
     //Shop
+	bool TextBox;
+
     bool Own_Wep0;
     bool Own_Wep1;
     bool Own_Wep2;
     bool Own_Wep3;
 
+	bool Wep0;
     bool Wep1;
     bool Wep2;
     bool Wep3;

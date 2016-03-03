@@ -98,12 +98,10 @@ bool Collision::MonsterHitbox(Vector3& ProjectilePosition, Vector3& MonsterPosit
         ProjectilePosition.z > MinPoint.z && ProjectilePosition.z < MaxPoint.z)
     {
         return true;
-       // std::cout << "always true" << std::endl;
     }
     else
     {
         return false;
-      //  std::cout << "always false" << std::endl;
     }
 }
 

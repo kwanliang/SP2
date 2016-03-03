@@ -20,6 +20,7 @@ void Projectile::Update(double dt)
 
     if (SharedData::GetInstance()->Left_Clicked == true && BulletTime > SharedData::GetInstance()->Equipped->Fire_Rate && UI.UI_On == false && SharedData::GetInstance()->Equipped->Ammo > 0 && SharedData::GetInstance()->Equipped->Reloading == false)
     {
+		SharedData::GetInstance()->Gun->play2D("Sound\\Shoot.mp3");
         SharedData::GetInstance()->Equipped->shoot();
         Projectile::ProjectileCount.push_back(new Projectile(SharedData::GetInstance()->PlayerPosition, SharedData::GetInstance()->PlayerTarget - SharedData::GetInstance()->PlayerPosition));
         BulletTime = 0;

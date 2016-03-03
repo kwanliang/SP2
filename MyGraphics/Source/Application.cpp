@@ -84,6 +84,8 @@ void resize_callback(GLFWwindow* window, int w, int h)
 
 void Application::Init()
 {
+	//Summons rngesus
+	srand(time(0));
 	//Set the error callback
 	glfwSetErrorCallback(error_callback);
 
@@ -102,7 +104,8 @@ void Application::Init()
 
 	//Create a window and create its OpenGL context
 	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    m_window = glfwCreateWindow(mode->width, mode->height, "Computer Graphics", glfwGetPrimaryMonitor(), NULL);
+    //m_window = glfwCreateWindow(mode->width, mode->height, "Computer Graphics", glfwGetPrimaryMonitor(), NULL);
+	m_window = glfwCreateWindow(800, 600, "Computer Graphics", NULL, NULL);
     SharedData::GetInstance()->MonitorWidth = mode->width;
     SharedData::GetInstance()->MonitorHeight = mode->height;
 

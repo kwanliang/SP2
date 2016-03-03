@@ -2,7 +2,7 @@
 #define ABILITIES_H
 
 #include "Application.h"
-#include "NEnemy.h"
+#include "Enemy.h"
 
 class Abilities
 {
