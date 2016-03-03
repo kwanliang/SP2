@@ -1,3 +1,14 @@
+/******************************************************************************/
+/*!
+\file	SP2Scene.h
+\author Kwan Liang
+\author Glence Low
+\author Chuan Guang Zhe
+\par	email: 152104G@mymail.nyp.edu.sg
+\brief
+Class to define main framework.
+*/
+/******************************************************************************/
 #ifndef SP2SCENE_H
 #define SP2SCENE_H
 
@@ -22,50 +33,64 @@
 #include "Crate.h"
 #include "timer.h"
 
+/******************************************************************************/
+/*!
+Class SP2Scene:
+\brief
+Defines the main frame and its methods
+*/
+/******************************************************************************/
 class SP2Scene : public Scene
 {
     MS modelStack, viewStack, projectionStack;
 
     enum GEOMETRY_TYPE
     {
-        AXES = 0,
-        LIGHTBALL,
-        Hitbox,
+		AXES = 0,
+		LIGHTBALL,
+		Hitbox,
 
-        //Menu
-        UI_MENU,
-        UI_MENU_SELECT_START,
-        UI_MENU_SELECT_EXIT,
+		//Menu
+		UI_MENU,
+		UI_MENU_SELECT_START,
+		UI_MENU_SELECT_EXIT,
 
-        //Race Selection
-        UI_RACESELECTION,
-        UI_HUMAN,
-        UI_ROBOT,
-        UI_INFESTED,
-        UI_RACE_SELECT,
-        UI_RACE_BACK,
+		//Race Selection
+		UI_RACESELECTION,
+		UI_HUMAN,
+		UI_ROBOT,
+		UI_INFESTED,
+		UI_RACE_SELECT,
+		UI_RACE_BACK,
 
-        //Name Input
-        UI_NAMEINPUT,
-        UI_TEXTBOX,
-        UI_NAME_ACCEPT,
-        UI_NAME_BACK,
-        UI_NAME_MENU,
+		//Name Input
+		UI_NAMEINPUT,
+		UI_TEXTBOX,
+		UI_NAME_ACCEPT,
+		UI_NAME_BACK,
+		UI_NAME_MENU,
 
-        //Planet Navigation
-        UI_PLANET_NAVIGATION,
-        UI_PLANET_SLIME,
-        UI_PLANET_ROBOT,
-        UI_PLANET_DARK,
-        UI_PLANET_SUN,
+		//Planet Navigation
+		UI_PLANET_NAVIGATION,
+		UI_PLANET_SLIME,
+		UI_PLANET_ROBOT,
+		UI_PLANET_DARK,
+		UI_PLANET_SUN,
 
-        //Shop
+		//Shop
 		UI_SELECT,
-        UI_SHOP,
-        UI_SHOP_SELECT,
-        UI_SHOP_GUN,
-        UI_SHOP_MELEE,
-        UI_SHOP_ITEM,
+		UI_SHOP,
+		UI_SHOP_SELECT,
+		UI_SHOP_GUN,
+		UI_SHOP_MELEE,
+		UI_SHOP_ITEM,
+
+		//gameove
+		UI_GAMEOVER,
+		UI_BACKTOSHIP,
+
+		//win
+		UI_WIN,
 
         //Text
         TEXT,
@@ -211,6 +236,9 @@ class SP2Scene : public Scene
 		UI_FIGHTBOSS,
 		UI_LEAVEPLANET,
 
+		//instruction
+		UI_INSTRUCTION,
+
         NUM_GEOMETRY,
     };
     enum UNIFORM_TYPE
@@ -315,7 +343,11 @@ public:
 
     bool reloading;
 
-	bool returnship_UI;
+	bool ON_Instruction;
+	int waitLa;
+
+	bool showWin;
+	bool showGameover;
 
     virtual void Init();
     virtual void Update(double dt);
@@ -352,6 +384,9 @@ private:
 	void renderCrate();
     void RenderAbilities();
 	void renderReturnUI();
+	void renderInstruction();
+	void renderGameover();
+	void renderWin();
 
     Character Character;
 

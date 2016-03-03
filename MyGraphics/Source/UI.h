@@ -2,11 +2,6 @@
 #define UI_H
 
 #include "Vector3.h"
-#include "Mouse.h"
-#include "SP2Scene.h"
-#include "Application.h"
-#include "camera2.h"
-
 
 class UI {
 private:

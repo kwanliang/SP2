@@ -1,6 +1,21 @@
+/******************************************************************************/
+/*!
+\file	Boss1.cpp
+\author Kwan Liang
+\par	email: 152104G@mymail.nyp.edu.sg
+\brief
+Class to define boss1 framework.
+*/
+/******************************************************************************/
 #include "Boss1.h"
 #include "Application.h"
 
+/******************************************************************************/
+/*!
+\brief
+Boss1 default constructor
+*/
+/******************************************************************************/
 Boss1::Boss1()
 {
     SharedData::GetInstance()->BOSS1_Splits = 1;
@@ -10,10 +25,22 @@ Boss1::Boss1()
     BOSS1_MoveSpd = 200.0f;
 }
 
+/******************************************************************************/
+/*!
+\brief
+Boss1 default constructor
+*/
+/******************************************************************************/
 Boss1::~Boss1()
 {
 }
 
+/******************************************************************************/
+/*!
+\brief
+initialize value of boss1
+*/
+/******************************************************************************/
 void Boss1::Init()
 {
     Vector3 Boss1HitboxSize(150, 150, 150);
@@ -25,6 +52,15 @@ void Boss1::Init()
     SharedData::GetInstance()->Boss1Hitbox = Boss1HitboxSize;
 }
 
+/******************************************************************************/
+/*!
+\brief
+Boss1 Update
+
+\param dt
+update boss1 
+*/
+/******************************************************************************/
 void Boss1::Update(double dt)
 {
     if (Boss1::isDead() == false) {
@@ -50,6 +86,14 @@ void Boss1::Update(double dt)
     }
 }
 
+/******************************************************************************/
+/*!
+\brief
+Boss1 Reset
+
+respwan boss
+*/
+/******************************************************************************/
 void Boss1::Reset()
 {
     SharedData::GetInstance()->BOSS1_Splits = 1;
@@ -59,11 +103,29 @@ void Boss1::Reset()
     BOSS1_MoveSpd = 200.0f;
 }
 
+/******************************************************************************/
+/*!
+\brief
+Boss1 receiveDamage
+
+\param Damage
+boss1 minus hp with damage is taken
+*/
+/******************************************************************************/
 void Boss1::receiveDamage(int Damage)
 {
     BOSS1_HP -= Damage;
 }
 
+/******************************************************************************/
+/*!
+\brief
+Boss1 FacePlayer
+
+\param player
+boss1 store in player position to face them
+*/
+/******************************************************************************/
 void Boss1::FacePlayer(Vector3 Player)
 {
     Vector3 initView(0, 0, -1);
@@ -83,6 +145,18 @@ void Boss1::FacePlayer(Vector3 Player)
     }
 }
 
+/******************************************************************************/
+/*!
+\brief
+Boss1 ChasePlayer
+
+\param dt
+how fast the boss chase you
+
+\param Player
+store player position
+*/
+/******************************************************************************/
 void Boss1::ChasePlayer(double dt, Vector3 Player)
 {
     if (SharedData::GetInstance()->Boss1Position.x >= Player.x + 150)
@@ -104,6 +178,14 @@ void Boss1::ChasePlayer(double dt, Vector3 Player)
     }
 }
 
+/******************************************************************************/
+/*!
+\brief
+Boss1 isDead
+
+check wherethe boss1 is dead
+*/
+/******************************************************************************/
 bool Boss1::isDead()
 {
     if (BOSS1_HP <= 0) {

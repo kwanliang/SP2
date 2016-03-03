@@ -1,3 +1,14 @@
+/******************************************************************************/
+/*!
+\file	Camera2.h
+\author Chuan Guang Zhe
+\author Glence low
+\author kwan Liang
+\par	email: 152104G@mymail.nyp.edu.sg
+\brief
+Class to define Camera
+*/
+/******************************************************************************/
 #ifndef CAMERA_2_H
 #define CAMERA_2_H
 
@@ -5,6 +16,13 @@
 #include "Character.h"
 #include "Boss2.h"
 
+/******************************************************************************/
+/*!
+Class Boss2:
+\brief
+Defines the camera2 and its methods
+*/
+/******************************************************************************/
 class Camera2 : public Camera
 {
 public:

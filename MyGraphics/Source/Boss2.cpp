@@ -1,6 +1,21 @@
+/******************************************************************************/
+/*!
+\file	Boss2.cpp
+\author Glence Low
+\par	email: glencelow@hotmail.com
+\brief
+Class to define Boss 2, the spider Robot
+*/
+/******************************************************************************/
 #include "Boss2.h"
 #include "SharedData.h"
 
+/******************************************************************************/
+/*!
+\brief
+Boss3 default constructor
+*/
+/******************************************************************************/
 Boss2::Boss2()
 {
 	MAX_HP = 600;
@@ -27,20 +42,51 @@ Boss2::Boss2()
 	moverightbackleg = 0.f;
 }
 
+/******************************************************************************/
+/*!
+\brief
+Boss3 default deconstructor
+*/
+/******************************************************************************/
 Boss2::~Boss2()
 {
 }
+
+/******************************************************************************/
+/*!
+\brief
+Boss2 Updates
+\param dt
+Delta time in order to animate the boss
+*/
+/******************************************************************************/
 
 void Boss2::updates(double dt)
 {
 	moveRobotBosssleg(dt);
 }
 
+/******************************************************************************/
+/*!
+\brief
+Boss2 recieveDamage
+\param Damage
+minus hp to robot when taking damage
+*/
+/******************************************************************************/
 void Boss2::recieveDamage(int Damage)
 {
 	SharedData::GetInstance()->Boss2_HP -= Damage;
 }
 
+/******************************************************************************/
+/*!
+\brief
+Boss2 legs
+\param dt
+move Boss2 legs
+*/
+/******************************************************************************/
 void Boss2::moveRobotBosssleg(double dt)
 {
 	if (SharedData::GetInstance()->Boss2_HP > 400)
@@ -156,6 +202,16 @@ void Boss2::moveRobotBosssleg(double dt)
 	}
 }
 
+/******************************************************************************/
+/*!
+\brief
+Checks if robot is dead
+
+\return
+Returns true if robot is dead.
+Returns false if robot is alive.
+*/
+/******************************************************************************/
 bool Boss2::isDead(void)
 {
 	if (SharedData::GetInstance()->Boss2_HP <= 0)

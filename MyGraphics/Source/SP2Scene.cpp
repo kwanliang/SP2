@@ -1,3 +1,14 @@
+/******************************************************************************/
+/*!
+\file	SP2Scene.cpp
+\author Kwan Liang
+\author Glence Low
+\author Chuan Guang Zhe
+\par	email: 152104G@mymail.nyp.edu.sg
+\brief
+Class to define main framework.
+*/
+/******************************************************************************/
 #include <iomanip>
 #include "SP2Scene.h"
 #include "GL\glew.h"
@@ -20,6 +31,12 @@ float SP2Scene::UI_Human_Rotate = 0;
 float SP2Scene::UI_Robot_Rotate = 0;
 float SP2Scene::UI_Infested_Rotate = 0;
 
+/******************************************************************************/
+/*!
+\brief
+	SP2Scene default constructor
+*/
+/******************************************************************************/
 SP2Scene::SP2Scene()
 {
     //UI::UI_On = false;
@@ -50,18 +67,35 @@ SP2Scene::SP2Scene()
 	legsheight = 0;
 	legsize = 0;
 	legP = 0;
+	ON_Instruction = false;
 
 	SharedData::GetInstance()->returnship_UI = false;
 	SharedData::GetInstance()->enemydefeated = 0;
 	SharedData::GetInstance()->flyingdown = 1000;
-	returnship_UI = false;
+	waitLa = 10;
+	showWin = false;
+	showGameover = false;
 
 }
 
+/******************************************************************************/
+/*!
+\brief
+	SP2Scene default constructor
+*/
+/******************************************************************************/
 SP2Scene::~SP2Scene()
 {
 }
 
+/******************************************************************************/
+/*!
+\brief
+	SP2Scene Init
+
+	initialize values
+*/
+/******************************************************************************/
 void SP2Scene::Init()
 {
     LSPEED = 100.f;
@@ -494,12 +528,28 @@ void SP2Scene::Init()
 	//<<<<<<<<<<<<<<<<<<<<<<<<UI_returnship<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[UI_RETURNPLANE] = MeshBuilder::GenerateOBJ("UI return", "OBJ//UI_Plane.obj");
 	meshList[UI_RETURNPLANE]->textureID = LoadTGA("Image//UI//UI_Space.tga");
-	meshList[UI_RETURNPLANE]->textureID = LoadTGA("Image//UI//test.tga");
 	meshList[UI_LEAVEPLANET] = MeshBuilder::GenerateOBJ("UI return", "OBJ//UI_Plane.obj");
 	meshList[UI_LEAVEPLANET]->textureID = LoadTGA("Image//UI//UI_Leaveplanet.tga");
 	meshList[UI_FIGHTBOSS] = MeshBuilder::GenerateOBJ("UI return", "OBJ//UI_Plane.obj");
 	meshList[UI_FIGHTBOSS]->textureID = LoadTGA("Image//UI//UI_Fightboss.tga");
 	//<<<<<<<<<<<<<<<<<<<<<<<<UI_returnship<<<<<<<<<<<<<<<<<<<<<<<<
+
+	//<<<<<<<<<<<<<<<<<<<<<<<<UI_HELP<<<<<<<<<<<<<<<<<<<<<<<<
+	meshList[UI_INSTRUCTION] = MeshBuilder::GenerateOBJ("UI help", "OBJ//UI_Plane.obj");
+	meshList[UI_INSTRUCTION]->textureID = LoadTGA("Image//UI//UI_Instruction.tga");
+	//<<<<<<<<<<<<<<<<<<<<<<<<UI_HELP<<<<<<<<<<<<<<<<<<<<<<<<
+
+	//<<<<<<<<<<<<<<<<<<<<<<<<GAME_OVER<<<<<<<<<<<<<<<<<<<<<<<<
+	meshList[UI_GAMEOVER] = MeshBuilder::GenerateOBJ("UI help", "OBJ//UI_Plane.obj");
+	meshList[UI_GAMEOVER]->textureID = LoadTGA("Image//UI//UI_Gameover.tga");
+	meshList[UI_BACKTOSHIP] = MeshBuilder::GenerateOBJ("UI help", "OBJ//UI_Plane.obj");
+	meshList[UI_BACKTOSHIP]->textureID = LoadTGA("Image//UI//UI_Gameover.tga");
+	//<<<<<<<<<<<<<<<<<<<<<<<<GAME_OVER<<<<<<<<<<<<<<<<<<<<<<<<
+
+	//<<<<<<<<<<<<<<<<<<<<<<<<WIN<<<<<<<<<<<<<<<<<<<<<<<<
+	meshList[UI_WIN] = MeshBuilder::GenerateOBJ("UI help", "OBJ//UI_Plane.obj");
+	meshList[UI_WIN]->textureID = LoadTGA("Image//UI//UI_Win.tga");
+	//<<<<<<<<<<<<<<<<<<<<<<<<WIN<<<<<<<<<<<<<<<<<<<<<<<<
 
     light[0].type = Light::LIGHT_POINT;
     light[0].position.Set(0, 0, 0);
@@ -531,6 +581,18 @@ void SP2Scene::Init()
 static float ROT_LIMIT = 45.f;
 static float SCALE_LIMIT = 5.f;
 
+/******************************************************************************/
+/*!
+\brief
+	SP2Scene RenderMesh
+
+\param *mesh
+load texture
+
+\param enableLight
+to use light
+*/
+/******************************************************************************/
 void SP2Scene::RenderMesh(Mesh *mesh, bool enableLight) {
     Mtx44 MVP, modelView, modelView_inverse_transpose;
 
@@ -576,17 +638,48 @@ void SP2Scene::RenderMesh(Mesh *mesh, bool enableLight) {
     }
 }
 
+/******************************************************************************/
+/*!
+\brief
+	SP2Scene Update
+
+\param dt
+constently update main frame work
+
+*/
+/******************************************************************************/
 void SP2Scene::Update(double dt)
 {
+	if ((Application::IsKeyPressed('H')) && (ON_Instruction == false) && (UI.UI_On == false) && (SharedData::GetInstance()->renderShip == true) && (waitLa >= 10))
+	{
+		ON_Instruction = true;
+		waitLa = 0;
+	}
+	else if ((Application::IsKeyPressed('H')) && (ON_Instruction == true) && (UI.UI_On == false) && (SharedData::GetInstance()->renderShip == true) && (waitLa >= 10))
+	{
+		ON_Instruction = false;
+		waitLa = 0;
+	}
+
+	if (waitLa <= 10)
+	{ 
+		waitLa++;
+	}
+	if (SharedData::GetInstance()->renderPause == true || UI.UI_PlanatNav == true || UI.UI_Pepe == true)
+	{
+		ON_Instruction = false;
+	}
+
 	if (Character.isDead() == true)
 	{
-		SharedData::GetInstance()->renderPlanet1 == false;
-		SharedData::GetInstance()->renderPlanet2 == false;
-		SharedData::GetInstance()->renderPlanet3 == false;
-		SharedData::GetInstance()->renderShip == true;
-		camera.position.x = 0;
-		camera.position.y = 0;
-		camera.position.z = -200;
+		UI.UI_On = true;
+		showGameover = true;
+	}
+
+	if (UI.UI_PlanatNav == true && Trophy_1 == true && Trophy_2 == true && Trophy_3 == true)
+	{
+			UI::UI_On = true;
+			showWin = true;
 	}
 
 	if (SharedData::GetInstance()->renderPlanet1 || SharedData::GetInstance()->renderPlanet2 || SharedData::GetInstance()->renderPlanet3)
@@ -1028,7 +1121,6 @@ void SP2Scene::Update(double dt)
 	{
 		SharedData::GetInstance()->renderReturn = true;
 		SharedData::GetInstance()->returnship_UI = true;
-		returnship_UI = true;
 		UI.UI_On = true;
 	}
 
@@ -1040,41 +1132,38 @@ void SP2Scene::Update(double dt)
 		SharedData::GetInstance()->renderReturn = true;
 		SharedData::GetInstance()->returnship_UI = true;
 		UI.UI_On = true;
-		returnship_UI = true;
 	}
-
-    if (Application::IsKeyPressed('Z'))
-    {
-        Character.recieveDamage(1);
-    }
-
-    if (SharedData::GetInstance()->UI_Human_Selected == true) {
-        UI_Human_Rotate += (float)(50 * dt);
-        UI_Robot_Rotate = 0;
-        UI_Infested_Rotate = 0;
-        Character.SetRace(0);
-        SharedData::GetInstance()->renderHumanlegs = true;
-        SharedData::GetInstance()->renderInfestedlegs = false;
-        SharedData::GetInstance()->renderRobotlegs = false;
-    }
-    else if (SharedData::GetInstance()->UI_Robot_Selected == true) {
-        UI_Robot_Rotate += (float)(50 * dt);
-        UI_Human_Rotate = 0;
-        UI_Infested_Rotate = 0;
-        Character.SetRace(1);
-        SharedData::GetInstance()->renderRobotlegs = true;
-        SharedData::GetInstance()->renderInfestedlegs = false;
-        SharedData::GetInstance()->renderHumanlegs = false;
-    }
-    else if (SharedData::GetInstance()->UI_Infested_Selected == true) {
-        UI_Infested_Rotate += (float)(50 * dt);
-        UI_Human_Rotate = 0;
-        UI_Robot_Rotate = 0;
-        Character.SetRace(2);
-        SharedData::GetInstance()->renderInfestedlegs = true;
-        SharedData::GetInstance()->renderHumanlegs = false;
-        SharedData::GetInstance()->renderRobotlegs = false;
-    }
+	if (SharedData::GetInstance()->renderRaceSelection == true)
+	{
+		if (SharedData::GetInstance()->UI_Human_Selected == true) {
+			UI_Human_Rotate += (float)(50 * dt);
+			UI_Robot_Rotate = 0;
+			UI_Infested_Rotate = 0;
+			Character.SetRace(0);
+			SharedData::GetInstance()->renderHumanlegs = true;
+			SharedData::GetInstance()->renderInfestedlegs = false;
+			SharedData::GetInstance()->renderRobotlegs = false;
+		}
+		else if (SharedData::GetInstance()->UI_Robot_Selected == true) {
+			UI_Robot_Rotate += (float)(50 * dt);
+			UI_Human_Rotate = 0;
+			UI_Infested_Rotate = 0;
+			Character.SetRace(1);
+			SharedData::GetInstance()->renderRobotlegs = true;
+			SharedData::GetInstance()->renderInfestedlegs = false;
+			SharedData::GetInstance()->renderHumanlegs = false;
+		}
+		else if (SharedData::GetInstance()->UI_Infested_Selected == true) {
+			UI_Infested_Rotate += (float)(50 * dt);
+			UI_Human_Rotate = 0;
+			UI_Robot_Rotate = 0;
+			Character.SetRace(2);
+			SharedData::GetInstance()->renderInfestedlegs = true;
+			SharedData::GetInstance()->renderHumanlegs = false;
+			SharedData::GetInstance()->renderRobotlegs = false;
+		}
+	}
+   
 
     if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true || SharedData::GetInstance()->renderPlanet3 == true)
     {
@@ -1341,17 +1430,7 @@ void SP2Scene::Update(double dt)
 			(*manyCrate).Crate_HP--;
 		}
 
-		//if ((*manyCrate).isBroken() == true)
-		//{
 			float magnitude = (camera.position - (*manyCrate).Pos).Length();
-			/*float total_x = 0.f;
-			float total_y = 0.f;
-			float total_z = 0.f;
-			float magnitude = 0.f;
-			total_x = camera.position.x - (*manyCrate).Pos.x;
-			total_y = camera.position.z - (*manyCrate).Pos.y;
-			total_z = camera.position.z - (*manyCrate).Pos.z;
-			magnitude = sqrt((total_x*total_x) + (total_y*total_y) + (total_z*total_z));*/
             if (Collision::ObjCheck(SharedData::GetInstance()->PlayerPosition, (manyCrate)->Pos, CrateHitbox) == true && (manyCrate)->pickItem == false)
 			{
 				Character.large_health_kit_amount++;
@@ -1386,7 +1465,7 @@ void SP2Scene::Update(double dt)
         }
         else
         {
-            enemydefeated += 1;
+           SharedData::GetInstance()->enemydefeated += 1;
             Character.Coins += it->Drop;
             it = Enemy::Enemies.erase(it);
         }
@@ -1420,23 +1499,23 @@ void SP2Scene::Update(double dt)
 	}
 
 	// RETURN TO SHIP
-	if (enemydefeated >= 10 && flyup == false)
+	if (SharedData::GetInstance()->enemydefeated >= 10 && SharedData::GetInstance()->flyup == false)
 	{
-		flydown = true;
+		SharedData::GetInstance()->flydown = true;
 	}
 
-	if (flydown == true)
+	if (SharedData::GetInstance()->flydown == true)
 	{
-		flyingdown -= (float)(300 * dt);
-		if (flyingdown <= -50)
+		SharedData::GetInstance()->flyingdown -= (float)(300 * dt);
+		if (SharedData::GetInstance()->flyingdown <= -50)
 		{
-			flydown = false;
-			flyup = true;
+			SharedData::GetInstance()->flydown = false;
+			SharedData::GetInstance()->flyup = true;
 			arrowdown = true;
 		}
 	}
 
-	if (flyup == true)
+	if (SharedData::GetInstance()->flyup == true)
 	{
 		arrowsignrotate += (float)(100 * dt);
 	}
@@ -1459,46 +1538,6 @@ void SP2Scene::Update(double dt)
 			arrowup = false;
 		}
 	}
-	//return to ship for planet 1 and 2
-	if ((camera.position.z <= 85 && camera.position.z >= -70) && (camera.position.x <= 1450 && camera.position.x >= 1400)
-		&& (flyup == true)
-		&& (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true))
-	{
-		RenderTextOnScreen(meshList[TEXT], "return back to ship", Color(1, 0, 0), 10, 13.7f, 10);
-	}
-
-	if (Application::IsKeyPressed('E') && (camera.position.z <= 85 && camera.position.z >= -70) && (camera.position.x <= 1450 && camera.position.x >= 1400)
-		&& (flyup == true)
-		&& (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true))
-	{
-		SharedData::GetInstance()->renderShip = true;
-		SharedData::GetInstance()->renderPlanet1 = false;
-		SharedData::GetInstance()->renderPlanet2 = false;
-		SharedData::GetInstance()->renderPlanet3 = false;
-		camera.position = (0, 0, 0);
-		enemydefeated = 0;
-	}
-
-	//return to ship for planet 3
-	if ((camera.position.x <= 85 && camera.position.x >= -70) && (camera.position.z <= 1450 && camera.position.z >= 1400)
-		&& (flyup == true)
-		&& (SharedData::GetInstance()->renderPlanet3 == true))
-	{
-		RenderTextOnScreen(meshList[TEXT], "return back to ship", Color(1, 0, 0), 10, 13.7f, 10);
-	}
-
-	if (Application::IsKeyPressed('E') && (camera.position.x <= 85 && camera.position.x >= -70) && (camera.position.z <= 1450 && camera.position.z >= 1400)
-		&& (flyup == true)
-		&& (SharedData::GetInstance()->renderPlanet3 == true))
-	{
-		SharedData::GetInstance()->renderShip = true;
-		SharedData::GetInstance()->renderPlanet1 = false;
-		SharedData::GetInstance()->renderPlanet2 = false;
-		SharedData::GetInstance()->renderPlanet3 = false;
-		camera.position = (0, 0, 0);
-		enemydefeated = 0;
-	}
-
 	//TROPHY
 	if (Slime.isDead() == true)
 	{
@@ -1522,7 +1561,7 @@ void SP2Scene::Update(double dt)
 	// For return ship
     if (Application::IsKeyPressed('P'))
     {
-        enemydefeated++;
+		SharedData::GetInstance()->enemydefeated++;
     }
 
 	if (Application::IsKeyPressed('Z'))
@@ -1575,6 +1614,15 @@ void SP2Scene::Update(double dt)
     enemy.EnemyUpdate(dt);
 }
 
+/******************************************************************************/
+/*!
+\brief
+	SP2Scene Render
+
+render tga and obj
+
+*/
+/******************************************************************************/
 void SP2Scene::Render()
 {
     // Render VBO here
@@ -1688,6 +1736,9 @@ void SP2Scene::Render()
         RenderPause();
     }
 
+	renderInstruction();
+	renderGameover();
+	renderWin();
     RenderAbilities();
 
     for (auto it : Projectile::ProjectileCount) {
@@ -1792,6 +1843,15 @@ void SP2Scene::Render()
     RenderTextOnScreen(meshList[TEXT], "PosZ : " + std::to_string(SharedData::GetInstance()->PlayerPosition.z), Color(1, 1, 1), 3, 1, 14);
 }
 
+/******************************************************************************/
+/*!
+\brief
+	SP2Scene RenderMenu
+
+load main menu
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderMenu()
 {
     RenderImageOnScreen(meshList[UI_MENU], 80, .5f, -.1f, 0, 0, 0, 0);
@@ -1801,6 +1861,15 @@ void SP2Scene::RenderMenu()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderRaceSelection
+
+load race selection
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderRaceSelection()
 {
     RenderImageOnScreen(meshList[UI_RACESELECTION], 80, .5f, -.1f, 0, 0, 0, 0);
@@ -1844,6 +1913,15 @@ void SP2Scene::RenderRaceSelection()
     }
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderNameInput
+
+allow player to input their name
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderNameInput() {
     // Name
     RenderImageOnScreen(meshList[UI_NAMEINPUT], 80, .5f, -.1f, 0, 0, 0, 0);
@@ -1859,6 +1937,15 @@ void SP2Scene::RenderNameInput() {
     RenderTextOnScreen(meshList[TEXT], "Maximum 10 letters", Color(1, 1, 1), 2, 13.5f, 12);
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderHUD
+
+load HUD
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderHUD()
 {
 	if (UI.UI_On == false)
@@ -1944,6 +2031,15 @@ void SP2Scene::RenderHUD()
 	}
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderShip
+
+load ship
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderShip()
 {
     float skyboxsize = 20;
@@ -2126,14 +2222,24 @@ void SP2Scene::RenderShip()
     modelStack.PopMatrix();
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderShop
+
+load shop
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderShop()
 {
 	if (UI.UI_Pepe == true)
 	{
-		RenderImageOnScreen(meshList[UI_SELECT], 30, 1.25, 0.55, 0, 0, 0, 0);
-		RenderTextOnScreen(meshList[TEXT], "Talk", Color(0.5, 0.7, 1), 4, 8.5, 10.5);
-		RenderTextOnScreen(meshList[TEXT], "Shop", Color(0.5, 0.7, 1), 4, 8.5, 8);
-		RenderTextOnScreen(meshList[TEXT], "Back", Color(0.5, 0.7, 1), 4, 8.5, 5.5);
+
+			RenderImageOnScreen(meshList[UI_SELECT], 30, 1.25, 0.55, 0, 0, 0, 0);
+			RenderTextOnScreen(meshList[TEXT], "Talk", Color(0.5, 0.7, 1), 4, 8.5, 10.5);
+			RenderTextOnScreen(meshList[TEXT], "Shop", Color(0.5, 0.7, 1), 4, 8.5, 8);
+			RenderTextOnScreen(meshList[TEXT], "Back", Color(0.5, 0.7, 1), 4, 8.5, 5.5);
 	}
 
     if (UI.UI_Shop == true)
@@ -2412,22 +2518,40 @@ void SP2Scene::RenderShop()
     }
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderDialogue
+
+load Dialogue
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderDialogue()
 {
 	if (SharedData::GetInstance()->TextBox == true)
 	{
-		RenderImageOnScreen(meshList[HUD_TEXTBOX], 80, .5f, 0, -0.1f, 0, 0, 0);
-		RenderTextOnScreen(meshList[TEXT], Dialogue.Line, Color(1, 1, 1), 2, 1, 3);
-		RenderTextOnScreen(meshList[TEXT], "Press T to continue...", Color(1, 1, 1), 1, 60, 3);
-		if (Application::IsKeyPressed('T'))
-		{
-			Dialogue.GenLine("Dialogue//Talk.txt");
-			SharedData::GetInstance()->TextBox = false;
-			UI::UI_Pepe = true;
-		}
+			RenderImageOnScreen(meshList[HUD_TEXTBOX], 80, .5f, 0, -0.1f, 0, 0, 0);
+			RenderTextOnScreen(meshList[TEXT], Dialogue.Line, Color(1, 1, 1), 2, 1, 3);
+			RenderTextOnScreen(meshList[TEXT], "Press T to continue...", Color(1, 1, 1), 1, 60, 3);
+			if (Application::IsKeyPressed('T'))
+			{
+				Dialogue.GenLine("Dialogue//Talk.txt");
+				SharedData::GetInstance()->TextBox = false;
+				UI::UI_Pepe = true;
+			}
 	}
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderEnemies
+
+load enemies
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderEnemies()
 {
     for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it)
@@ -2453,6 +2577,15 @@ void SP2Scene::RenderEnemies()
     }
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderPlanet1
+
+load planet1
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderPlanet1()
 {
     modelStack.PushMatrix();
@@ -2611,6 +2744,15 @@ void SP2Scene::RenderPlanet1()
     modelStack.PopMatrix();
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderPlanet2
+
+load RenderPlanet2
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderPlanet2()
 {
     modelStack.PushMatrix();
@@ -2695,6 +2837,15 @@ void SP2Scene::RenderPlanet2()
     modelStack.PopMatrix();
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderPlanet3
+
+load RenderPlanet3
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderPlanet3()
 {
     modelStack.PushMatrix();
@@ -2859,6 +3010,15 @@ void SP2Scene::RenderPlanet3()
     modelStack.PopMatrix();
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderCrate
+
+Spwan Crate
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderCrate()
 {
 	for (std::vector<Crate>::iterator manymanycrate = Crate::Crates.begin(); manymanycrate != Crate::Crates.end(); manymanycrate++)
@@ -2914,6 +3074,15 @@ void SP2Scene::RenderCrate()
 	}
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderBoss1
+
+Spwan RenderBoss1
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderBoss1()
 {
     if (boss1.isDead() == false) {
@@ -2927,6 +3096,15 @@ void SP2Scene::RenderBoss1()
 
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderBoss2
+
+Spwan RenderBoss2
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderBoss2()
 {
     if (Robot.isDead() == false)
@@ -2967,6 +3145,15 @@ void SP2Scene::RenderBoss2()
     }
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderBoss3
+
+Spwan RenderBoss3
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderBoss3()
 {
     if (Golem.isDead() == false && SharedData::GetInstance()->renderPlanet3 == true)
@@ -3082,6 +3269,15 @@ void SP2Scene::RenderBoss3()
     }
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderPause
+
+load Pause menu
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderPause()
 {
     RenderImageOnScreen(meshList[UI_PAUSE], 80, .5f, -.1f, .5f, 0, 0, 0);
@@ -3093,6 +3289,15 @@ void SP2Scene::RenderPause()
     RenderTextOnScreen(meshList[TEXT], "GAME PAUSED", Color(1, 1, 1), 6, 3, 6);
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene renderReturnUI
+
+load return UI
+
+*/
+/******************************************************************************/
 void SP2Scene::renderReturnUI()
 {
 	RenderImageOnScreen(meshList[UI_RETURNPLANE], 80, .5f, -.1f, .5f, 0, 0, 0);
@@ -3102,6 +3307,72 @@ void SP2Scene::renderReturnUI()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	RenderTextOnScreen(meshList[TEXT], "CHOOSE!!!", Color(1, 1, 1), 6, 4, 8);
 }
+
+/******************************************************************************/
+/*!
+\brief
+SP2Scene renderInstruction
+
+load Instruction screen
+
+*/
+/******************************************************************************/
+void SP2Scene::renderInstruction()
+{
+	if (ON_Instruction == true)
+	{
+		RenderImageOnScreen(meshList[UI_INSTRUCTION], 80, .5f, -.1f, 0.1f , 0, 0, 0);
+
+	}
+}
+
+/******************************************************************************/
+/*!
+\brief
+SP2Scene renderGameover
+
+load Gameover screen
+
+*/
+/******************************************************************************/
+void SP2Scene::renderGameover()
+{
+	if (showGameover == true)
+	{
+		RenderImageOnScreen(meshList[UI_GAMEOVER], 80, .5f, -.1f, 0.5f, 0, 0, 0);
+		glBlendFunc(1, 1);
+		RenderImageOnScreen(meshList[UI_LEAVEPLANET], 15, 2.7f, 0, 6, 0, 0, 0);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+}
+
+//void SP2Scene::renderWin()
+//{
+//	if (showWin == true)
+//	{
+//		RenderImageOnScreen(meshList[UI_WIN], 80, .5f, -.1f, 0.1f, 0, 0, 0);
+//		glBlendFunc(1, 1);
+//		RenderImageOnScreen(meshList[UI_PAUSE_SELECT_MENU], 8, 5, 2, 6, 0, 0, 0);
+//		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//	}
+//}
+
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderText
+
+\param *mesh
+load texture
+
+\param text
+load text
+
+\param color
+load color
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderText(Mesh* mesh, std::string text, Color color)
 {
     if (!mesh || mesh->textureID <= 0) //Proper error check
@@ -3132,6 +3403,31 @@ void SP2Scene::RenderText(Mesh* mesh, std::string text, Color color)
     glEnable(GL_DEPTH_TEST);
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderTextOnScreen
+
+\param *mesh
+load texture
+
+\param text
+load text
+
+\param color
+load color
+
+\param size
+how big the text is
+
+\param x
+which position along the x axis
+
+\param y
+which position along the y axis
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
     if (!mesh || mesh->textureID <= 0) //Proper error check
@@ -3174,6 +3470,37 @@ void SP2Scene::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, flo
     glEnable(GL_DEPTH_TEST);
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderImageOnScreen
+
+\param *mesh
+load texture
+
+\param size
+how big the text is
+
+\param x
+which position along the x axis
+
+\param y
+which position along the y axis
+
+\param z
+which position along the z axis
+
+\param rotateX
+how much to rotate along the x aixs
+
+\param rotateY
+how much to rotate along the y aixs
+
+\param rotateZ
+how much to rotate along the z aixs
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderImageOnScreen(Mesh* mesh, float size, float x, float y, float z, float rotateX, float rotateY, float rotateZ)
 {
     Mtx44 ortho;
@@ -3221,6 +3548,26 @@ void SP2Scene::RenderImageOnScreen(Mesh* mesh, float size, float x, float y, flo
     viewStack.PopMatrix();
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderImageOnScreen
+
+\param *mesh
+load texture
+
+\param Scale
+take in scale of x,y,z
+
+\param Translate
+take in translate of x,y,z
+
+\param Rotate
+take in rotation of x,y,z
+
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderImageOnScreen(Mesh* mesh, Vector3 Scale, Vector3 Translate, Vector3 Rotate)
 {
 	Mtx44 ortho;
@@ -3268,6 +3615,15 @@ void SP2Scene::RenderImageOnScreen(Mesh* mesh, Vector3 Scale, Vector3 Translate,
 	viewStack.PopMatrix();
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene Renderlegs
+
+load boss2 legs
+
+*/
+/******************************************************************************/
 void SP2Scene::Renderlegs()
 {
 	if (SharedData::GetInstance()->renderShip == true)
@@ -3276,11 +3632,11 @@ void SP2Scene::Renderlegs()
 		legsize = 35;
 		legP = 155;
 	}
-	if (SharedData::GetInstance()->renderPlanet1 || SharedData::GetInstance()->renderPlanet2 || SharedData::GetInstance()->renderPlanet3)
+	if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true || SharedData::GetInstance()->renderPlanet3 == true)
 	{
 		legsheight = 100;
 		legsize = 10;
-		legP = 50;
+		legP = 45;
 	}
 	//else if (SharedData::GetInstance()->renderPlanet1||)
     if (SharedData::GetInstance()->renderHumanlegs == true)
@@ -3372,6 +3728,15 @@ void SP2Scene::Renderlegs()
     }
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene RenderAbilities
+
+load abilities of each race
+
+*/
+/******************************************************************************/
 void SP2Scene::RenderAbilities()
 {
     //if (SharedData::GetInstance()->AbilityActiveTime < 5) {
@@ -3404,6 +3769,15 @@ void SP2Scene::RenderAbilities()
     //}
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene renderReturnShip
+
+load ship that goes back to ship
+
+*/
+/******************************************************************************/
 void SP2Scene::renderReturnShip()
 {
     if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true)
@@ -3448,6 +3822,15 @@ void SP2Scene::renderReturnShip()
     }
 }
 
+/******************************************************************************/
+/*!
+\brief
+SP2Scene Exit
+
+Exit
+
+*/
+/******************************************************************************/
 void SP2Scene::Exit()
 {
     // Cleanup VBO here

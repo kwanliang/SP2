@@ -1,18 +1,56 @@
+/******************************************************************************/
+/*!
+\file	Camera2.cpp
+\author Chuan Guang Zhe
+\author Kwan Liang
+\author Glence Low
+\par	email: 152104G@mymail.nyp.edu.sg
+\brief
+Class to define Camera2
+*/
+/******************************************************************************/
 #include "Camera2.h"
 #include "Application.h"
 #include "Mtx44.h"
 #include "Mouse.h"
 #include "Collision.h"
 
+/******************************************************************************/
+/*!
+\brief
+Camera2 default constructor
+*/
+/******************************************************************************/
 Camera2::Camera2()
 {
 	
 }
 
+/******************************************************************************/
+/*!
+\brief
+Camera2 default constructor
+*/
+/******************************************************************************/
 Camera2::~Camera2()
 {
 }
 
+/******************************************************************************/
+/*!
+\brief
+Camera2 Init
+
+\param &pos
+initialize position
+
+\param &target
+initialize target
+
+\param &up
+initialize direction
+*/
+/******************************************************************************/
 void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 {
     Vector3 ControlPanel(-350, 0, 0);
@@ -47,6 +85,16 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
     Test.SetRace(2);
 }
 
+/******************************************************************************/
+/*!
+\brief
+Camera2 Update
+
+\param dt
+update camera
+
+*/
+/******************************************************************************/
 void Camera2::Update(double dt)
 {
     static const float CAMERA_SPEED = 50.f;
@@ -389,6 +437,14 @@ void Camera2::Update(double dt)
     SharedData::GetInstance()->PlayerView = view;
 }
 
+/******************************************************************************/
+/*!
+\brief
+Camera2 Reset
+
+reset camera postion to normal
+*/
+/******************************************************************************/
 void Camera2::Reset()
 {
     position = defaultPosition;
