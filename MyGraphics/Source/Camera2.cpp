@@ -6,7 +6,7 @@
 
 Camera2::Camera2()
 {
-
+	
 }
 
 Camera2::~Camera2()
@@ -55,7 +55,7 @@ void Camera2::Update(double dt)
 	if(SharedData::GetInstance()->UI_Human_Selected == true)
 	{
 		Test.SetRace(0);
-		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999))
+		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999) && (Boss2.isDead() == false))
 		{
 			SharedData::GetInstance()->Move_Speed = 100.f;
 		}
@@ -63,7 +63,7 @@ void Camera2::Update(double dt)
 	else if (SharedData::GetInstance()->UI_Robot_Selected == true)
 	{
 		Test.SetRace(1);
-		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999))
+		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999) && (Boss2.isDead() == false))
 		{
 			SharedData::GetInstance()->Move_Speed = 200.f;
 		}
@@ -71,14 +71,14 @@ void Camera2::Update(double dt)
 	else if (SharedData::GetInstance()->UI_Infested_Selected == true)
 	{
 		Test.SetRace(2);
+		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999) && (Boss2.isDead() == false))
+		{
+			SharedData::GetInstance()->Move_Speed = 100.f;
+		}
 	}
 	else
 	{
 		Test.SetRace(2);
-		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999))
-		{
-			SharedData::GetInstance()->Move_Speed = 100.f;
-		}
 
 	}
 

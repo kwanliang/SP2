@@ -3,6 +3,7 @@
 
 #include "Camera.h"
 #include "Character.h"
+#include "Boss2.h"
 
 class Camera2 : public Camera
 {
@@ -33,6 +34,8 @@ public:
     Vector3 Boss1Size;
 	Vector3 boss2Hitbox;
 	Vector3 boss2Hitboxsize;
+
+	Boss2 Boss2;
 
     double mouseXPos;
     double mouseYPos;

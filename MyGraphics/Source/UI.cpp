@@ -1,8 +1,10 @@
 #include "UI.h"
+
 #include "Mouse.h"
 #include "SP2Scene.h"
 #include "Application.h"
 #include "camera2.h"
+
 
 bool UI::UI_On = true;
 bool UI::UI_PlanatNav = false;
@@ -396,6 +398,31 @@ void UI::Update(double dt)
 		}
 		else 
 		{
+	float Leaveplanet_MinX = (811.f / MonitorWidth) * Current_MonitorWidth;
+	float Leaveplanet_MaxX = (1135.f / MonitorWidth) * Current_MonitorWidth;
+	float Leaveplanet_MinY = (355.f / MonitorHeight) * Current_MonitorHeight;
+	float Leaveplanet_MaxY = (395.f / MonitorHeight) * Current_MonitorHeight;
+
+	float Fightboss_MinX = (795.f / MonitorWidth) * Current_MonitorWidth;
+	float Fightboss_MaxX = (1150.f / MonitorWidth) * Current_MonitorWidth;
+	float Fightboss_MinY = (866.f / MonitorHeight) * Current_MonitorHeight;
+	float Fightboss_MaxY = (905.f / MonitorHeight) * Current_MonitorHeight;
+
+	if (SharedData::GetInstance()->renderReturn == true) {
+		UI::ReturnshipUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Leaveplanet_MinX, Leaveplanet_MaxX, Leaveplanet_MinY, Leaveplanet_MaxY, 1);
+		UI::ReturnshipUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Fightboss_MinX, Fightboss_MaxX, Fightboss_MinY, Fightboss_MaxY, 2);
+
+		if (UI::ReturnshipUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Leaveplanet_MinX, Leaveplanet_MaxX, Leaveplanet_MinY, Leaveplanet_MaxY, 1) == true) {
+			SharedData::GetInstance()->Leaveplanet_Hovered = true;
+		}
+		else {
+			SharedData::GetInstance()->Leaveplanet_Hovered = false;
+		}
+
+		if (UI::ReturnshipUIHitbox(SharedData::GetInstance()->MousePos_X, SharedData::GetInstance()->MousePos_Y, Fightboss_MinX, Fightboss_MaxX, Fightboss_MinY, Fightboss_MaxY, 2) == true) {
+			SharedData::GetInstance()->Fightboss_Hovered = true;
+		}
+		else {
 			SharedData::GetInstance()->Fightboss_Hovered = false;
 		}
 	}
@@ -800,5 +827,16 @@ bool UI::ReturnshipUIHitbox(double& MousePositionX, double& MousePositionY, int 
 	else 
 	{
 		return false;
+		if (MenuUI_ID == 1 && SharedData::GetInstance()->Left_Clicked == true)
+		{
+			//SharedData::GetInstance()->renderShip = true;
+			//SharedData::GetInstance()->renderPlanet1 = false;
+			//SharedData::GetInstance()->renderPlanet2 = false;
+			//SharedData::GetInstance()->renderPlanet3 = false;
+			//camera.position = (0, 0, 0);
+			//enemydefeated = 0;
+			//flyingdown = 1000;
+			//SP2Scene.enemydefeated = 0;
+		}
 	}
 }

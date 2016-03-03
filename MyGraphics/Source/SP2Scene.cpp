@@ -50,9 +50,12 @@ SP2Scene::SP2Scene()
 	legsheight = 0;
 	legsize = 0;
 	legP = 0;
+
 	SharedData::GetInstance()->returnship_UI = false;
 	SharedData::GetInstance()->enemydefeated = 0;
 	SharedData::GetInstance()->flyingdown = 1000;
+	returnship_UI = false;
+
 }
 
 SP2Scene::~SP2Scene()
@@ -491,6 +494,7 @@ void SP2Scene::Init()
 	//<<<<<<<<<<<<<<<<<<<<<<<<UI_returnship<<<<<<<<<<<<<<<<<<<<<<<<
 	meshList[UI_RETURNPLANE] = MeshBuilder::GenerateOBJ("UI return", "OBJ//UI_Plane.obj");
 	meshList[UI_RETURNPLANE]->textureID = LoadTGA("Image//UI//UI_Space.tga");
+	meshList[UI_RETURNPLANE]->textureID = LoadTGA("Image//UI//test.tga");
 	meshList[UI_LEAVEPLANET] = MeshBuilder::GenerateOBJ("UI return", "OBJ//UI_Plane.obj");
 	meshList[UI_LEAVEPLANET]->textureID = LoadTGA("Image//UI//UI_Leaveplanet.tga");
 	meshList[UI_FIGHTBOSS] = MeshBuilder::GenerateOBJ("UI return", "OBJ//UI_Plane.obj");
@@ -584,11 +588,11 @@ void SP2Scene::Update(double dt)
 		camera.position.y = 0;
 		camera.position.z = -200;
 	}
+
 	if (SharedData::GetInstance()->renderPlanet1 || SharedData::GetInstance()->renderPlanet2 || SharedData::GetInstance()->renderPlanet3)
 	{
 		camera.position.y = 50;
 	}
-
 	//if (Application::IsKeyPressed('1')) //enable back face culling
 	//	glEnable(GL_CULL_FACE);
 	//if (Application::IsKeyPressed('2')) //disable back face culling
@@ -972,7 +976,6 @@ void SP2Scene::Update(double dt)
 	//cout << "rightup" << moveupRightleg << endl;
 	//cout << "rightdown" << movedownRightleg << endl;
 
-
 	if (Application::IsKeyPressed('P'))
 	{
 		SharedData::GetInstance()->enemydefeated++;
@@ -1025,6 +1028,7 @@ void SP2Scene::Update(double dt)
 	{
 		SharedData::GetInstance()->renderReturn = true;
 		SharedData::GetInstance()->returnship_UI = true;
+		returnship_UI = true;
 		UI.UI_On = true;
 	}
 
@@ -1036,6 +1040,7 @@ void SP2Scene::Update(double dt)
 		SharedData::GetInstance()->renderReturn = true;
 		SharedData::GetInstance()->returnship_UI = true;
 		UI.UI_On = true;
+		returnship_UI = true;
 	}
 
     if (Application::IsKeyPressed('Z'))
@@ -1141,6 +1146,12 @@ void SP2Scene::Update(double dt)
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	if (SharedData::GetInstance()->Equipped->Ammo == 0)
+	{
+		Wait = 0;
+		SharedData::GetInstance()->Equipped->Reloading = true;
+	}
+
     //Spin item
     Item_Spin += (float)(120 * dt);
     if (Item_Spin >= 360)
@@ -1353,6 +1364,8 @@ void SP2Scene::Update(double dt)
 
 	// SPAWNING AND DESPAWNING OF ENEMIES 
     if (SharedData::GetInstance()->renderPlanet1 == true && Wave <= 0)
+    //PLANET 3 BOSS
+    if (Golem.isDead() == false)
     {
         Wave = 5;
         for (int amount = 0; amount < 0; amount++)
@@ -1530,6 +1543,7 @@ void SP2Scene::Update(double dt)
 	}
 
 	//KL STUFF
+
     if (SharedData::GetInstance()->Bombard == true) {
         SharedData::GetInstance()->rocketdown -= (float)(700 * dt);
     }
