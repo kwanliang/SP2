@@ -25,12 +25,22 @@ class Enemy
 {
 public:
 	int MAX_HP;
+	float HPbar;
     int HP;
     int Attack;
+    int Drop;
+    double DamageCooldown;
     float Degree;
     Vector3 Pos;
-    int Drop;
-	float HPbar;
+    Vector3 RobotProjectilePosition;
+    Vector3 RobotProjectileView;
+    bool DamageCountdown;
+    bool RobotShootState;
+    bool EnemyAttackAnimation;
+
+    //Monster Animation
+    float SlimeJump;
+    float SwordAttack;
 
     Enemy();
     Enemy(int HP, int Attack, int Drop);
@@ -44,8 +54,9 @@ public:
     void ReceiveDamage(const int Dmg);
     void FacePlayer(Vector3 Player);
     void ChasePlayer(double dt, Vector3 Player);
-    void DamagePlayer(Vector3 Player);
     bool IsDead(void);
+
+    Character character;
 };
 
 #endif

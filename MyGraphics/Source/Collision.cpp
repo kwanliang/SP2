@@ -1,23 +1,6 @@
-/******************************************************************************/
-/*!
-\file	Collision.cpp
-\author Kwan Liang
-\par	email: 152104G@mymail.nyp.edu.sg
-\brief
-Class to define Collision
-*/
-/******************************************************************************/
 #include "Collision.h"
 
-/******************************************************************************/
-/*!
-\brief
-Collision BoundaryCheck
 
-\param CameraPosition
-check boundary of planet with camera postion
-*/
-/******************************************************************************/
 bool Collision::BoundaryCheck(Vector3& CameraPosition) 
 {
 	if (SharedData::GetInstance()->renderShip== true)
@@ -88,21 +71,6 @@ bool Collision::BoundaryCheck(Vector3& CameraPosition)
 	}
 }
 
-/******************************************************************************/
-/*!
-\brief
-Collision ObjCheck
-
-\param CameraPosition
-check boundary of obj with cameraposition
-
-\param ObjPostion
-check obj position
-
-\ param HitboxSize
-check how big the hitbox is
-*/
-/******************************************************************************/
 bool Collision::ObjCheck(Vector3& CameraPosition, const Vector3& ObjPosition, const Vector3& HitboxSize)
 { 
     Vector3 MaxPoint = ObjPosition + HitboxSize;
@@ -120,21 +88,6 @@ bool Collision::ObjCheck(Vector3& CameraPosition, const Vector3& ObjPosition, co
     }
 }
 
-/******************************************************************************/
-/*!
-\brief
-Collision MonsterHitbox
-
-\param ProjectilePosition
-check position of projectile 
-
-\param MonsterPosition
-check monster position
-
-\param HitboxSize
-check how big the hitbox is
-*/
-/******************************************************************************/
 bool Collision::MonsterHitbox(Vector3& ProjectilePosition, Vector3& MonsterPosition, const Vector3& HitboxSize)
 {
     Vector3 MaxPoint = MonsterPosition + HitboxSize;

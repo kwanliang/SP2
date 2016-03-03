@@ -158,6 +158,9 @@
     <ClInclude Include="Source\Boss1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Keyboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Boss3.h">
       <Filter>Header Files</Filter>
     </ClInclude>

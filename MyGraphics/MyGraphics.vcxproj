@@ -115,6 +115,7 @@
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\Crate.h" />
     <ClInclude Include="Source\Dialogue.h" />
+    <ClInclude Include="Source\Keyboard.h" />
     <ClInclude Include="Source\Mouse.h" />
     <ClInclude Include="Source\Enemy.h" />
     <ClInclude Include="Source\Projectile.h" />

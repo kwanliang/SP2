@@ -26,21 +26,8 @@ void Projectile::Update(double dt)
         BulletTime = 0;
     }
 
-    if (collision.BoundaryCheck(ProjectilePosition) == true) {/* &&
-        collision.MonsterHitbox(ProjectilePosition, SharedData::GetInstance()->Boss1Position, Boss1HitboxSize) == false &&
-        BulletTime < .5 && UI.UI_On == false)
+    if (collision.BoundaryCheck(ProjectilePosition) == true) 
     {
-        ProjectilePosition += ProjectileView * dt * 3000;
-    }
-
-    if (collision.BoundaryCheck(ProjectilePosition) == true &&
-        collision.ObjCheck(ProjectilePosition, SharedData::GetInstance()->SetCratePosition, CrateHitboxsize) == false &&
-        BulletTime < .5 && UI.UI_On == false)
-    {
-        ProjectilePosition += ProjectileView * dt * 3000;
-    }
-    else
-    {*/
         ProjectilePosition += ProjectileView * dt * 500;
         SharedData::GetInstance()->ProjectilePosition = ProjectilePosition;
     }

@@ -1,31 +1,18 @@
-/******************************************************************************/
-/*!
-\file	Boss2.h
-\author Glence Low
-\par	email: glencelow@hotmail.com
-\brief
-Class to define Boss 2, the spider Robot
-*/
-/******************************************************************************/
 #ifndef BOSS2_H
 #define BOSS2_H
 
-/******************************************************************************/
-/*!
-Class Boss 2:
-\brief
-Defines the robot and its methods
-*/
-/******************************************************************************/
+#include "Collision.h"
+
 class Boss2
 {
 public:
 	Boss2();
 	~Boss2();
 
-	void recieveDamage(int Damage);
+	void receiveDamage(int Damage);
 	void moveRobotBosssleg(double dt);
 	void updates(double dt);
+    void reset();
 
 	bool moveleftforward;
 	bool moveleftback;
@@ -51,14 +38,9 @@ public:
 	int Attack;
 	float move_Speed;
 
+    void FacePlayer(Vector3 Player);
+    void ChasePlayer(double dt, Vector3 Player);
 	bool isDead(void);
-
-
 };
-
-
-
-
-
 
 #endif 

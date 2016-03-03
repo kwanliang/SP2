@@ -69,7 +69,7 @@ public:
 	Boss3();
 	~Boss3();
 	void updates(double dt);
-	void recieveDamage(int Damage);
+	void receiveDamage(int Damage);
 	void PhaseShift(double dt);
 	bool isDead(void);
 	void reset(void);

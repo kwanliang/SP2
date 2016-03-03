@@ -87,7 +87,7 @@ void Character::SetRace(int i)
 	Amount of HP to be deducted
 */
 /******************************************************************************/
-void Character::recieveDamage(int Damage)
+void Character::receiveDamage(int Damage)
 {
 	HP -= Damage;
 }

@@ -1,14 +1,3 @@
-/******************************************************************************/
-/*!
-\file	SP2Scene.cpp
-\author Kwan Liang
-\author Glence Low
-\author Chuan Guang Zhe
-\par	email: 152104G@mymail.nyp.edu.sg
-\brief
-Class to define main framework.
-*/
-/******************************************************************************/
 #include <iomanip>
 #include "SP2Scene.h"
 #include "GL\glew.h"
@@ -31,80 +20,54 @@ float SP2Scene::UI_Human_Rotate = 0;
 float SP2Scene::UI_Robot_Rotate = 0;
 float SP2Scene::UI_Infested_Rotate = 0;
 
-/******************************************************************************/
-/*!
-\brief
-	SP2Scene default constructor
-*/
-/******************************************************************************/
 SP2Scene::SP2Scene()
 {
-    //UI::UI_On = false;
-    SharedData::GetInstance()->renderMenu = true;
+	SharedData::GetInstance()->renderMenu = false;
     SharedData::GetInstance()->renderRaceSelection = false;
     SharedData::GetInstance()->renderNameInput = false;
-    SharedData::GetInstance()->renderShip = false;
+	SharedData::GetInstance()->renderShip = true;
     SharedData::GetInstance()->renderPlanet1 = false;
     SharedData::GetInstance()->renderPlanet2 = false;
     SharedData::GetInstance()->renderPlanet3 = false;
+
+	SharedData::GetInstance()->Injured->setSoundVolume(0.3f);
+	SharedData::GetInstance()->BGM->setSoundVolume(0.2f);
+	SharedData::GetInstance()->Gun->setSoundVolume(0.1f);
+	SharedData::GetInstance()->UI_Human_Selected = true;
+
     moveupLeftleg = false;
     moveupRightleg = false;
     movedownLeftleg = false;
     movedownRightleg = false;
     movingLeftleg = 0;
     movingRightleg = 0;
-    SharedData::GetInstance()->flydown = false;
-	SharedData::GetInstance()->flyup = false;
+    enemydefeated = 0;
+    flydown = false;
+    flyingdown = 1000;
+    flyup = false;
     arrowsignmove = 0;
     arrowsignrotate = 0;
     arrowup = false;
     arrowdown = false;
     SharedData::GetInstance()->renderPause = false;
-	SharedData::GetInstance()->renderReturn = false;
 	distancefrom_Item = 0;
-	Crate_Time = 5;
-	legSpeed = 0;
-	legsheight = 0;
-	legsize = 0;
-	legP = 0;
-	ON_Instruction = false;
-
-	SharedData::GetInstance()->returnship_UI = false;
-	SharedData::GetInstance()->enemydefeated = 0;
-	SharedData::GetInstance()->flyingdown = 1000;
-	waitLa = 10;
-	showWin = false;
-	showGameover = false;
-
 }
 
-/******************************************************************************/
-/*!
-\brief
-	SP2Scene default constructor
-*/
-/******************************************************************************/
 SP2Scene::~SP2Scene()
 {
 }
 
-/******************************************************************************/
-/*!
-\brief
-	SP2Scene Init
-
-	initialize values
-*/
-/******************************************************************************/
 void SP2Scene::Init()
 {
     LSPEED = 100.f;
 
     reload_delay = 0.f;
 
-    Character.Coins += 5980;
+	Dialogue.GenLine("Dialogue//Talk.txt");
 
     Item_Spin = 0.f;
+
+    WaveCap = 0;
 
     nearDoor = false;
     closeDoor = false;
@@ -129,15 +92,29 @@ void SP2Scene::Init()
     SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(2, Weapon("Heavy Pulse Rifle", 10, 1.f, 2, 10, 500)));
     SharedData::GetInstance()->WeaponMap.insert(std::pair<int, Weapon>(3, Weapon("Minigun", 1, 0.1f, 1, 100, 1000)));
 
-    SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(0)->second;
+    SharedData::GetInstance()->Equipped = &SharedData::GetInstance()->WeaponMap.find(3)->second;
 
     //ENEMIES
+	Slime.Init();
 
-	//SLIMES
-	for (int amount = 0; amount < 10; amount++)
-	{
-		Enemy::Enemies.push_back(Enemy(5, 2, 10));
-	}
+    if (SharedData::GetInstance()->renderPlanet1 == true) {
+        for (int amount = 0; amount <5; amount++)
+        {
+            Enemy::Enemies.push_back(Enemy(2, 1, 10));
+        }
+    }
+    else if (SharedData::GetInstance()->renderPlanet2 == true) {
+        for (int amount = 0; amount < 5; amount++)
+        {
+            Enemy::Enemies.push_back(Enemy(10, 3, 30));
+        }
+    }
+    else if (SharedData::GetInstance()->renderPlanet3 == true) {
+        for (int amount = 0; amount < 5; amount++)
+        {
+            Enemy::Enemies.push_back(Enemy(20, 5, 30));
+        }
+    }
 
 	//Crate
 	for (int totalCrate = 0; totalCrate <= 1; totalCrate++)
@@ -194,7 +171,6 @@ void SP2Scene::Init()
 
     //Initialize camera settings
     camera.Init(Vector3(0, 0, -200), Vector3(0, 0, 0), Vector3(0, 1, 0));
-    boss1.Init();
 
     // Get a handle for our "colorTexture" uniform
     m_parameters[U_COLOR_TEXTURE_ENABLED] = glGetUniformLocation(m_programID, "colorTextureEnabled");
@@ -336,8 +312,8 @@ void SP2Scene::Init()
     meshList[SLIME_TREE]->textureID = LoadTGA("Image//planet1//slimetree.tga");
     meshList[SLIME_MOUNTAIN] = MeshBuilder::GenerateOBJ("slimemountain", "OBJ//planet1//slimemountain.obj");
     meshList[SLIME_MOUNTAIN]->textureID = LoadTGA("Image//planet1//slimemountain.tga");
-    meshList[SLIME_GREEN] = MeshBuilder::GenerateOBJ("slime green", "OBJ//planet1//Slime.obj");
-    meshList[SLIME_GREEN]->textureID = LoadTGA("Image//planet1//slimes//Green_Slime.tga");
+    meshList[SLIME_ENEMY] = MeshBuilder::GenerateOBJ("slime green", "OBJ//planet1//Slime.obj");
+    meshList[SLIME_ENEMY]->textureID = LoadTGA("Image//planet1//slimes//Green_Slime.tga");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET1<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<ENEMY<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -352,6 +328,7 @@ void SP2Scene::Init()
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS1<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET2<<<<<<<<<<<<<<<<<<<<<<<<<<
+    GLuint robot = LoadTGA("Image//planet2//planet2_monster//Robot.tga");
     meshList[PLANET2_FRONT] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
     meshList[PLANET2_FRONT]->textureID = LoadTGA("Image//planet2//planet2_front.tga");
     meshList[PLANET2_BACK] = MeshBuilder::GenerateQuad("front", Color(1, 1, 1), TexCoord(1, 1));
@@ -368,6 +345,10 @@ void SP2Scene::Init()
     meshList[PLANET2_GROUND]->textureID = LoadTGA("Image//planet2//planet2_ground.tga");
     meshList[FENCE] = MeshBuilder::GenerateOBJ("fence", "OBJ//planet2//fence.obj");
     meshList[FENCE]->textureID = LoadTGA("Image//planet2//fence.tga");
+    meshList[ROBOT_ENEMY] = MeshBuilder::GenerateOBJ("Robot", "OBJ//planet2//robot.obj");
+    meshList[ROBOT_ENEMY]->textureID = robot;
+    meshList[ROBOT_PROJECTILE] = MeshBuilder::GenerateOBJ("Robot", "OBJ//planet2//robot_projectile.obj");
+    meshList[ROBOT_PROJECTILE]->textureID = robot;
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET2<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS2<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -406,6 +387,8 @@ void SP2Scene::Init()
     meshList[PLANET3_DARKMOUNTAIN]->textureID = LoadTGA("Image//planet3//darkmountain.tga");
     meshList[PLANET3_DARKTREE] = MeshBuilder::GenerateOBJ("darkmountain", "OBJ//planet3//darktree.obj");
     meshList[PLANET3_DARKTREE]->textureID = LoadTGA("Image//planet3//darktree.tga");
+    meshList[SWORD_ENEMY] = MeshBuilder::GenerateOBJ("Knight", "OBJ//planet3//Sword.obj");
+    meshList[SWORD_ENEMY]->textureID = LoadTGA("Image//planet3//planet3_monster//Sword.tga");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<PLANET3<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<BOSS3<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -447,7 +430,7 @@ void SP2Scene::Init()
     meshList[HEALTH_KIT] = MeshBuilder::GenerateOBJ("Coins", "OBJ//items//healthkit.obj");
     meshList[HEALTH_KIT]->textureID = LoadTGA("Image//items//healthkit.tga");
     meshList[LARGE_HEALTH_KIT] = MeshBuilder::GenerateOBJ("Coins", "OBJ//items//healthkit.obj");
-    meshList[LARGE_HEALTH_KIT]->textureID = LoadTGA("Image//items//large healthkit.tga");
+	meshList[LARGE_HEALTH_KIT]->textureID = LoadTGA("Image//items//large healthkit.tga");
 
 	meshList[CROWN] = MeshBuilder::GenerateOBJ("Crown", "OBJ//items/Crown.obj");
 	meshList[CROWN]->textureID = LoadTGA("Image//planet1//slimes//Boss_Slime.tga");
@@ -523,33 +506,11 @@ void SP2Scene::Init()
     meshList[TURRET]->textureID = LoadTGA("Image//turret.tga");
     meshList[ROCKET] = MeshBuilder::GenerateOBJ("rocket ability", "OBJ//rocket.obj");
     meshList[ROCKET]->textureID = LoadTGA("Image//rocket.tga");
+    meshList[EXPLOSION] = MeshBuilder::GenerateOBJ("Explosion", "OBJ//Explosion.obj");
+    meshList[EXPLOSION]->textureID = LoadTGA("Image//Explosion.tga");
+    meshList[SNARE] = MeshBuilder::GenerateOBJ("Snare", "OBJ//Snare.obj");
+    meshList[SNARE]->textureID = LoadTGA("Image//Snare.tga");
     //<<<<<<<<<<<<<<<<<<<<<<<<ABILITIES<<<<<<<<<<<<<<<<<<<<<<<<
-
-	//<<<<<<<<<<<<<<<<<<<<<<<<UI_returnship<<<<<<<<<<<<<<<<<<<<<<<<
-	meshList[UI_RETURNPLANE] = MeshBuilder::GenerateOBJ("UI return", "OBJ//UI_Plane.obj");
-	meshList[UI_RETURNPLANE]->textureID = LoadTGA("Image//UI//UI_Space.tga");
-	meshList[UI_LEAVEPLANET] = MeshBuilder::GenerateOBJ("UI return", "OBJ//UI_Plane.obj");
-	meshList[UI_LEAVEPLANET]->textureID = LoadTGA("Image//UI//UI_Leaveplanet.tga");
-	meshList[UI_FIGHTBOSS] = MeshBuilder::GenerateOBJ("UI return", "OBJ//UI_Plane.obj");
-	meshList[UI_FIGHTBOSS]->textureID = LoadTGA("Image//UI//UI_Fightboss.tga");
-	//<<<<<<<<<<<<<<<<<<<<<<<<UI_returnship<<<<<<<<<<<<<<<<<<<<<<<<
-
-	//<<<<<<<<<<<<<<<<<<<<<<<<UI_HELP<<<<<<<<<<<<<<<<<<<<<<<<
-	meshList[UI_INSTRUCTION] = MeshBuilder::GenerateOBJ("UI help", "OBJ//UI_Plane.obj");
-	meshList[UI_INSTRUCTION]->textureID = LoadTGA("Image//UI//UI_Instruction.tga");
-	//<<<<<<<<<<<<<<<<<<<<<<<<UI_HELP<<<<<<<<<<<<<<<<<<<<<<<<
-
-	//<<<<<<<<<<<<<<<<<<<<<<<<GAME_OVER<<<<<<<<<<<<<<<<<<<<<<<<
-	meshList[UI_GAMEOVER] = MeshBuilder::GenerateOBJ("UI help", "OBJ//UI_Plane.obj");
-	meshList[UI_GAMEOVER]->textureID = LoadTGA("Image//UI//UI_Gameover.tga");
-	meshList[UI_BACKTOSHIP] = MeshBuilder::GenerateOBJ("UI help", "OBJ//UI_Plane.obj");
-	meshList[UI_BACKTOSHIP]->textureID = LoadTGA("Image//UI//UI_Gameover.tga");
-	//<<<<<<<<<<<<<<<<<<<<<<<<GAME_OVER<<<<<<<<<<<<<<<<<<<<<<<<
-
-	//<<<<<<<<<<<<<<<<<<<<<<<<WIN<<<<<<<<<<<<<<<<<<<<<<<<
-	meshList[UI_WIN] = MeshBuilder::GenerateOBJ("UI help", "OBJ//UI_Plane.obj");
-	meshList[UI_WIN]->textureID = LoadTGA("Image//UI//UI_Win.tga");
-	//<<<<<<<<<<<<<<<<<<<<<<<<WIN<<<<<<<<<<<<<<<<<<<<<<<<
 
     light[0].type = Light::LIGHT_POINT;
     light[0].position.Set(0, 0, 0);
@@ -581,18 +542,6 @@ void SP2Scene::Init()
 static float ROT_LIMIT = 45.f;
 static float SCALE_LIMIT = 5.f;
 
-/******************************************************************************/
-/*!
-\brief
-	SP2Scene RenderMesh
-
-\param *mesh
-load texture
-
-\param enableLight
-to use light
-*/
-/******************************************************************************/
 void SP2Scene::RenderMesh(Mesh *mesh, bool enableLight) {
     Mtx44 MVP, modelView, modelView_inverse_transpose;
 
@@ -638,55 +587,8 @@ void SP2Scene::RenderMesh(Mesh *mesh, bool enableLight) {
     }
 }
 
-/******************************************************************************/
-/*!
-\brief
-	SP2Scene Update
-
-\param dt
-constently update main frame work
-
-*/
-/******************************************************************************/
 void SP2Scene::Update(double dt)
-{
-	if ((Application::IsKeyPressed('H')) && (ON_Instruction == false) && (UI.UI_On == false) && (SharedData::GetInstance()->renderShip == true) && (waitLa >= 10))
-	{
-		ON_Instruction = true;
-		waitLa = 0;
-	}
-	else if ((Application::IsKeyPressed('H')) && (ON_Instruction == true) && (UI.UI_On == false) && (SharedData::GetInstance()->renderShip == true) && (waitLa >= 10))
-	{
-		ON_Instruction = false;
-		waitLa = 0;
-	}
-
-	if (waitLa <= 10)
-	{ 
-		waitLa++;
-	}
-	if (SharedData::GetInstance()->renderPause == true || UI.UI_PlanatNav == true || UI.UI_Pepe == true)
-	{
-		ON_Instruction = false;
-	}
-
-	if (Character.isDead() == true)
-	{
-		UI.UI_On = true;
-		showGameover = true;
-	}
-
-	if (UI.UI_PlanatNav == true && Trophy_1 == true && Trophy_2 == true && Trophy_3 == true)
-	{
-			UI::UI_On = true;
-			showWin = true;
-	}
-
-	if (SharedData::GetInstance()->renderPlanet1 || SharedData::GetInstance()->renderPlanet2 || SharedData::GetInstance()->renderPlanet3)
-	{
-		camera.position.y = 50;
-	}
-	//if (Application::IsKeyPressed('1')) //enable back face culling
+{	//if (Application::IsKeyPressed('1')) //enable back face culling
 	//	glEnable(GL_CULL_FACE);
 	//if (Application::IsKeyPressed('2')) //disable back face culling
 	//	glDisable(GL_CULL_FACE);
@@ -695,239 +597,123 @@ void SP2Scene::Update(double dt)
 	if (Application::IsKeyPressed('4'))
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //wireframe mode
 
-    //<<<<<<<<<<<<<<<<<<<<<<HOVER CHECK<<<<<<<<<<<<<<<<<<<<<<<<
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//								HOVER CHECK
     if (UI::UI_On == true && SharedData::GetInstance()->renderMenu == true ||
         UI::UI_On == true && SharedData::GetInstance()->renderRaceSelection == true ||
         UI::UI_On == true && SharedData::GetInstance()->renderNameInput == true ||
-        UI::UI_On == true && SharedData::GetInstance()->renderPause == true ||
-		UI::UI_On ==true && SharedData::GetInstance()->renderReturn == true)
-    {
-        //Menu
-        if (SharedData::GetInstance()->Menu_Start_Hovered == true) {
-            meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start_S.tga");
-        }
-        else {
-            meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start.tga");
-        }
-
-        if (SharedData::GetInstance()->Menu_Exit_Hovered == true) {
-            meshList[UI_MENU_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit_S.tga");
-        }
-        else {
-            meshList[UI_MENU_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
-        }
-
-        //Race
-        if (SharedData::GetInstance()->Race_Name_Hovered == true) {
-            meshList[UI_RACE_SELECT]->textureID = LoadTGA("Image//UI//UI_Race_Select_S.tga");
-        }
-        else {
-            meshList[UI_RACE_SELECT]->textureID = LoadTGA("Image//UI//UI_Race_Select.tga");
-        }
-
-        if (SharedData::GetInstance()->Race_Back_Hovered == true) {
-            meshList[UI_RACE_BACK]->textureID = LoadTGA("Image//UI//UI_Race_Back_S.tga");
-        }
-        else {
-            meshList[UI_RACE_BACK]->textureID = LoadTGA("Image//UI//UI_Race_Back.tga");
-        }
-
-        //Name
-        if (SharedData::GetInstance()->Name_Start_Hovered == true) {
-            meshList[UI_NAME_ACCEPT]->textureID = LoadTGA("Image//UI//UI_Name_Accept_S.tga");
-        }
-        else {
-            meshList[UI_NAME_ACCEPT]->textureID = LoadTGA("Image//UI//UI_Name_Accept.tga");
-        }
-
-        if (SharedData::GetInstance()->Name_Back_Hovered == true) {
-            meshList[UI_NAME_BACK]->textureID = LoadTGA("Image//UI//UI_Name_Back_S.tga");
-        }
-        else {
-            meshList[UI_NAME_BACK]->textureID = LoadTGA("Image//UI//UI_Name_Back.tga");
-        }
-
-        if (SharedData::GetInstance()->Name_Menu_Hovered == true) {
-            meshList[UI_NAME_MENU]->textureID = LoadTGA("Image//UI//UI_Name_Menu_S.tga");
-        }
-        else {
-            meshList[UI_NAME_MENU]->textureID = LoadTGA("Image//UI//UI_Name_Menu.tga");
-        }
-
-        //Pause
-        if (SharedData::GetInstance()->Pause_Resume_Hovered == true) {
-            meshList[UI_PAUSE_SELECT_RESUME]->textureID = LoadTGA("Image//UI//UI_Resume_S.tga");
-        }
-        else {
-            meshList[UI_PAUSE_SELECT_RESUME]->textureID = LoadTGA("Image//UI//UI_Resume.tga");
-        }
-
-        if (SharedData::GetInstance()->Pause_Menu_Hovered == true) {
-            meshList[UI_PAUSE_SELECT_MENU]->textureID = LoadTGA("Image//UI//UI_Pause_BTMM_S.tga");
-        }
-        else {
-            meshList[UI_PAUSE_SELECT_MENU]->textureID = LoadTGA("Image//UI//UI_Pause_BTMM.tga");
-        }
-
-        if (SharedData::GetInstance()->Pause_Exit_Hovered == true) {
-            meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit_S.tga");
-        }
-        else {
-            meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
-        }
-
-		//return
-		if (SharedData::GetInstance()->Leaveplanet_Hovered == true) {
-			meshList[UI_LEAVEPLANET]->textureID = LoadTGA("Image//UI//UI_Leaveplanet_S.tga");
+        UI::UI_On == true && SharedData::GetInstance()->renderPause == true)
+	{
+		//Menu
+		if (SharedData::GetInstance()->Menu_Start_Hovered == true) {
+			meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start_S.tga");
 		}
 		else {
-			meshList[UI_LEAVEPLANET]->textureID = LoadTGA("Image//UI//UI_Leaveplanet.tga");
+			meshList[UI_MENU_SELECT_START]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Start.tga");
 		}
 
-		if (SharedData::GetInstance()->Fightboss_Hovered == true) {
-			meshList[UI_FIGHTBOSS]->textureID = LoadTGA("Image//UI//UI_Fightboss_S.tga");
+		if (SharedData::GetInstance()->Menu_Exit_Hovered == true) {
+			meshList[UI_MENU_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit_S.tga");
 		}
 		else {
-			meshList[UI_FIGHTBOSS]->textureID = LoadTGA("Image//UI//UI_Fightboss.tga");
+			meshList[UI_MENU_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
 		}
-    }
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	//Use Item
-	if (Application::IsKeyPressed('1') && UseL <= 0 && Character.large_health_kit_amount != 0 && Character.HP != Character.MAX_HP)
-	{
-		UseL = 10;
-		Character.useLarge_Health_kit();
-	}
-	else if (UseL >= 0)
-	{
-		UseL -= dt;
-	}
+		//Race
+		if (SharedData::GetInstance()->Race_Name_Hovered == true) {
+			meshList[UI_RACE_SELECT]->textureID = LoadTGA("Image//UI//UI_Race_Select_S.tga");
+		}
+		else {
+			meshList[UI_RACE_SELECT]->textureID = LoadTGA("Image//UI//UI_Race_Select.tga");
+		}
 
-    if (Application::IsKeyPressed('2') && UseN <= 0 && Character.health_kit_amount != 0 && Character.HP != Character.MAX_HP)
-	{
-		UseN = 10;
-		Character.useHealth_kit();
-	}
-	else if (UseN >= 0)
-	{
-		UseN -= dt;
-	}
+		if (SharedData::GetInstance()->Race_Back_Hovered == true) {
+			meshList[UI_RACE_BACK]->textureID = LoadTGA("Image//UI//UI_Race_Back_S.tga");
+		}
+		else {
+			meshList[UI_RACE_BACK]->textureID = LoadTGA("Image//UI//UI_Race_Back.tga");
+		}
 
-	//Spin item
-	Item_Spin += (float)(120 * dt);
-	if (Item_Spin >= 360)
-	{
-		Item_Spin = 0;
-	}
+		//Name
+		if (SharedData::GetInstance()->Name_Start_Hovered == true) {
+			meshList[UI_NAME_ACCEPT]->textureID = LoadTGA("Image//UI//UI_Name_Accept_S.tga");
+		}
+		else {
+			meshList[UI_NAME_ACCEPT]->textureID = LoadTGA("Image//UI//UI_Name_Accept.tga");
+		}
 
-	//Shop
-	if (SharedData::GetInstance()->BuyLarge == true && Character.Coins - 50 >= 0 && Character.large_health_kit_amount <= 9 && Wait1 >= 0.5f)
-	{
-		Wait1 = 0.f;
-		Character.Coins -= 50;
-		Character.large_health_kit_amount++;
-		SharedData::GetInstance()->BuyLarge = false;
-	}
+		if (SharedData::GetInstance()->Name_Back_Hovered == true) {
+			meshList[UI_NAME_BACK]->textureID = LoadTGA("Image//UI//UI_Name_Back_S.tga");
+		}
+		else {
+			meshList[UI_NAME_BACK]->textureID = LoadTGA("Image//UI//UI_Name_Back.tga");
+		}
 
-	if (SharedData::GetInstance()->BuyNormal == true && Character.Coins - 10 >= 0 && Character.health_kit_amount <= 9 && Wait1 >= 0.5f)
-	{
-		Wait1 = 0.f;
-		Character.Coins -= 10;
-		Character.health_kit_amount++;
-		SharedData::GetInstance()->BuyNormal = false;
-	}
+		if (SharedData::GetInstance()->Name_Menu_Hovered == true) {
+			meshList[UI_NAME_MENU]->textureID = LoadTGA("Image//UI//UI_Name_Menu_S.tga");
+		}
+		else {
+			meshList[UI_NAME_MENU]->textureID = LoadTGA("Image//UI//UI_Name_Menu.tga");
+		}
 
-	if (Wait1 < 0.5f)
-	{
-		Wait1 += dt;
-	}
+		//Pause
+		if (SharedData::GetInstance()->Pause_Resume_Hovered == true) {
+			meshList[UI_PAUSE_SELECT_RESUME]->textureID = LoadTGA("Image//UI//UI_Resume_S.tga");
+		}
+		else {
+			meshList[UI_PAUSE_SELECT_RESUME]->textureID = LoadTGA("Image//UI//UI_Resume.tga");
+		}
 
+		if (SharedData::GetInstance()->Pause_Menu_Hovered == true) {
+			meshList[UI_PAUSE_SELECT_MENU]->textureID = LoadTGA("Image//UI//UI_Pause_BTMM_S.tga");
+		}
+		else {
+			meshList[UI_PAUSE_SELECT_MENU]->textureID = LoadTGA("Image//UI//UI_Pause_BTMM.tga");
+		}
 
-    for (auto pc : Projectile::ProjectileCount) {
-    for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it)
-    {
-            if ( !(it)->IsDead() &&
-                Collision::MonsterHitbox((pc)->ProjectilePosition, (it)->Pos, SharedData::GetInstance()->GreenSlimeHitbox)) 
-			{
-                (it)->ReceiveDamage(SharedData::GetInstance()->Equipped->Attack_Value);
-            }
-        }
-    }
-
-	for (auto cr_pc : Projectile::ProjectileCount) {
-		for (std::vector<Crate>::iterator it = Crate::Crates.begin(); it != Crate::Crates.end(); ++it)
-		{
-			if (!(it)->isBroken() &&
-				Collision::MonsterHitbox((cr_pc)->ProjectilePosition, (it)->Pos, SharedData::GetInstance()->GreenSlimeHitbox))
-			{
-				(it)->takeDamage(SharedData::GetInstance()->Equipped->Attack_Value);
-			}
+		if (SharedData::GetInstance()->Pause_Exit_Hovered == true) {
+			meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit_S.tga");
+		}
+		else {
+			meshList[UI_PAUSE_SELECT_EXIT]->textureID = LoadTGA("Image//UI//UI_Menu_Select_Exit.tga");
 		}
 	}
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	Vector3 bob(100, 100, 100);
-
-	for (std::vector<Crate>::iterator manyCrate = Crate::Crates.begin(); manyCrate != Crate::Crates.end();)
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//								UI RELATED
+	if (SharedData::GetInstance()->renderRaceSelection == true)
 	{
-
-		(*manyCrate).crateUpdate(dt);
-		if (Application::IsKeyPressed('B'))
-		{
-			(*manyCrate).Crate_HP--;
+		if (SharedData::GetInstance()->UI_Human_Selected == true) {
+			UI_Human_Rotate += (float)(50 * dt);
+			UI_Robot_Rotate = 0;
+			UI_Infested_Rotate = 0;
+			Character.SetRace(0);
+			SharedData::GetInstance()->renderHumanlegs = true;
+			SharedData::GetInstance()->renderInfestedlegs = false;
+			SharedData::GetInstance()->renderRobotlegs = false;
 		}
-			float magnitude = (camera.position - (*manyCrate).Pos).Length();
-			if (Collision::ObjCheck(SharedData::GetInstance()->PlayerPosition, (manyCrate)->Pos, bob) == true && (manyCrate)->pickItem == false)
-			{
-				if (Character.health_kit_amount < 10)
-				{
-					Character.health_kit_amount++;
-					(manyCrate)->Crate::pickItem = true;
-
-					manyCrate = Crate::Crates.erase(manyCrate);
-				}
-				else if (Character.health_kit_amount >= 10)
-				{
-					(manyCrate)->Crate::pickItem = true;
-					manyCrate = Crate::Crates.erase(manyCrate);
-				}
-			}
-			else {
-				manyCrate++;
-			}
-	}
-
-
-	// Show FPS
-	FPS = std::to_string(toupper(1 / dt));
-
-	// Charcter Door
-
-	if ((camera.position.x <= 1360 && camera.position.x >= 110) && (camera.position.z <= 670 && camera.position.z >= -670) && (nearDoor == false))
-	{
-		nearDoor = true;
-	}
-
-	if (nearDoor == true)
-	{
-		if (moveDoor <= 100)
-		{
-			moveDoor += (float)(200 * dt);
-
+		else if (SharedData::GetInstance()->UI_Robot_Selected == true) {
+			UI_Robot_Rotate += (float)(50 * dt);
+			UI_Human_Rotate = 0;
+			UI_Infested_Rotate = 0;
+			Character.SetRace(1);
+			SharedData::GetInstance()->renderRobotlegs = true;
+			SharedData::GetInstance()->renderInfestedlegs = false;
+			SharedData::GetInstance()->renderHumanlegs = false;
 		}
-		if (moveDoor >= 100){
-
-			nearDoor = false;
+		else if (SharedData::GetInstance()->UI_Infested_Selected == true) {
+			UI_Infested_Rotate += (float)(50 * dt);
+			UI_Human_Rotate = 0;
+			UI_Robot_Rotate = 0;
+			Character.SetRace(2);
+			SharedData::GetInstance()->renderInfestedlegs = true;
+			SharedData::GetInstance()->renderHumanlegs = false;
+			SharedData::GetInstance()->renderRobotlegs = false;
 		}
 	}
 
-	if (nearDoor == false && moveDoor >= 0)
-	{
-		moveDoor -= (float)(200 * dt);
-	}
-
-	// Planet Animation
-
+	// PLANET SELECTION UI
 	if (UI_PlanetNav_Animation == true)
 	{
 		if (PlanetMove_1_Y < 2) {
@@ -959,28 +745,17 @@ void SP2Scene::Update(double dt)
 
 		UI.UI_PlanetName = false;
 	}
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	// Gun Recoil
-	if (SharedData::GetInstance()->Left_Clicked == true && GunBounceBack < 5 && UI.UI_On == false && projectile.BulletTime > .5) {
-		GunBounceBack += (float)(100 * dt);
-	}
-	else {
-		GunBounceBack = 0;
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//								CHARACTER RELATED
+	// CHECK IF CHARACTER IS ALIVE
+	if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true || SharedData::GetInstance()->renderPlanet3 == true)
+	{
+		Character.isDead();
 	}
 
-	//character legs
-	if (SharedData::GetInstance()->renderHumanlegs == true)
-	{	
-		legSpeed = 100;
-	}
-	else if (SharedData::GetInstance()->renderRobotlegs == true)
-	{
-		legSpeed = 50;
-	}
-	else if (SharedData::GetInstance()->renderInfestedlegs == true)
-	{
-		legSpeed = 200;
-	}
+	// CHARACTER LEGS ANIMATION
 	moveupLeftleg = false;
 	moveupRightleg = false;
 	if (Application::IsKeyPressed('W') || Application::IsKeyPressed('S'))
@@ -991,8 +766,8 @@ void SP2Scene::Update(double dt)
 
 	if (moveupLeftleg == true && movedownLeftleg == false)
 	{
-		movingLeftleg += (float)(legSpeed * dt);
-		if (movingLeftleg > 48)
+		movingLeftleg += (float)(100 * dt);
+		if (movingLeftleg >= 48)
 		{
 			moveupLeftleg = false;
 			movedownLeftleg = true;
@@ -1002,8 +777,8 @@ void SP2Scene::Update(double dt)
 
 	if (movedownLeftleg == true && moveupLeftleg == true)
 	{
-		movingLeftleg -= (float)(legSpeed * dt);
-		if (movingLeftleg < -48)
+		movingLeftleg -= (float)(100 * dt);
+		if (movingLeftleg <= -50)
 		{
 			moveupLeftleg = true;
 			movedownLeftleg = false;
@@ -1012,8 +787,8 @@ void SP2Scene::Update(double dt)
 
 	if (moveupRightleg == true && movedownLeftleg == true)
 	{
-		movingRightleg += (float)(legSpeed * dt);
-		if (movingRightleg > 48)
+		movingRightleg += (float)(100 * dt);
+		if (movingRightleg >= 48)
 		{
 			moveupLeftleg = true;
 			movedownRightleg = true;
@@ -1023,8 +798,8 @@ void SP2Scene::Update(double dt)
 
 	if (movedownRightleg == true && moveupLeftleg == true)
 	{
-		movingRightleg -= (float)(legSpeed * dt);
-		if (movingRightleg < -48)
+		movingRightleg -= (float)(100 * dt);
+		if (movingRightleg <= -50)
 		{
 			moveupRightleg = true;
 			movedownRightleg = false;
@@ -1035,7 +810,7 @@ void SP2Scene::Update(double dt)
 	{
 		if (movingLeftleg > 0)
 		{
-			movingLeftleg -= (float)(legSpeed * dt);
+			movingLeftleg -= (float)(100 * dt);
 		}
 
 		if (movingLeftleg < 0)
@@ -1045,12 +820,12 @@ void SP2Scene::Update(double dt)
 
 		if (movingRightleg > 0)
 		{
-			movingRightleg -= (float)(legSpeed * dt);
+			movingRightleg -= (float)(100 * dt);
 		}
 
 		if (movingRightleg < 0)
 		{
-			movingRightleg += (float)(legSpeed * dt);
+			movingRightleg += (float)(100 * dt);
 		}
 	}
 
@@ -1064,132 +839,30 @@ void SP2Scene::Update(double dt)
 		movingRightleg = 0.f;
 
 	}
-	//cout << "leftup" << moveupLeftleg << endl;
-	//cout << "leftdown" << movedownLeftleg << endl;
-	//cout << "rightup" << moveupRightleg << endl;
-	//cout << "rightdown" << movedownRightleg << endl;
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	if (Application::IsKeyPressed('P'))
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//								WEAPON RELATED
+	// RELOAD
+	if (Application::IsKeyPressed('R') && Wait >= 5 && SharedData::GetInstance()->Equipped->Ammo != SharedData::GetInstance()->Equipped->MAX_Ammo)
 	{
-		SharedData::GetInstance()->enemydefeated++;
+		Wait = 0;
+		SharedData::GetInstance()->Equipped->Reloading = true;
 	}
-
-	//returnship
-	if (SharedData::GetInstance()->enemydefeated >= 10 && SharedData::GetInstance()->flyup == false)
+	else if (Wait < 5 && SharedData::GetInstance()->Equipped->Reloading == false)
 	{
-		SharedData::GetInstance()->flydown = true;
+		reload_delay = 0;
+		Wait += (float)(10 * dt);
 	}
-
-	if (SharedData::GetInstance()->flydown == true)
+	if (SharedData::GetInstance()->Equipped->Reloading == true)
 	{
-		SharedData::GetInstance()->flyingdown -= (float)(300 * dt);
-		if (SharedData::GetInstance()->flyingdown <= -50)
-			{
-			SharedData::GetInstance()->flydown = false;
-			SharedData::GetInstance()->flyup = true;
-				arrowdown = true;
-			}
-	}
-
-	if (SharedData::GetInstance()->flyup == true)
-	{
-		arrowsignrotate += (float)(300 * dt);
-	}
-
-	if (arrowdown == true)
-	{
-		arrowsignmove -= (float)(50 * dt);
-			if (arrowsignmove <= -30)
-			{
-				arrowdown = false;
-				arrowup = true;
-			}
-	}
-	if (arrowup == true)
-	{
-		arrowsignmove += (float)(50 * dt);
-		if (arrowsignmove >= 30)
+		reload_delay += (float)(10 * dt);
+		if (reload_delay >= 20)
 		{
-			arrowdown = true;
-			arrowup = false;
-		}
-	}
-	//return to ship for planet 1 and 2
-	if (Application::IsKeyPressed('E') && (camera.position.z <= 85 && camera.position.z >= -50) && (camera.position.x <= 1500 && camera.position.x >= 1400) 
-		&& (SharedData::GetInstance()->flyup == true)
-		&& (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true))
-	{
-		SharedData::GetInstance()->renderReturn = true;
-		SharedData::GetInstance()->returnship_UI = true;
-		UI.UI_On = true;
-	}
-
-	//return to shiup for planet 3
-	if (Application::IsKeyPressed('E') && (camera.position.x <= 85 && camera.position.x >= -50) && (camera.position.z <= 1500 && camera.position.z >= 1400) 
-		&& (SharedData::GetInstance()->flyup == true)
-		&& (SharedData::GetInstance()->renderPlanet3 == true))
-	{
-		SharedData::GetInstance()->renderReturn = true;
-		SharedData::GetInstance()->returnship_UI = true;
-		UI.UI_On = true;
-	}
-	if (SharedData::GetInstance()->renderRaceSelection == true)
-	{
-		if (SharedData::GetInstance()->UI_Human_Selected == true) {
-			UI_Human_Rotate += (float)(50 * dt);
-			UI_Robot_Rotate = 0;
-			UI_Infested_Rotate = 0;
-			Character.SetRace(0);
-			SharedData::GetInstance()->renderHumanlegs = true;
-			SharedData::GetInstance()->renderInfestedlegs = false;
-			SharedData::GetInstance()->renderRobotlegs = false;
-		}
-		else if (SharedData::GetInstance()->UI_Robot_Selected == true) {
-			UI_Robot_Rotate += (float)(50 * dt);
-			UI_Human_Rotate = 0;
-			UI_Infested_Rotate = 0;
-			Character.SetRace(1);
-			SharedData::GetInstance()->renderRobotlegs = true;
-			SharedData::GetInstance()->renderInfestedlegs = false;
-			SharedData::GetInstance()->renderHumanlegs = false;
-		}
-		else if (SharedData::GetInstance()->UI_Infested_Selected == true) {
-			UI_Infested_Rotate += (float)(50 * dt);
-			UI_Human_Rotate = 0;
-			UI_Robot_Rotate = 0;
-			Character.SetRace(2);
-			SharedData::GetInstance()->renderInfestedlegs = true;
-			SharedData::GetInstance()->renderHumanlegs = false;
-			SharedData::GetInstance()->renderRobotlegs = false;
-		}
-	}
-   
-
-    if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true || SharedData::GetInstance()->renderPlanet3 == true)
-    {
-        Character.isDead();
-    }
-
-    //Reloads the gun
-    if (Application::IsKeyPressed('R') && Wait >= 5 && SharedData::GetInstance()->Equipped->Ammo != SharedData::GetInstance()->Equipped->MAX_Ammo)
-    {
-        Wait = 0;
-        SharedData::GetInstance()->Equipped->Reloading = true;
-    }
-    else if (Wait < 5 && SharedData::GetInstance()->Equipped->Reloading == false)
-    {
-        reload_delay = 0;
-        Wait += (float)(10 * dt);
-    }
-    if (SharedData::GetInstance()->Equipped->Reloading == true)
-    {
-        reload_delay += (float)(10 * dt);
-        if (reload_delay >= 20)
-        {
 			SharedData::GetInstance()->Gun->play2D("Sound\\Reload.mp3");
-            SharedData::GetInstance()->Equipped->reload();
-        }
-    }
+			SharedData::GetInstance()->Equipped->reload();
+		}
+	}
 
 	// Gun Recoil
 	if (SharedData::GetInstance()->Left_Clicked == true && GunBounceBack < 5 && UI.UI_On == false && projectile.BulletTime > SharedData::GetInstance()->Equipped->Fire_Rate) {
@@ -1200,27 +873,6 @@ void SP2Scene::Update(double dt)
 	}
 
 	// BULLET
-	for (auto pc : Projectile::ProjectileCount) {
-		for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it)
-		{
-			if (!(it)->IsDead() &&
-				Collision::MonsterHitbox((pc)->ProjectilePosition, (it)->Pos, SharedData::GetInstance()->GreenSlimeHitbox))
-			{
-				(it)->ReceiveDamage(SharedData::GetInstance()->Equipped->Attack_Value);
-			}
-		}
-	}
-
-	for (auto cr_pc : Projectile::ProjectileCount) {
-		for (std::vector<Crate>::iterator it = Crate::Crates.begin(); it != Crate::Crates.end(); ++it)
-		{
-			if (!(it)->isBroken() &&
-				Collision::MonsterHitbox((cr_pc)->ProjectilePosition, (it)->Pos, SharedData::GetInstance()->GreenSlimeHitbox))
-			{
-				(it)->takeDamage(SharedData::GetInstance()->Equipped->Attack_Value);
-			}
-		}
-	}
 
 	for (std::vector<Projectile*>::iterator it = Projectile::ProjectileCount.begin(); it != Projectile::ProjectileCount.end();) {
 		if (collision.BoundaryCheck((*it)->ProjectilePosition) == false) {
@@ -1235,20 +887,15 @@ void SP2Scene::Update(double dt)
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	if (SharedData::GetInstance()->Equipped->Ammo == 0)
+	//								ITEM/SHOP//PEPE RELATED
+	// SPIN ITEM
+	Item_Spin += (float)(120 * dt);
+	if (Item_Spin >= 360)
 	{
-		Wait = 0;
-		SharedData::GetInstance()->Equipped->Reloading = true;
+		Item_Spin = 0;
 	}
 
-    //Spin item
-    Item_Spin += (float)(120 * dt);
-    if (Item_Spin >= 360)
-    {
-        Item_Spin = 0;
-    }
-
-    //Shop
+	// USE ITEM
 	if (Application::IsKeyPressed('1') && UseL <= 0 && Character.large_health_kit_amount != 0 && Character.HP != Character.MAX_HP && UseL <= 0)
 	{
 		UseL = 10;
@@ -1270,119 +917,67 @@ void SP2Scene::Update(double dt)
 	}
 
 	// SHOP
-    if (SharedData::GetInstance()->BuyLarge == true && Character.Coins - 50 >= 0 && Character.large_health_kit_amount <= 9 && Wait1 >= 0.5f)
-    {
-        Wait1 = 0.f;
-        Character.Coins -= 50;
-        Character.large_health_kit_amount++;
-        SharedData::GetInstance()->BuyLarge = false;
-    }
-
-    if (SharedData::GetInstance()->BuyNormal == true && Character.Coins - 10 >= 0 && Character.health_kit_amount <= 9 && Wait1 >= 0.5f)
-    {
-        Wait1 = 0.f;
-        Character.Coins -= 10;
-        Character.health_kit_amount++;
-        SharedData::GetInstance()->BuyNormal = false;
-    }
-
-    if (Wait1 < 0.5f)
-    {
-        Wait1 += dt;
-    }
-
-    //ENEMIES
-    if (SharedData::GetInstance()->renderPlanet1 == true && Wave <= 0)
-    {
-        Wave = 5;
-        for (int amount = 0; amount < 6; amount++)
-        {
-            Enemy::Enemies.push_back(Enemy(2, 2, 10));
-        }
-    }
-    else if (Wave >= 0)
-    {
-        Wave -= dt;
-    }
-    for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end();)
-    {
-        if (!(it)->IsDead())
-        {
-            it->EnemyUpdate(dt);
-            ++it;
-        }
-        else
-        {
-			SharedData::GetInstance()->enemydefeated += 1;
-            Character.Coins += it->Drop;
-            it = Enemy::Enemies.erase(it);
-        }
-    }
-
-	//Crate
-	if (Crate_Time >= 5)
+	if (SharedData::GetInstance()->BuyLarge == true && Character.Coins - 50 >= 0 && Character.large_health_kit_amount <= 9 && Wait1 >= 0.5f)
 	{
-		if ( Crate::Crates.size() < 1)
-		{
-			for (int totalCrate = 0; totalCrate <= 1; totalCrate++)
-			{
-				Crate::Crates.push_back(Crate(1, false));
-			}
-			Crate_Time = 0;
-		}
-	}
-	else if (Crate_Time <= 5)
-	{
-		Crate_Time += dt;
+		Wait1 = 0.f;
+		Character.Coins -= 50;
+		Character.large_health_kit_amount++;
+		SharedData::GetInstance()->BuyLarge = false;
 	}
 
-    //PLANET 3
-    if (SharedData::GetInstance()->renderPlanet3 == true)
-    {
-        light[0].type = Light::LIGHT_SPOT;
-        glUniform1i(m_parameters[U_LIGHT0_TYPE], light[0].type);
-        Vector3 view = (camera.target - camera.position).Normalized();
-        light[0].position.Set(camera.position.x, camera.position.y, camera.position.z);
-        light[0].spotDirection.Set(-view.x, -view.y, -view.z);
-    }
+	if (SharedData::GetInstance()->BuyNormal == true && Character.Coins - 10 >= 0 && Character.health_kit_amount <= 9 && Wait1 >= 0.5f)
+	{
+		Wait1 = 0.f;
+		Character.Coins -= 10;
+		Character.health_kit_amount++;
+		SharedData::GetInstance()->BuyNormal = false;
+	}
+	if (Wait1 < 0.5f)
+	{
+		Wait1 += dt;
+	}
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    //PLANET 2 BOSS
-    Robot.updates(dt);
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	//								PLANETS RELATED
 
-    if (Application::IsKeyPressed('E') && SharedData::GetInstance()->renderPlanet2 == true)
-    {
-        Robot.moveleftforward = true;
-        Robot.moverightforward = true;
+	//PLANET 2 BOSS
+	Robot.updates(dt);
 
-        Robot.moveleftBacklegup = true;
-        Robot.moverightBacklegup = true;
-    }
+	if (Application::IsKeyPressed('E') && SharedData::GetInstance()->renderPlanet2 == true)
+	{
+		Robot.moveleftforward = true;
+		Robot.moverightforward = true;
 
-    if (SharedData::GetInstance()->Boss2_HP <= 400 && SharedData::GetInstance()->Phase == 0)
-    {
-        SharedData::GetInstance()->Phase = 1;
-    }
-    if (SharedData::GetInstance()->Boss2_HP <= 400 && SharedData::GetInstance()->Phase == 1)
-    {
-        meshList[ROBOT_LEFTPAIR]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
-        meshList[ROBOT_RIGHTPAIR]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
-        meshList[ROBOT_BACKLEFTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
-        meshList[ROBOT_BACKRIGHTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
-        meshList[PLANET2_GROUND]->textureID = LoadTGA("Image//planet2//planet2_groundweb.tga");
-        SharedData::GetInstance()->Phase = 9;
-        Robot.growbig = true;
-    }
+		Robot.moveleftBacklegup = true;
+		Robot.moverightBacklegup = true;
+	}
 
-    if (SharedData::GetInstance()->Boss2_HP <= 100 && SharedData::GetInstance()->Phase == 9)
-    {
-        SharedData::GetInstance()->Phase = 99;
-    }
+	if (SharedData::GetInstance()->Boss2_HP <= 400 && SharedData::GetInstance()->Phase == 0)
+	{
+		SharedData::GetInstance()->Phase = 1;
+	}
+	if (SharedData::GetInstance()->Boss2_HP <= 400 && SharedData::GetInstance()->Phase == 1)
+	{
+		meshList[ROBOT_LEFTPAIR]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
+		meshList[ROBOT_RIGHTPAIR]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
+		meshList[ROBOT_BACKLEFTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
+		meshList[ROBOT_BACKRIGHTLEG]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p2.tga");
+		meshList[PLANET2_GROUND]->textureID = LoadTGA("Image//planet2//planet2_groundweb.tga");
+		SharedData::GetInstance()->Phase = 9;
+		Robot.growbig = true;
+	}
 
-    if (SharedData::GetInstance()->Phase == 99)
-    {
-        meshList[ROBOT_MAINBODY]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p3.tga");
-        SharedData::GetInstance()->Phase = 999;
-    }
+	if (SharedData::GetInstance()->Boss2_HP <= 100 && SharedData::GetInstance()->Phase == 9)
+	{
+		SharedData::GetInstance()->Phase = 99;
+	}
+
+	if (SharedData::GetInstance()->Phase == 99)
+	{
+		meshList[ROBOT_MAINBODY]->textureID = LoadTGA("Image//planet2//planet2_monster//Robot_Boss_p3.tga");
+		SharedData::GetInstance()->Phase = 999;
+	}
 
 
 	//PLANET 3
@@ -1409,8 +1004,8 @@ void SP2Scene::Update(double dt)
 			}
 			if (Application::IsKeyPressed('V'))
 			{
-				Golem.recieveDamage(100);
-				Robot.recieveDamage(100);
+				Golem.receiveDamage(100);
+				Robot.receiveDamage(100);
 			}
 			if (Golem.Phase2 == true)
 			{
@@ -1423,39 +1018,65 @@ void SP2Scene::Update(double dt)
     Vector3 CrateHitbox(100, 100, 100);
 	for (std::vector<Crate>::iterator manyCrate = Crate::Crates.begin(); manyCrate != Crate::Crates.end();)
 	{
-
 		(*manyCrate).crateUpdate(dt);
 		if (Application::IsKeyPressed('B'))
 		{
 			(*manyCrate).Crate_HP--;
 		}
-
-			float magnitude = (camera.position - (*manyCrate).Pos).Length();
-            if (Collision::ObjCheck(SharedData::GetInstance()->PlayerPosition, (manyCrate)->Pos, CrateHitbox) == true && (manyCrate)->pickItem == false)
-			{
-				Character.large_health_kit_amount++;
-				(manyCrate)->Crate::pickItem = true;
-			}
-			else {
-				manyCrate++;
-			}
+		float magnitude = (camera.position - (*manyCrate).Pos).Length();
+        if (Collision::ObjCheck(SharedData::GetInstance()->PlayerPosition, (manyCrate)->Pos, CrateHitbox) == true && (manyCrate)->pickItem == false)
+		{
+			Character.large_health_kit_amount++;
+			(manyCrate)->Crate::pickItem = true;
+		}
+		else {
+			manyCrate++;
+		}
 	}
 
 	// SPAWNING AND DESPAWNING OF ENEMIES 
-    if (SharedData::GetInstance()->renderPlanet1 == true && Wave <= 0)
-    //PLANET 3 BOSS
-    if (Golem.isDead() == false)
+    if (SharedData::GetInstance()->resetEnemies == true)
     {
+        WaveCap = 0;
+        enemydefeated = 0;
+        Slime.BOSS1_HP = 100;
+        SharedData::GetInstance()->Boss2_HP = 600;
+        Golem.HP = 1000;
+        SharedData::GetInstance()->resetEnemies = false;
+    }
+
+    if (SharedData::GetInstance()->renderPlanet1 == true && Wave <= 0 && WaveCap <= 5)
+    {
+        WaveCap++;
         Wave = 5;
-        for (int amount = 0; amount < 0; amount++)
+        for (int amount = 0; amount < 2; amount++)
         {
-            Enemy::Enemies.push_back(Enemy(5, 2, 10));
+            Enemy::Enemies.push_back(Enemy(2, 1, 10));
+        }
+    }
+    else if (SharedData::GetInstance()->renderPlanet2 == true && Wave <= 0 && WaveCap <= 5)
+    {
+        WaveCap++;
+        Wave = 5;
+        for (int amount = 0; amount < 2; amount++)
+        {
+            Enemy::Enemies.push_back(Enemy(10, 3, 30));
+        }
+    }
+    else if (SharedData::GetInstance()->renderPlanet3 == true && Wave <= 0 && WaveCap <= 5)
+    {
+        WaveCap++;
+        Wave = 5;
+        for (int amount = 0; amount < 2; amount++)
+        {
+            Enemy::Enemies.push_back(Enemy(20, 5, 30));
         }
     }
     else if (Wave >= 0)
     {
         Wave -= dt;
     }
+
     for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end();)
     {
         if ((it)->IsDead() == false)
@@ -1465,11 +1086,154 @@ void SP2Scene::Update(double dt)
         }
         else
         {
-           SharedData::GetInstance()->enemydefeated += 1;
+            enemydefeated += 1;
             Character.Coins += it->Drop;
+            SharedData::GetInstance()->accumulatedCoins += it->Drop;
             it = Enemy::Enemies.erase(it);
         }
     }
+
+    if (SharedData::GetInstance()->rocketdamage_Slime == true) {
+        for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end();) {
+            (it)->ReceiveDamage(10);
+            if ((it)->IsDead() == true) {
+                enemydefeated++;
+                Character.Coins += it->Drop;
+                SharedData::GetInstance()->accumulatedCoins += it->Drop;
+                it = Enemy::Enemies.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+        SharedData::GetInstance()->rocketdamage_Slime = false;
+    }
+    if (SharedData::GetInstance()->rocketdamage_Robot == true) {
+        for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end();) {
+            (it)->ReceiveDamage(10);
+            if ((it)->IsDead() == true) {
+                enemydefeated++;
+                Character.Coins += it->Drop;
+                SharedData::GetInstance()->accumulatedCoins += it->Drop;
+                it = Enemy::Enemies.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+        SharedData::GetInstance()->rocketdamage_Robot = false;
+    }
+
+    if (SharedData::GetInstance()->rocketdamage_Sword == true) {
+        for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end();) {
+            (it)->ReceiveDamage(10);
+            if ((it)->IsDead() == true) {
+                enemydefeated++;
+                Character.Coins += it->Drop;
+                it = Enemy::Enemies.erase(it);
+                SharedData::GetInstance()->accumulatedCoins += it->Drop;
+            }
+            else {
+                ++it;
+            }
+        }
+        SharedData::GetInstance()->rocketdamage_Sword = false;
+    }
+
+    for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it) {
+        if ((it)->DamageCountdown == true) {
+            (it)->DamageCooldown += time.getElapsedTime();
+            if ((it)->DamageCooldown >= 1) {
+                (it)->DamageCountdown = false;
+            }
+        }
+
+        if (SharedData::GetInstance()->renderPlanet1 == true) {
+            if (Collision::MonsterHitbox(SharedData::GetInstance()->PlayerPosition, (it)->Pos, SharedData::GetInstance()->GreenSlimeHitbox)) {
+                if ((it)->DamageCooldown >= 3) {
+                    Character.receiveDamage(SharedData::GetInstance()->EnemyAttack);
+                    (it)->DamageCooldown = 0;
+                    (it)->DamageCountdown = true;
+                    (it)->EnemyAttackAnimation = true;
+                }
+            }
+            if ((it)->EnemyAttackAnimation == true && (it)->SlimeJump <= -30) {
+                std::cout << "1" << std::endl;
+                (it)->SlimeJump += (float)(100 * dt);
+            }
+            else if ((it)->SlimeJump > -50) {
+                std::cout << "2" << std::endl;
+                (it)->SlimeJump -= (float)(100 * dt);
+                (it)->EnemyAttackAnimation = false;
+            }
+
+        }
+        else if (SharedData::GetInstance()->renderPlanet2 == true) {
+            if (Collision::MonsterHitbox(SharedData::GetInstance()->PlayerPosition, (it)->Pos, SharedData::GetInstance()->RobotHitbox)) {
+                if ((it)->DamageCooldown >= 3) {
+                    Character.receiveDamage(SharedData::GetInstance()->EnemyAttack);
+                    (it)->DamageCooldown = 0;
+                    (it)->DamageCountdown = true;
+                }
+            }
+        }
+        else if (SharedData::GetInstance()->renderPlanet3 == true) {
+            if (Collision::MonsterHitbox(SharedData::GetInstance()->PlayerPosition, (it)->Pos, SharedData::GetInstance()->SwordHitbox)) {
+                if ((it)->DamageCooldown >= 3) {
+                    Character.receiveDamage(SharedData::GetInstance()->EnemyAttack);
+                    (it)->DamageCooldown = 0;
+                    (it)->DamageCountdown = true;
+                    (it)->EnemyAttackAnimation = true;
+                }
+            }
+            if ((it)->EnemyAttackAnimation == true && (it)->SwordAttack <= 60) {
+                (it)->SwordAttack += (float)(500 * dt);
+            }
+            else if ((it)->SwordAttack > 0) {
+                (it)->SwordAttack -= (float)(500 * dt);
+                (it)->EnemyAttackAnimation = false;
+            }
+        }
+    }
+
+    if ((SharedData::GetInstance()->renderPlanet2) == true) {
+        for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it) {
+            if (Collision::BoundaryCheck((it)->RobotProjectilePosition) == true && (it)->RobotShootState == true) {
+                (it)->RobotProjectilePosition += (it)->RobotProjectileView * dt * 1000;
+
+                if (Collision::ObjCheck((it)->RobotProjectilePosition, SharedData::GetInstance()->PlayerPosition, Vector3(50, 50, 50)) == true) {
+                    Character.receiveDamage(1);
+                    (it)->RobotProjectilePosition = (it)->Pos;
+                }
+            }
+            else {
+                (it)->RobotProjectilePosition = (it)->Pos;
+            }
+        }
+    }
+
+
+    if (SharedData::GetInstance()->renderPlanet1 == true) {
+        if (Collision::MonsterHitbox(SharedData::GetInstance()->PlayerPosition, SharedData::GetInstance()->Boss1Position, SharedData::GetInstance()->Boss1Hitbox)) {
+            SharedData::GetInstance()->DamageCooldown += time.getElapsedTime();
+            if (SharedData::GetInstance()->DamageCooldown > 3) {
+                Character.receiveDamage(Slime.BOSS1_Attack);
+                std::cout << Character.HP << std::endl;
+                SharedData::GetInstance()->DamageCooldown = 0;
+            }
+        }
+    }
+    else if (SharedData::GetInstance()->renderPlanet2 == true) {
+        if (Collision::MonsterHitbox(SharedData::GetInstance()->PlayerPosition, SharedData::GetInstance()->Boss2Position, SharedData::GetInstance()->Boss2Hitbox)) {
+            SharedData::GetInstance()->DamageCooldown += time.getElapsedTime();
+            if (SharedData::GetInstance()->DamageCooldown > 3) {
+                Character.receiveDamage(Robot.Attack);
+                std::cout << Character.HP << std::endl;
+                SharedData::GetInstance()->DamageCooldown = 0;
+            }
+        }
+    }
+
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -1499,23 +1263,23 @@ void SP2Scene::Update(double dt)
 	}
 
 	// RETURN TO SHIP
-	if (SharedData::GetInstance()->enemydefeated >= 10 && SharedData::GetInstance()->flyup == false)
+	if (enemydefeated >= 10 && flyup == false)
 	{
-		SharedData::GetInstance()->flydown = true;
+		flydown = true;
 	}
 
-	if (SharedData::GetInstance()->flydown == true)
+	if (flydown == true)
 	{
-		SharedData::GetInstance()->flyingdown -= (float)(300 * dt);
-		if (SharedData::GetInstance()->flyingdown <= -50)
+		flyingdown -= (float)(300 * dt);
+		if (flyingdown <= -50)
 		{
-			SharedData::GetInstance()->flydown = false;
-			SharedData::GetInstance()->flyup = true;
+			flydown = false;
+			flyup = true;
 			arrowdown = true;
 		}
 	}
 
-	if (SharedData::GetInstance()->flyup == true)
+	if (flyup == true)
 	{
 		arrowsignrotate += (float)(100 * dt);
 	}
@@ -1538,6 +1302,50 @@ void SP2Scene::Update(double dt)
 			arrowup = false;
 		}
 	}
+	//return to ship for planet 1 and 2
+	if ((camera.position.z <= 85 && camera.position.z >= -70) && (camera.position.x <= 1450 && camera.position.x >= 1400)
+		&& (flyup == true)
+		&& (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true))
+	{
+		RenderTextOnScreen(meshList[TEXT], "return back to ship", Color(1, 0, 0), 10, 13.7f, 10);
+	}
+
+	if (Application::IsKeyPressed('E') && (camera.position.z <= 85 && camera.position.z >= -70) && (camera.position.x <= 1450 && camera.position.x >= 1400)
+		&& (flyup == true)
+		&& (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true) || Character.isDead() == true)
+	{
+        SharedData::GetInstance()->resetEnemies = true;
+		SharedData::GetInstance()->renderShip = true;
+		SharedData::GetInstance()->renderPlanet1 = false;
+		SharedData::GetInstance()->renderPlanet2 = false;
+		SharedData::GetInstance()->renderPlanet3 = false;
+        SharedData::GetInstance()->resetScene == true;
+        Character.HP = Character.MAX_HP;
+		enemydefeated = 0;
+	}
+
+	//return to ship for planet 3
+	if ((camera.position.x <= 85 && camera.position.x >= -70) && (camera.position.z <= 1450 && camera.position.z >= 1400)
+		&& (flyup == true)
+		&& (SharedData::GetInstance()->renderPlanet3 == true))
+	{
+		RenderTextOnScreen(meshList[TEXT], "return back to ship", Color(1, 0, 0), 10, 13.7f, 10);
+	}
+
+	if (Application::IsKeyPressed('E') && (camera.position.x <= 85 && camera.position.x >= -70) && (camera.position.z <= 1450 && camera.position.z >= 1400)
+		&& (flyup == true)
+        && (SharedData::GetInstance()->renderPlanet3 == true) || Character.isDead() == true)
+	{
+        SharedData::GetInstance()->resetEnemies = true;
+		SharedData::GetInstance()->renderShip = true;
+		SharedData::GetInstance()->renderPlanet1 = false;
+		SharedData::GetInstance()->renderPlanet2 = false;
+		SharedData::GetInstance()->renderPlanet3 = false;
+        SharedData::GetInstance()->resetScene == true;
+        Character.HP = Character.MAX_HP;
+		enemydefeated = 0;
+	}
+
 	//TROPHY
 	if (Slime.isDead() == true)
 	{
@@ -1553,6 +1361,32 @@ void SP2Scene::Update(double dt)
 	}
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    //								ABILITy RELATED
+
+    if (SharedData::GetInstance()->Bombard == true) {
+        SharedData::GetInstance()->rocketdown -= (float)(700 * dt);
+    }
+    if (SharedData::GetInstance()->rocketdown < 50) {
+        SharedData::GetInstance()->Bombard = false;
+        SharedData::GetInstance()->explode = true;
+        SharedData::GetInstance()->rocketdown = 1000.f;
+    }
+
+    if (SharedData::GetInstance()->explode == true) {
+        SharedData::GetInstance()->expandExplosion += (float)(500 * dt);
+        if (SharedData::GetInstance()->expandExplosion > 150) {
+            SharedData::GetInstance()->rocketdamage = true;
+            SharedData::GetInstance()->rocketdamage_Slime = true;
+            SharedData::GetInstance()->rocketdamage_Robot = true;
+            SharedData::GetInstance()->rocketdamage_Sword = true;
+            SharedData::GetInstance()->expandExplosion = 10.f;
+            SharedData::GetInstance()->explode = false;
+        }
+    }
+
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	//								UTILITY RELATED
     // Show FPS
@@ -1561,12 +1395,12 @@ void SP2Scene::Update(double dt)
 	// For return ship
     if (Application::IsKeyPressed('P'))
     {
-		SharedData::GetInstance()->enemydefeated++;
+        enemydefeated++;
     }
 
 	if (Application::IsKeyPressed('Z'))
 	{
-		Character.recieveDamage(1);
+		Character.receiveDamage(1);
 	}
 
 	if (Application::IsKeyPressed('X'))
@@ -1577,23 +1411,9 @@ void SP2Scene::Update(double dt)
 	if (Application::IsKeyPressed('K'))
 	{
 		Slime.receiveDamage(9000);
-		Robot.recieveDamage(9000);
-		Golem.recieveDamage(9000);
+		Robot.receiveDamage(9000);
+		Golem.receiveDamage(9000);
 	}
-
-	//KL STUFF
-
-    if (SharedData::GetInstance()->Bombard == true) {
-        SharedData::GetInstance()->rocketdown -= (float)(700 * dt);
-    }
-    if (SharedData::GetInstance()->rocketdown < 50) {
-        SharedData::GetInstance()->Bombard = false;
-        SharedData::GetInstance()->rocketdamage = true;
-        SharedData::GetInstance()->rocketdown = 1000.f;
-    }
-
-    Vector3 no(50, 50, 50);
-
 
     camera.Update(dt);
     for (std::vector<Projectile*>::iterator it = Projectile::ProjectileCount.begin(); it != Projectile::ProjectileCount.end();) {
@@ -1606,7 +1426,6 @@ void SP2Scene::Update(double dt)
             ++it;
         }
     }
-    projectile.Update(dt);
     UI.Update(dt);
 	projectile.Update(dt);
     abilities.Update(dt);
@@ -1614,15 +1433,6 @@ void SP2Scene::Update(double dt)
     enemy.EnemyUpdate(dt);
 }
 
-/******************************************************************************/
-/*!
-\brief
-	SP2Scene Render
-
-render tga and obj
-
-*/
-/******************************************************************************/
 void SP2Scene::Render()
 {
     // Render VBO here
@@ -1630,7 +1440,6 @@ void SP2Scene::Render()
 
     //Set view matrix using camera settings
     viewStack.LoadIdentity();
-
 
     viewStack.LookAt(
         camera.position.x, camera.position.y, camera.position.z,
@@ -1690,11 +1499,11 @@ void SP2Scene::Render()
 		}
         RenderPlanet1();
 		RenderEnemies();
-		RenderBoss1();
 		Renderlegs();
 		RenderCrate();
-		if (SharedData::GetInstance()->enemydefeated >= 10)
+		if (enemydefeated >= 10)
 		{
+            RenderBoss1();
 			renderReturnShip();
 		}
     }
@@ -1706,11 +1515,12 @@ void SP2Scene::Render()
 			PlayBGM = false;
 		}
         RenderPlanet2();
-		RenderBoss2();
+        RenderEnemies();
 		Renderlegs();
 		RenderCrate();
-		if (SharedData::GetInstance()->enemydefeated >= 10)
+		if (enemydefeated >= 10)
 		{
+            RenderBoss2();
 			renderReturnShip();
 		}
     }
@@ -1722,11 +1532,12 @@ void SP2Scene::Render()
 			PlayBGM = false;
 		}
         RenderPlanet3();
-		RenderBoss3();
+        RenderEnemies();
 		Renderlegs();
 		RenderCrate();
-		if (SharedData::GetInstance()->enemydefeated >= 10)
+		if (enemydefeated >= 10)
 		{
+            RenderBoss3();
 			renderReturnShip();
 		}
     }
@@ -1736,9 +1547,6 @@ void SP2Scene::Render()
         RenderPause();
     }
 
-	renderInstruction();
-	renderGameover();
-	renderWin();
     RenderAbilities();
 
     for (auto it : Projectile::ProjectileCount) {
@@ -1771,26 +1579,6 @@ void SP2Scene::Render()
     }
 
     RenderHUD();
-
-	if (SharedData::GetInstance()->returnship_UI == true)
-	{
-		renderReturnUI();
-		
-	}
-
-    if (SharedData::GetInstance()->Equipped->Reloading == true)
-    {
-        RenderTextOnScreen(meshList[TEXT], "RELOADING...", Color(1, 0.5, 0.5), 4, 6.5, 8);
-    }
-
-    if (UI.UI_PlanatNav == false && UI.UI_Shop == false
-        && SharedData::GetInstance()->renderMenu == false
-        && SharedData::GetInstance()->renderRaceSelection == false
-        && SharedData::GetInstance()->renderNameInput == false
-        && SharedData::GetInstance()->renderPause == false)
-    {
-
-    }
 
     if (UI.UI_PlanatNav == true)
     {
@@ -1835,23 +1623,14 @@ void SP2Scene::Render()
     // FPS
     RenderTextOnScreen(meshList[TEXT], "FPS:" + FPS, Color(1, 1, 1), 3, 1, 19);
 
-    RenderTextOnScreen(meshList[TEXT], "MouseX : " + std::to_string(SharedData::GetInstance()->MousePos_X), Color(1, 1, 1), 3, 1, 18);
-    RenderTextOnScreen(meshList[TEXT], "MouseY : " + std::to_string(SharedData::GetInstance()->MousePos_Y), Color(1, 1, 1), 3, 1, 17);
+    //RenderTextOnScreen(meshList[TEXT], "MouseX : " + std::to_string(SharedData::GetInstance()->MousePos_X), Color(1, 1, 1), 3, 1, 18);
+    //RenderTextOnScreen(meshList[TEXT], "MouseY : " + std::to_string(SharedData::GetInstance()->MousePos_Y), Color(1, 1, 1), 3, 1, 17);
 
-    RenderTextOnScreen(meshList[TEXT], "PosX : " + std::to_string(SharedData::GetInstance()->PlayerPosition.x), Color(1, 1, 1), 3, 1, 16);
-    RenderTextOnScreen(meshList[TEXT], "PosY : " + std::to_string(SharedData::GetInstance()->PlayerPosition.y), Color(1, 1, 1), 3, 1, 15);
-    RenderTextOnScreen(meshList[TEXT], "PosZ : " + std::to_string(SharedData::GetInstance()->PlayerPosition.z), Color(1, 1, 1), 3, 1, 14);
+    //RenderTextOnScreen(meshList[TEXT], "PosX : " + std::to_string(SharedData::GetInstance()->PlayerPosition.x), Color(1, 1, 1), 3, 1, 16);
+    //RenderTextOnScreen(meshList[TEXT], "PosY : " + std::to_string(SharedData::GetInstance()->PlayerPosition.y), Color(1, 1, 1), 3, 1, 15);
+    //RenderTextOnScreen(meshList[TEXT], "PosZ : " + std::to_string(SharedData::GetInstance()->PlayerPosition.z), Color(1, 1, 1), 3, 1, 14);
 }
 
-/******************************************************************************/
-/*!
-\brief
-	SP2Scene RenderMenu
-
-load main menu
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderMenu()
 {
     RenderImageOnScreen(meshList[UI_MENU], 80, .5f, -.1f, 0, 0, 0, 0);
@@ -1861,15 +1640,6 @@ void SP2Scene::RenderMenu()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderRaceSelection
-
-load race selection
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderRaceSelection()
 {
     RenderImageOnScreen(meshList[UI_RACESELECTION], 80, .5f, -.1f, 0, 0, 0, 0);
@@ -1881,47 +1651,35 @@ void SP2Scene::RenderRaceSelection()
     RenderImageOnScreen(meshList[UI_RACE_BACK], 4, 15, 1, 1, 0, 0, 0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	RenderTextOnScreen(meshList[TEXT], "Choose your race!", Color(0.5, 0.7, 1), 3, 7, 19);
-    if (SharedData::GetInstance()->UI_Human_Selected == false) {
+    if (SharedData::GetInstance()->UI_Human_Selected == true) {
         RenderTextOnScreen(meshList[TEXT], "Human", Color(1, 1, 1), 2, 6.5f, 11);
-		RenderTextOnScreen(meshList[TEXT], "HP=20", Color(0.5, 0.7, 1), 2, 6.5f, 10);
-		RenderTextOnScreen(meshList[TEXT], "Speed=Normal", Color(0.5, 0.7, 1), 2, 4.5f, 9);
+        RenderTextOnScreen(meshList[TEXT], "HP=20", Color(0.5, 0.7, 1), 2, 18, 9);
+        RenderTextOnScreen(meshList[TEXT], "Speed=Normal", Color(0.5, 0.7, 1), 2, 16, 8);
+        RenderTextOnScreen(meshList[TEXT], "Ability=Turret", Color(0.5, 0.7, 1), 2, 15, 7);
     }
     else {
         RenderTextOnScreen(meshList[TEXT], "Human", Color(1, 0, 0), 2, 6.5f, 11);
-		RenderTextOnScreen(meshList[TEXT], "HP=20", Color(0.5, 0.7, 1), 2, 6.5f, 10);
-		RenderTextOnScreen(meshList[TEXT], "Speed=Normal", Color(0.5, 0.7, 1), 2, 4.5f, 9);
     }
-    if (SharedData::GetInstance()->UI_Robot_Selected == false) {
+    if (SharedData::GetInstance()->UI_Robot_Selected == true) {
         RenderTextOnScreen(meshList[TEXT], "Robot", Color(1, 1, 1), 2, 18, 11);
-		RenderTextOnScreen(meshList[TEXT], "HP=40", Color(0.5, 0.7, 1), 2, 18, 10);
-		RenderTextOnScreen(meshList[TEXT], "Speed=Slow", Color(0.5, 0.7, 1), 2, 16, 9);
+		RenderTextOnScreen(meshList[TEXT], "HP=40", Color(0.5, 0.7, 1), 2, 18, 9);
+		RenderTextOnScreen(meshList[TEXT], "Speed=Slow", Color(0.5, 0.7, 1), 2, 16, 8);
+        RenderTextOnScreen(meshList[TEXT], "Ability=Bombard", Color(0.5, 0.7, 1), 2, 14, 7);
     }
     else {
         RenderTextOnScreen(meshList[TEXT], "Robot", Color(1, 0, 0), 2, 18, 11);
-		RenderTextOnScreen(meshList[TEXT], "HP=40", Color(0.5, 0.7, 1), 2, 18, 10);
-		RenderTextOnScreen(meshList[TEXT], "Speed=Slow", Color(0.5, 0.7, 1), 2, 16, 9);
     }
-    if (SharedData::GetInstance()->UI_Infested_Selected == false) {
+    if (SharedData::GetInstance()->UI_Infested_Selected == true) {
         RenderTextOnScreen(meshList[TEXT], "Infested", Color(1, 1, 1), 2, 28.5f, 11);
-		RenderTextOnScreen(meshList[TEXT], "HP=10", Color(0.5, 0.7, 1), 2, 30, 10);
-		RenderTextOnScreen(meshList[TEXT], "Speed=Fast", Color(0.5, 0.7, 1), 2, 28, 9);
+        RenderTextOnScreen(meshList[TEXT], "HP=10", Color(0.5, 0.7, 1), 2, 18, 9);
+        RenderTextOnScreen(meshList[TEXT], "Speed=Fast", Color(0.5, 0.7, 1), 2, 16, 8);
+        RenderTextOnScreen(meshList[TEXT], "Ability=Snare", Color(0.5, 0.7, 1), 2, 15, 7);
     }
     else {
         RenderTextOnScreen(meshList[TEXT], "Infested", Color(1, 0, 0), 2, 28.5f, 11);
-		RenderTextOnScreen(meshList[TEXT], "HP=10", Color(0.5, 0.7, 1), 2, 30, 10);
-		RenderTextOnScreen(meshList[TEXT], "Speed=Fast", Color(0.5, 0.7, 1), 2, 28, 9);
     }
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderNameInput
-
-allow player to input their name
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderNameInput() {
     // Name
     RenderImageOnScreen(meshList[UI_NAMEINPUT], 80, .5f, -.1f, 0, 0, 0, 0);
@@ -1937,15 +1695,6 @@ void SP2Scene::RenderNameInput() {
     RenderTextOnScreen(meshList[TEXT], "Maximum 10 letters", Color(1, 1, 1), 2, 13.5f, 12);
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderHUD
-
-load HUD
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderHUD()
 {
 	if (UI.UI_On == false)
@@ -2017,6 +1766,16 @@ void SP2Scene::RenderHUD()
 		RenderTextOnScreen(meshList[TEXT], "HP:", Color(1, 1, 1), 3, 1, 1);
 		RenderTextOnScreen(meshList[TEXT], "   " + std::to_string(Character.HP) + "/" + std::to_string(Character.MAX_HP), Color(1, 1, 1), 3, 1, 1);
 
+        if (SharedData::GetInstance()->abilityAvailable == true && SharedData::GetInstance()->UI_Human_Selected == true) {
+            RenderImageOnScreen(meshList[TURRET], 1, 66, 16, 4, 0, 0, 0); 
+        }
+        else if (SharedData::GetInstance()->abilityAvailable == true && SharedData::GetInstance()->UI_Robot_Selected == true) {
+            RenderImageOnScreen(meshList[ROCKET], 1, 66, 17, 4, 180, 0, 0); 
+        }
+        else if (SharedData::GetInstance()->abilityAvailable == true && SharedData::GetInstance()->UI_Infested_Selected == true) {
+            RenderImageOnScreen(meshList[SNARE], 2, 33, 8, 4, 90, 0, 0);
+        }
+
 		RenderImageOnScreen(meshList[HUD_AMMO], 30, 2.4, -0.5, 0.01, 0, 0, 0);
 		RenderTextOnScreen(meshList[TEXT], std::to_string(SharedData::GetInstance()->Equipped->Ammo) + "/" + std::to_string(SharedData::GetInstance()->Equipped->MAX_Ammo), Color(1, 1, 1), 2.5, 27, 1);
 
@@ -2031,15 +1790,6 @@ void SP2Scene::RenderHUD()
 	}
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderShip
-
-load ship
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderShip()
 {
     float skyboxsize = 20;
@@ -2222,24 +1972,14 @@ void SP2Scene::RenderShip()
     modelStack.PopMatrix();
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderShop
-
-load shop
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderShop()
 {
 	if (UI.UI_Pepe == true)
 	{
-
-			RenderImageOnScreen(meshList[UI_SELECT], 30, 1.25, 0.55, 0, 0, 0, 0);
-			RenderTextOnScreen(meshList[TEXT], "Talk", Color(0.5, 0.7, 1), 4, 8.5, 10.5);
-			RenderTextOnScreen(meshList[TEXT], "Shop", Color(0.5, 0.7, 1), 4, 8.5, 8);
-			RenderTextOnScreen(meshList[TEXT], "Back", Color(0.5, 0.7, 1), 4, 8.5, 5.5);
+		RenderImageOnScreen(meshList[UI_SELECT], 30, 1.25, 0.55, 0, 0, 0, 0);
+		RenderTextOnScreen(meshList[TEXT], "Talk", Color(0.5, 0.7, 1), 4, 8.5, 10.5);
+		RenderTextOnScreen(meshList[TEXT], "Shop", Color(0.5, 0.7, 1), 4, 8.5, 8);
+		RenderTextOnScreen(meshList[TEXT], "Back", Color(0.5, 0.7, 1), 4, 8.5, 5.5);
 	}
 
     if (UI.UI_Shop == true)
@@ -2518,74 +2258,103 @@ void SP2Scene::RenderShop()
     }
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderDialogue
-
-load Dialogue
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderDialogue()
 {
 	if (SharedData::GetInstance()->TextBox == true)
 	{
-			RenderImageOnScreen(meshList[HUD_TEXTBOX], 80, .5f, 0, -0.1f, 0, 0, 0);
-			RenderTextOnScreen(meshList[TEXT], Dialogue.Line, Color(1, 1, 1), 2, 1, 3);
-			RenderTextOnScreen(meshList[TEXT], "Press T to continue...", Color(1, 1, 1), 1, 60, 3);
-			if (Application::IsKeyPressed('T'))
-			{
-				Dialogue.GenLine("Dialogue//Talk.txt");
-				SharedData::GetInstance()->TextBox = false;
-				UI::UI_Pepe = true;
-			}
+		RenderImageOnScreen(meshList[HUD_TEXTBOX], 80, .5f, 0, -0.1f, 0, 0, 0);
+		RenderTextOnScreen(meshList[TEXT], Dialogue.Line, Color(1, 1, 1), 2, 1, 3);
+		RenderTextOnScreen(meshList[TEXT], "Press T to continue...", Color(1, 1, 1), 1, 60, 3);
+		if (Application::IsKeyPressed('T'))
+		{
+			Dialogue.GenLine("Dialogue//Talk.txt");
+			SharedData::GetInstance()->TextBox = false;
+			UI::UI_Pepe = true;
+		}
 	}
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderEnemies
-
-load enemies
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderEnemies()
 {
-    for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it)
-    {
-        if ((*it).IsDead() == false)
+    if (SharedData::GetInstance()->renderPlanet1 == true) {
+        for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it)
         {
-            modelStack.PushMatrix();
-            modelStack.Translate(it->Pos.x, -50, it->Pos.z);
-            modelStack.Rotate(it->Degree, 0, 1, 0);
-            modelStack.Scale(50, 50, 50);
-			RenderMesh(meshList[SLIME_GREEN], false);
+            if ((*it).IsDead() == false)
+            {
+                modelStack.PushMatrix();
+                modelStack.Translate(it->Pos.x, it->SlimeJump, it->Pos.z);
+                modelStack.Rotate(it->Degree, 0, 1, 0);
+                modelStack.Scale(50, 50, 50);
+                RenderMesh(meshList[SLIME_ENEMY], false);
 
-			modelStack.PushMatrix();
-			modelStack.Translate(0, 1.5, 0);
-			modelStack.Rotate(-90, 0, 1, 0);
-			modelStack.Rotate(90, 0, 0, 1);
-			modelStack.Scale(0.25, 1, (it->HPbar * 2));
-			RenderMesh(meshList[HP_BAR], false);
-			modelStack.PopMatrix();
+                modelStack.PushMatrix();
+                modelStack.Translate(0, 1.5, 0);
+                modelStack.Rotate(-90, 0, 1, 0);
+                modelStack.Rotate(90, 0, 0, 1);
+                modelStack.Scale(0.25, 1, (it->HPbar * 2));
+                RenderMesh(meshList[HP_BAR], false);
+                modelStack.PopMatrix();
 
-            modelStack.PopMatrix();
+                modelStack.PopMatrix();
+            }
+        }
+    }
+    else if (SharedData::GetInstance()->renderPlanet2 == true) {
+        for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it)
+        {
+            if ((*it).IsDead() == false)
+            {
+                modelStack.PushMatrix();
+                modelStack.Translate(it->Pos.x, -50, it->Pos.z);
+                modelStack.Rotate(it->Degree, 0, 1, 0);
+                modelStack.Scale(50, 50, 50);
+                RenderMesh(meshList[ROBOT_ENEMY], false);
+
+                modelStack.PushMatrix();
+                modelStack.Translate(0, 1.5, 0);
+                modelStack.Rotate(-90, 0, 1, 0);
+                modelStack.Rotate(90, 0, 0, 1);
+                modelStack.Scale(0.25, 1, (it->HPbar * 2));
+                RenderMesh(meshList[HP_BAR], false);
+                modelStack.PopMatrix();
+
+                modelStack.PopMatrix();
+
+                modelStack.PushMatrix();
+                modelStack.Translate(it->RobotProjectilePosition.x, -50, it->RobotProjectilePosition.z);
+                modelStack.Rotate(it->Degree, 0, 1, 0);
+                modelStack.Scale(50, 50, 50);
+                RenderMesh(meshList[ROBOT_PROJECTILE], false);
+                modelStack.PopMatrix();
+            }
+        }
+    }
+    else if (SharedData::GetInstance()->renderPlanet3 == true) {
+        for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it)
+        {
+            if ((*it).IsDead() == false)
+            {
+                modelStack.PushMatrix();
+                modelStack.Translate(it->Pos.x, -50, it->Pos.z);
+                modelStack.Rotate(it->Degree, 0, 1, 0);
+                modelStack.Rotate(it->SwordAttack, -1, 0, 0);
+                modelStack.Scale(10, 10, 10);
+                RenderMesh(meshList[SWORD_ENEMY], true);
+
+                modelStack.PushMatrix();
+                modelStack.Translate(0, 6, 0);
+                modelStack.Rotate(-90, 0, 1, 0);
+                modelStack.Rotate(90, 0, 0, 1);
+                modelStack.Scale(0.25, 1, (it->HPbar * 2));
+                RenderMesh(meshList[HP_BAR], false);
+                modelStack.PopMatrix();
+
+                modelStack.PopMatrix();
+            }
         }
     }
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderPlanet1
-
-load planet1
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderPlanet1()
 {
     modelStack.PushMatrix();
@@ -2744,15 +2513,6 @@ void SP2Scene::RenderPlanet1()
     modelStack.PopMatrix();
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderPlanet2
-
-load RenderPlanet2
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderPlanet2()
 {
     modelStack.PushMatrix();
@@ -2837,15 +2597,6 @@ void SP2Scene::RenderPlanet2()
     modelStack.PopMatrix();
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderPlanet3
-
-load RenderPlanet3
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderPlanet3()
 {
     modelStack.PushMatrix();
@@ -3010,60 +2761,27 @@ void SP2Scene::RenderPlanet3()
     modelStack.PopMatrix();
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderCrate
-
-Spwan Crate
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderCrate()
 {
 	for (std::vector<Crate>::iterator manymanycrate = Crate::Crates.begin(); manymanycrate != Crate::Crates.end(); manymanycrate++)
 	{
-		if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true)
+		if ((*manymanycrate).isBroken() == false)
 		{
-			if ((*manymanycrate).isBroken() == false)
-			{
-				modelStack.PushMatrix();
-				modelStack.Translate(manymanycrate->Pos.x, manymanycrate->Pos.y, manymanycrate->Pos.z);
-				modelStack.Scale(20, 20, 20);
-				RenderMesh(meshList[CRATE], false);
-				modelStack.PopMatrix();
-			}
-
-			if ((*manymanycrate).isBroken() == true && (manymanycrate)->pickItem == false)
-			{
-				modelStack.PushMatrix();
-				modelStack.Translate(manymanycrate->Pos.x, manymanycrate->Pos.y - 50, manymanycrate->Pos.z);
-				modelStack.Rotate(Item_Spin, 0, 1, 0);
-				modelStack.Scale(30, 30, 30);
-				RenderMesh(meshList[HEALTH_KIT], false);
-				modelStack.PopMatrix();
-			}
+			modelStack.PushMatrix();
+			modelStack.Translate(manymanycrate->Pos.x, manymanycrate->Pos.y, manymanycrate->Pos.z);
+			modelStack.Scale(20, 20, 20);
+			RenderMesh(meshList[CRATE], false);
+			modelStack.PopMatrix();
 		}
-		else if (SharedData::GetInstance()->renderPlanet3 ==true)
-		{
-			if ((*manymanycrate).isBroken() == false)
-			{
-				modelStack.PushMatrix();
-				modelStack.Translate(manymanycrate->Pos.x, manymanycrate->Pos.y, manymanycrate->Pos.z);
-				modelStack.Scale(20, 20, 20);
-				RenderMesh(meshList[CRATE], false);
-				modelStack.PopMatrix();
-			}
 
-			if ((*manymanycrate).isBroken() == true && (manymanycrate)->pickItem == false)
-			{
-				modelStack.PushMatrix();
-				modelStack.Translate(manymanycrate->Pos.x, manymanycrate->Pos.y - 50, manymanycrate->Pos.z);
-				modelStack.Rotate(Item_Spin, 0, 1, 0);
-				modelStack.Scale(30, 30, 30);
-				RenderMesh(meshList[HEALTH_KIT], true);
-				modelStack.PopMatrix();
-			}
+		if ((*manymanycrate).isBroken() == true && (manymanycrate)->pickItem == false)
+		{
+			modelStack.PushMatrix();
+			modelStack.Translate(manymanycrate->Pos.x, manymanycrate->Pos.y-50, manymanycrate->Pos.z);
+			modelStack.Rotate(Item_Spin, 0, 1, 0);
+			modelStack.Scale(30, 30, 30);
+			RenderMesh(meshList[LARGE_HEALTH_KIT], false);
+			modelStack.PopMatrix();
 		}
 
 		modelStack.PushMatrix();
@@ -3074,18 +2792,14 @@ void SP2Scene::RenderCrate()
 	}
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderBoss1
-
-Spwan RenderBoss1
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderBoss1()
 {
-    if (boss1.isDead() == false) {
+    if (Slime.isDead() == false && SharedData::GetInstance()->renderPlanet1 == true)
+	{
+        SharedData::GetInstance()->renderBoss1 = true;
+		RenderTextOnScreen(meshList[TEXT], std::to_string(Slime.BOSS1_HP) + "/" + std::to_string(Slime.BOSS1_MAX_HP), Color(1, 0., 0.7), 3, 12, 19);
+		RenderImageOnScreen(meshList[BOSS_BAR], Vector3((1.f * Slime.BOSS1_HP / Slime.BOSS1_MAX_HP * 75), 5, 1), Vector3(40, 50, -0.1f), Vector3(0, 0, 0));
+		
         modelStack.PushMatrix();
         modelStack.Translate(SharedData::GetInstance()->Boss1Position.x, -50, SharedData::GetInstance()->Boss1Position.z);
         modelStack.Rotate(SharedData::GetInstance()->Boss1Degree, 0, 1, 0);
@@ -3093,25 +2807,25 @@ void SP2Scene::RenderBoss1()
         RenderMesh(meshList[SLIME_BOSS], false);
         modelStack.PopMatrix();
     }
-
+    else
+    {
+        SharedData::GetInstance()->renderBoss1 = false;
+    }
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderBoss2
-
-Spwan RenderBoss2
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderBoss2()
 {
-    if (Robot.isDead() == false)
+    if (Robot.isDead() == false && SharedData::GetInstance()->renderPlanet2 == true)
     {
+        SharedData::GetInstance()->renderBoss2 = true;
+        RenderTextOnScreen(meshList[TEXT], std::to_string(SharedData::GetInstance()->Boss2_HP) + "/" + std::to_string(Robot.MAX_HP), Color(1, 0., 0.7), 3, 12, 19);
+        RenderImageOnScreen(meshList[BOSS_BAR], Vector3((1.f * SharedData::GetInstance()->Boss2_HP / Robot.MAX_HP * 75), 5, 1), Vector3(40, 50, -0.1f), Vector3(0, 0, 0));
+
         modelStack.PushMatrix();
+        modelStack.Translate(SharedData::GetInstance()->Boss2Position.x, -50, SharedData::GetInstance()->Boss2Position.z);
+        modelStack.Rotate(90, 0, 1, 0);
+        modelStack.Rotate(SharedData::GetInstance()->Boss2Degree, 0, 1, 0);
         modelStack.Scale(Robot.scaleRobotBoss, Robot.scaleRobotBoss, Robot.scaleRobotBoss);
-        modelStack.Translate(0, -50, 1000);
 
         modelStack.PushMatrix();
         modelStack.Scale(15, 15, 15);
@@ -3143,21 +2857,17 @@ void SP2Scene::RenderBoss2()
         modelStack.PopMatrix();
         modelStack.PopMatrix();
     }
+    else 
+    {
+        SharedData::GetInstance()->renderBoss2 = false;
+    }
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderBoss3
-
-Spwan RenderBoss3
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderBoss3()
 {
     if (Golem.isDead() == false && SharedData::GetInstance()->renderPlanet3 == true)
     {
+        SharedData::GetInstance()->renderBoss3 = true;
 		RenderTextOnScreen(meshList[TEXT], std::to_string(Golem.HP) + "/" + std::to_string(Golem.MAX_HP), Color(1, 0., 0.7), 3, 12, 19);
 		RenderImageOnScreen(meshList[BOSS_BAR], Vector3((1.f * Golem.HP / Golem.MAX_HP * 75), 5, 1), Vector3(40, 50, -0.1f), Vector3(0, 0, 0));
 
@@ -3267,17 +2977,12 @@ void SP2Scene::RenderBoss3()
         }
         modelStack.PopMatrix();
     }
+    else
+    {
+        SharedData::GetInstance()->renderBoss3 = false;
+    }
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderPause
-
-load Pause menu
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderPause()
 {
     RenderImageOnScreen(meshList[UI_PAUSE], 80, .5f, -.1f, .5f, 0, 0, 0);
@@ -3289,90 +2994,6 @@ void SP2Scene::RenderPause()
     RenderTextOnScreen(meshList[TEXT], "GAME PAUSED", Color(1, 1, 1), 6, 3, 6);
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene renderReturnUI
-
-load return UI
-
-*/
-/******************************************************************************/
-void SP2Scene::renderReturnUI()
-{
-	RenderImageOnScreen(meshList[UI_RETURNPLANE], 80, .5f, -.1f, .5f, 0, 0, 0);
-	glBlendFunc(1, 1);
-	RenderImageOnScreen(meshList[UI_FIGHTBOSS], 15, 2.7f, 2, 6, 0, 0, 0);
-	RenderImageOnScreen(meshList[UI_LEAVEPLANET], 15, 2.7f, 0, 6, 0, 0, 0);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	RenderTextOnScreen(meshList[TEXT], "CHOOSE!!!", Color(1, 1, 1), 6, 4, 8);
-}
-
-/******************************************************************************/
-/*!
-\brief
-SP2Scene renderInstruction
-
-load Instruction screen
-
-*/
-/******************************************************************************/
-void SP2Scene::renderInstruction()
-{
-	if (ON_Instruction == true)
-	{
-		RenderImageOnScreen(meshList[UI_INSTRUCTION], 80, .5f, -.1f, 0.1f , 0, 0, 0);
-
-	}
-}
-
-/******************************************************************************/
-/*!
-\brief
-SP2Scene renderGameover
-
-load Gameover screen
-
-*/
-/******************************************************************************/
-void SP2Scene::renderGameover()
-{
-	if (showGameover == true)
-	{
-		RenderImageOnScreen(meshList[UI_GAMEOVER], 80, .5f, -.1f, 0.5f, 0, 0, 0);
-		glBlendFunc(1, 1);
-		RenderImageOnScreen(meshList[UI_LEAVEPLANET], 15, 2.7f, 0, 6, 0, 0, 0);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-}
-
-//void SP2Scene::renderWin()
-//{
-//	if (showWin == true)
-//	{
-//		RenderImageOnScreen(meshList[UI_WIN], 80, .5f, -.1f, 0.1f, 0, 0, 0);
-//		glBlendFunc(1, 1);
-//		RenderImageOnScreen(meshList[UI_PAUSE_SELECT_MENU], 8, 5, 2, 6, 0, 0, 0);
-//		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//	}
-//}
-
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderText
-
-\param *mesh
-load texture
-
-\param text
-load text
-
-\param color
-load color
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderText(Mesh* mesh, std::string text, Color color)
 {
     if (!mesh || mesh->textureID <= 0) //Proper error check
@@ -3403,31 +3024,6 @@ void SP2Scene::RenderText(Mesh* mesh, std::string text, Color color)
     glEnable(GL_DEPTH_TEST);
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderTextOnScreen
-
-\param *mesh
-load texture
-
-\param text
-load text
-
-\param color
-load color
-
-\param size
-how big the text is
-
-\param x
-which position along the x axis
-
-\param y
-which position along the y axis
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, float size, float x, float y)
 {
     if (!mesh || mesh->textureID <= 0) //Proper error check
@@ -3470,37 +3066,6 @@ void SP2Scene::RenderTextOnScreen(Mesh* mesh, std::string text, Color color, flo
     glEnable(GL_DEPTH_TEST);
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderImageOnScreen
-
-\param *mesh
-load texture
-
-\param size
-how big the text is
-
-\param x
-which position along the x axis
-
-\param y
-which position along the y axis
-
-\param z
-which position along the z axis
-
-\param rotateX
-how much to rotate along the x aixs
-
-\param rotateY
-how much to rotate along the y aixs
-
-\param rotateZ
-how much to rotate along the z aixs
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderImageOnScreen(Mesh* mesh, float size, float x, float y, float z, float rotateX, float rotateY, float rotateZ)
 {
     Mtx44 ortho;
@@ -3548,26 +3113,6 @@ void SP2Scene::RenderImageOnScreen(Mesh* mesh, float size, float x, float y, flo
     viewStack.PopMatrix();
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderImageOnScreen
-
-\param *mesh
-load texture
-
-\param Scale
-take in scale of x,y,z
-
-\param Translate
-take in translate of x,y,z
-
-\param Rotate
-take in rotation of x,y,z
-
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderImageOnScreen(Mesh* mesh, Vector3 Scale, Vector3 Translate, Vector3 Rotate)
 {
 	Mtx44 ortho;
@@ -3615,55 +3160,33 @@ void SP2Scene::RenderImageOnScreen(Mesh* mesh, Vector3 Scale, Vector3 Translate,
 	viewStack.PopMatrix();
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene Renderlegs
-
-load boss2 legs
-
-*/
-/******************************************************************************/
 void SP2Scene::Renderlegs()
 {
-	if (SharedData::GetInstance()->renderShip == true)
-	{
-		legsheight = 350;
-		legsize = 35;
-		legP = 155;
-	}
-	if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true || SharedData::GetInstance()->renderPlanet3 == true)
-	{
-		legsheight = 100;
-		legsize = 10;
-		legP = 45;
-	}
-	//else if (SharedData::GetInstance()->renderPlanet1||)
     if (SharedData::GetInstance()->renderHumanlegs == true)
     {
         Vector3 view = (camera.target - camera.position).Normalized();
 
         modelStack.PushMatrix();
-		modelStack.Translate(camera.position.x, camera.position.y - legsheight, camera.position.z + 2);
+        modelStack.Translate(camera.position.x, camera.position.y - 30, camera.position.z + 2);
         modelStack.Rotate(camera.theta, 0, 1, 0);
 
-		modelStack.Translate(0, legP, 0);
+        modelStack.Translate(0, 15, 0);
         modelStack.Rotate(-movingLeftleg, 1, 0, 0);
-		modelStack.Translate(0, -legP, 0);
+        modelStack.Translate(0, -15, 0);
 
-		modelStack.Scale(legsize, legsize, legsize);
+        modelStack.Scale(12, 12, 12);
         RenderMesh(meshList[HUMAN_LEFTLEG], false);
         modelStack.PopMatrix();
 
         modelStack.PushMatrix();
-		modelStack.Translate(camera.position.x, camera.position.y - legsheight, camera.position.z + 2);
+        modelStack.Translate(camera.position.x, camera.position.y - 30, camera.position.z + 2);
         modelStack.Rotate(camera.theta, 0, 1, 0);
 
-		modelStack.Translate(0, legP, 0);
+        modelStack.Translate(0, 15, 0);
         modelStack.Rotate(-movingRightleg, 1, 0, 0);
-		modelStack.Translate(0, -legP, 0);
+        modelStack.Translate(0, -15, 0);
 
-		modelStack.Scale(legsize, legsize, legsize);
+        modelStack.Scale(12, 12, 12);
         RenderMesh(meshList[HUMAN_RIGHTLEG], false);
         modelStack.PopMatrix();
 
@@ -3673,111 +3196,120 @@ void SP2Scene::Renderlegs()
     {
         Vector3 view = (camera.target - camera.position).Normalized();
 
-		modelStack.PushMatrix();
-		modelStack.Translate(camera.position.x, camera.position.y - legsheight, camera.position.z + 2);
-		modelStack.Rotate(camera.theta, 0, 1, 0);
+        modelStack.PushMatrix();
+        modelStack.Translate(camera.position.x, camera.position.y - 30, camera.position.z + 2);
+        modelStack.Rotate(camera.theta, 0, 1, 0);
 
-		modelStack.Translate(0, legP, 0);
-		modelStack.Rotate(-movingLeftleg, 1, 0, 0);
-		modelStack.Translate(0, -legP, 0);
+        modelStack.Translate(0, 15, 0);
+        modelStack.Rotate(-movingLeftleg, 1, 0, 0);
+        modelStack.Translate(0, -15, 0);
 
-		modelStack.Scale(legsize, legsize, legsize);
-		RenderMesh(meshList[PROBOT_LEFTLEG], false);
-		modelStack.PopMatrix();
+        modelStack.Scale(12, 12, 12);
+        RenderMesh(meshList[PROBOT_LEFTLEG], false);
+        modelStack.PopMatrix();
 
-		modelStack.PushMatrix();
-		modelStack.Translate(camera.position.x, camera.position.y - legsheight, camera.position.z + 2);
-		modelStack.Rotate(camera.theta, 0, 1, 0);
+        modelStack.PushMatrix();
+        modelStack.Translate(camera.position.x, camera.position.y - 30, camera.position.z + 2);
+        modelStack.Rotate(camera.theta, 0, 1, 0);
 
-		modelStack.Translate(0, legP, 0);
-		modelStack.Rotate(-movingRightleg, 1, 0, 0);
-		modelStack.Translate(0, -legP, 0);
+        modelStack.Translate(0, 15, 0);
+        modelStack.Rotate(-movingRightleg, 1, 0, 0);
+        modelStack.Translate(0, -15, 0);
 
-		modelStack.Scale(legsize, legsize, legsize);
-		RenderMesh(meshList[PROBOT_RIGHTLEG], false);
-		modelStack.PopMatrix();
+        modelStack.Scale(12, 12, 12);
+        RenderMesh(meshList[PROBOT_RIGHTLEG], false);
+        modelStack.PopMatrix();
     }
 
     if (SharedData::GetInstance()->renderInfestedlegs == true)
     {
         Vector3 view = (camera.target - camera.position).Normalized();
 
-		modelStack.PushMatrix();
-		modelStack.Translate(camera.position.x, camera.position.y - legsheight, camera.position.z + 2);
-		modelStack.Rotate(camera.theta, 0, 1, 0);
+        modelStack.PushMatrix();
+        modelStack.Translate(camera.position.x, camera.position.y - 30, camera.position.z + 2);
+        modelStack.Rotate(camera.theta, 0, 1, 0);
 
-		modelStack.Translate(0, legP, 0);
-		modelStack.Rotate(-movingLeftleg, 1, 0, 0);
-		modelStack.Translate(0, -legP, 0);
+        modelStack.Translate(0, 15, 0);
+        modelStack.Rotate(-movingLeftleg, 1, 0, 0);
+        modelStack.Translate(0, -15, 0);
 
-		modelStack.Scale(legsize, legsize, legsize);
-		RenderMesh(meshList[INFESTED_LEFTLEG], false);
-		modelStack.PopMatrix();
+        modelStack.Scale(12, 12, 12);
+        RenderMesh(meshList[INFESTED_LEFTLEG], false);
+        modelStack.PopMatrix();
 
-		modelStack.PushMatrix();
-		modelStack.Translate(camera.position.x, camera.position.y - legsheight, camera.position.z + 2);
-		modelStack.Rotate(camera.theta, 0, 1, 0);
+        modelStack.PushMatrix();
+        modelStack.Translate(camera.position.x, camera.position.y - 30, camera.position.z + 2);
+        modelStack.Rotate(camera.theta, 0, 1, 0);
 
-		modelStack.Translate(0, legP, 0);
-		modelStack.Rotate(-movingRightleg, 1, 0, 0);
-		modelStack.Translate(0, -legP, 0);
+        modelStack.Translate(0, 15, 0);
+        modelStack.Rotate(-movingRightleg, 1, 0, 0);
+        modelStack.Translate(0, -15, 0);
 
-		modelStack.Scale(legsize, legsize, legsize);
-		RenderMesh(meshList[INFESTED_RIGHTLEG], false);
-		modelStack.PopMatrix();
+        modelStack.Scale(12, 12, 12);
+        RenderMesh(meshList[INFESTED_RIGHTLEG], false);
+        modelStack.PopMatrix();
     }
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene RenderAbilities
-
-load abilities of each race
-
-*/
-/******************************************************************************/
 void SP2Scene::RenderAbilities()
 {
-    //if (SharedData::GetInstance()->AbilityActiveTime < 5) {
-    //modelStack.PushMatrix();
-    //modelStack.Translate(SharedData::GetInstance()->TurretPosition.x, SharedData::GetInstance()->TurretPosition.y, SharedData::GetInstance()->TurretPosition.z);
-    //modelStack.Scale(50, 50, 50);
-    //RenderMesh(meshList[TURRET], false);
-    //modelStack.PopMatrix();
+    if (SharedData::GetInstance()->TurretDeployed == true)
+    {
+        modelStack.PushMatrix();
+        modelStack.Translate(SharedData::GetInstance()->TurretPosition.x, -50, SharedData::GetInstance()->TurretPosition.z);
+        modelStack.Rotate(SharedData::GetInstance()->TurretDegree, 0, 1, 0);
+        modelStack.Scale(20, 10, 20);
+        RenderMesh(meshList[TURRET], false);
+        modelStack.PopMatrix();
 
-    if (SharedData::GetInstance()->Bombard == true) {
+        modelStack.PushMatrix();
+        modelStack.Translate(SharedData::GetInstance()->TurretProjectilePosition.x, -25, SharedData::GetInstance()->TurretProjectilePosition.z);
+        modelStack.Scale(2, 2, 2);
+        RenderMesh(meshList[BULLET], false);
+        modelStack.PopMatrix();
+    }
+
+    if (SharedData::GetInstance()->Bombard == true || SharedData::GetInstance()->explode == true)
+    {
         for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it)
         {
-            if ((*it).IsDead() == false)
+            if ((it)->IsDead() == false)
             {
-                modelStack.PushMatrix();
-                modelStack.Translate(it->Pos.x, SharedData::GetInstance()->rocketdown, it->Pos.z);
-                modelStack.Rotate(it->Degree, 0, 1, 0);
-                modelStack.Scale(50, 50, 50);
-                RenderMesh(meshList[ROCKET], false);
-                modelStack.PopMatrix();
+                if (SharedData::GetInstance()->Bombard == true) {
+                    modelStack.PushMatrix();
+                    modelStack.Translate(it->Pos.x, SharedData::GetInstance()->rocketdown, it->Pos.z);
+                    modelStack.Rotate(it->Degree, 0, 1, 0);
+                    modelStack.Scale(50, 50, 50);
+                    RenderMesh(meshList[ROCKET], false);
+                    modelStack.PopMatrix();
+                }
+                if (SharedData::GetInstance()->explode == true) {
+                    modelStack.PushMatrix();
+                    modelStack.Translate(it->Pos.x, -150, it->Pos.z);
+                    modelStack.Scale(SharedData::GetInstance()->expandExplosion, SharedData::GetInstance()->expandExplosion, SharedData::GetInstance()->expandExplosion);
+                    RenderMesh(meshList[EXPLOSION], false);
+                    modelStack.PopMatrix();
+                }
             }
         }
     }
 
-    //modelStack.PushMatrix();
-    //modelStack.Translate(SharedData::GetInstance()->TurretPosition.x - 50, SharedData::GetInstance()->TurretPosition.y, SharedData::GetInstance()->TurretPosition.z);
-    //modelStack.Scale(50, 50, 50);
-    //RenderMesh(meshList[ROCKET], false);
-    //modelStack.PopMatrix();
-    //}
+    if (SharedData::GetInstance()->SnareMonsters == true)
+    {
+        for (std::vector<Enemy>::iterator it = Enemy::Enemies.begin(); it != Enemy::Enemies.end(); ++it)
+        {
+            if ((it)->IsDead() == false)
+            {
+                modelStack.PushMatrix();
+                modelStack.Translate(it->Pos.x, -50, it->Pos.z);
+                modelStack.Scale(100, 100, 100);
+                RenderMesh(meshList[SNARE], false);
+                modelStack.PopMatrix();
+            }
+        }
+    }
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene renderReturnShip
-
-load ship that goes back to ship
-
-*/
-/******************************************************************************/
 void SP2Scene::renderReturnShip()
 {
     if (SharedData::GetInstance()->renderPlanet1 == true || SharedData::GetInstance()->renderPlanet2 == true)
@@ -3786,13 +3318,13 @@ void SP2Scene::renderReturnShip()
         modelStack.Translate(1700, 0, 0);
 
         modelStack.PushMatrix();
-		modelStack.Translate(0, SharedData::GetInstance()->flyingdown, 0);
+        modelStack.Translate(0, flyingdown, 0);
         modelStack.Scale(100, 100, 100);
         RenderMesh(meshList[RETURN_SHIP], false);
         modelStack.PopMatrix();
 
         modelStack.PushMatrix();
-		modelStack.Translate(0, SharedData::GetInstance()->flyingdown + 100 + arrowsignmove, 0);
+        modelStack.Translate(0, flyingdown + 100 + arrowsignmove, 0);
         modelStack.Rotate(arrowsignrotate, 0, 1, 0);
         modelStack.Scale(5, 5, 5);
         RenderMesh(meshList[ARROW_SIGN], false);
@@ -3806,13 +3338,13 @@ void SP2Scene::renderReturnShip()
         modelStack.Translate(0, 0, 1700);
 
         modelStack.PushMatrix();
-		modelStack.Translate(0, SharedData::GetInstance()->flyingdown, 0);
+        modelStack.Translate(0, flyingdown, 0);
         modelStack.Scale(100, 100, 100);
         RenderMesh(meshList[RETURN_SHIP], false);
         modelStack.PopMatrix();
 
         modelStack.PushMatrix();
-		modelStack.Translate(0, SharedData::GetInstance()->flyingdown + 100 + arrowsignmove, 0);
+        modelStack.Translate(0, flyingdown + 100 + arrowsignmove, 0);
         modelStack.Rotate(arrowsignrotate, 0, 1, 0);
         modelStack.Scale(5, 5, 5);
         RenderMesh(meshList[ARROW_SIGN], false);
@@ -3822,15 +3354,6 @@ void SP2Scene::renderReturnShip()
     }
 }
 
-/******************************************************************************/
-/*!
-\brief
-SP2Scene Exit
-
-Exit
-
-*/
-/******************************************************************************/
 void SP2Scene::Exit()
 {
     // Cleanup VBO here

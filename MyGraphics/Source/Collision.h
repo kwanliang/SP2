@@ -1,23 +1,9 @@
-/******************************************************************************/
-/*!
-\file	Collision.h
-\author Kwan Liang
-\par	email: 152104G@mymail.nyp.edu.sg
-\brief
-Class to define Collision
-/******************************************************************************/
 #ifndef COLLISION_H
 #define COLLISION_H
 
 #include "Vector3.h"
 #include "SharedData.h"
 
-/******************************************************************************/
-/*!
-Class Collision:
-\brief
-Defines the Collision and its methods
-/******************************************************************************/
 class Collision {
 private:
 

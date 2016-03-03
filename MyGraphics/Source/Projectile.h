@@ -24,7 +24,6 @@ public:
 
 	Projectile(Vector3 pos = (0, 0, 0), Vector3 dir = (0, 0, 1));
     ~Projectile();
-    //virtual void Init();
     virtual void Update(double dt);
 
     StopWatch time;

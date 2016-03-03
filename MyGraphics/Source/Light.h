@@ -1,26 +1,8 @@
-/******************************************************************************/
-/*!
-\file	Light.h
-\author Kwan Liang
-\author Glence Low
-\author Chuan Guang Zhe
-\par	email: 152104G@mymail.nyp.edu.sg
-\brief
-Class to Light main framework.
-*/
-/******************************************************************************/
 #ifndef LIGHT_H
 #define LIGHT_H
 
 #include "Vertex.h"
 
-/******************************************************************************/
-/*!
-Class Light:
-\brief
-Defines the Light frame and its methods
-*/
-/******************************************************************************/
 struct Light {
     enum LIGHT_TYPE {
         LIGHT_POINT = 0,

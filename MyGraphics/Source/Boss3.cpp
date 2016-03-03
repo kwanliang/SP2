@@ -8,6 +8,7 @@
 */
 /******************************************************************************/
 #include "Boss3.h"
+#include "Application.h"
 
 /******************************************************************************/
 /*!
@@ -86,6 +87,12 @@ void Boss3::updates(double dt)
 	PhaseShift(dt);
 	StompL(dt);
 	StompR(dt);
+
+    if (Application::IsKeyPressed('L') || SharedData::GetInstance()->resetBoss3 == true)
+    {
+        Boss3::reset();
+        SharedData::GetInstance()->resetBoss3 = false;
+    }
 }
 
 /******************************************************************************/
@@ -97,7 +104,7 @@ void Boss3::updates(double dt)
 	Amount of health to be deducted
 */
 /******************************************************************************/
-void Boss3::recieveDamage(int Damage)
+void Boss3::receiveDamage(int Damage)
 {
 	HP -= Damage;
 }

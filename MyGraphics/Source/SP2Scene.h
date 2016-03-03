@@ -1,14 +1,3 @@
-/******************************************************************************/
-/*!
-\file	SP2Scene.h
-\author Kwan Liang
-\author Glence Low
-\author Chuan Guang Zhe
-\par	email: 152104G@mymail.nyp.edu.sg
-\brief
-Class to define main framework.
-*/
-/******************************************************************************/
 #ifndef SP2SCENE_H
 #define SP2SCENE_H
 
@@ -31,66 +20,51 @@ Class to define main framework.
 #include "Boss2.h"
 #include "Boss3.h"
 #include "Crate.h"
-#include "timer.h"
 
-/******************************************************************************/
-/*!
-Class SP2Scene:
-\brief
-Defines the main frame and its methods
-*/
-/******************************************************************************/
 class SP2Scene : public Scene
 {
     MS modelStack, viewStack, projectionStack;
 
     enum GEOMETRY_TYPE
     {
-		AXES = 0,
-		LIGHTBALL,
-		Hitbox,
+        AXES = 0,
+        LIGHTBALL,
+        Hitbox,
 
-		//Menu
-		UI_MENU,
-		UI_MENU_SELECT_START,
-		UI_MENU_SELECT_EXIT,
+        //Menu
+        UI_MENU,
+        UI_MENU_SELECT_START,
+        UI_MENU_SELECT_EXIT,
 
-		//Race Selection
-		UI_RACESELECTION,
-		UI_HUMAN,
-		UI_ROBOT,
-		UI_INFESTED,
-		UI_RACE_SELECT,
-		UI_RACE_BACK,
+        //Race Selection
+        UI_RACESELECTION,
+        UI_HUMAN,
+        UI_ROBOT,
+        UI_INFESTED,
+        UI_RACE_SELECT,
+        UI_RACE_BACK,
 
-		//Name Input
-		UI_NAMEINPUT,
-		UI_TEXTBOX,
-		UI_NAME_ACCEPT,
-		UI_NAME_BACK,
-		UI_NAME_MENU,
+        //Name Input
+        UI_NAMEINPUT,
+        UI_TEXTBOX,
+        UI_NAME_ACCEPT,
+        UI_NAME_BACK,
+        UI_NAME_MENU,
 
-		//Planet Navigation
-		UI_PLANET_NAVIGATION,
-		UI_PLANET_SLIME,
-		UI_PLANET_ROBOT,
-		UI_PLANET_DARK,
-		UI_PLANET_SUN,
+        //Planet Navigation
+        UI_PLANET_NAVIGATION,
+        UI_PLANET_SLIME,
+        UI_PLANET_ROBOT,
+        UI_PLANET_DARK,
+        UI_PLANET_SUN,
 
-		//Shop
+        //Shop
 		UI_SELECT,
-		UI_SHOP,
-		UI_SHOP_SELECT,
-		UI_SHOP_GUN,
-		UI_SHOP_MELEE,
-		UI_SHOP_ITEM,
-
-		//gameove
-		UI_GAMEOVER,
-		UI_BACKTOSHIP,
-
-		//win
-		UI_WIN,
+        UI_SHOP,
+        UI_SHOP_SELECT,
+        UI_SHOP_GUN,
+        UI_SHOP_MELEE,
+        UI_SHOP_ITEM,
 
         //Text
         TEXT,
@@ -155,9 +129,14 @@ class SP2Scene : public Scene
 		PLANET3_DARKTREE,
 
         //Planet 1 Monsters
-        SLIME_GREEN,
-        SLIME_PINK,
-        SLIME_BLUE,
+        SLIME_ENEMY,
+
+        //Planet 2 Monsters
+        ROBOT_ENEMY,
+        ROBOT_PROJECTILE,
+
+        //Planet 3 Monsters
+        SWORD_ENEMY,
 
         //BOSS 1
         SLIME_BOSS,
@@ -202,6 +181,8 @@ class SP2Scene : public Scene
         //Abilities
         TURRET,
         ROCKET,
+        EXPLOSION,
+        SNARE,
 
         //Items
         COIN,
@@ -230,14 +211,6 @@ class SP2Scene : public Scene
 		//CRATE
 		CRATE,
 		LOOT,
-
-		//return ship
-		UI_RETURNPLANE,
-		UI_FIGHTBOSS,
-		UI_LEAVEPLANET,
-
-		//instruction
-		UI_INSTRUCTION,
 
         NUM_GEOMETRY,
     };
@@ -308,6 +281,7 @@ public:
 
     float PlanetMove_1_Y;
 
+    int WaveCap;
     float Wave = 0.f;
 
     float PlanetMove_2_X;
@@ -330,11 +304,10 @@ public:
 	float movingLeftleg;
 	float movingRightleg;
 
-	float legSpeed;
-	int legsheight;
-	int legsize;
-	int legP;
-	
+	int enemydefeated;
+	bool flydown;
+	bool flyup;
+	float flyingdown;
 	float arrowsignmove;
 	bool arrowup;
 	bool arrowdown;
@@ -342,12 +315,6 @@ public:
 	float distancefrom_Item;
 
     bool reloading;
-
-	bool ON_Instruction;
-	int waitLa;
-
-	bool showWin;
-	bool showGameover;
 
     virtual void Init();
     virtual void Update(double dt);
@@ -383,10 +350,6 @@ private:
 	void renderReturnShip();
 	void renderCrate();
     void RenderAbilities();
-	void renderReturnUI();
-	void renderInstruction();
-	void renderGameover();
-	void renderWin();
 
     Character Character;
 
@@ -416,16 +379,13 @@ private:
 
     Abilities abilities;
 
-    Boss1 boss1;
-
     Enemy enemy;
+
+    StopWatch time;
 
     Mesh *meshList[NUM_GEOMETRY];
 
     Light light[1];
-
-	StopWatch time;
-	double Crate_Time;
 
     bool nearDoor;
     float moveDoor;

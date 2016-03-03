@@ -4,7 +4,6 @@
 #include <vector>
 #include <map>
 
-#include "Vector3.h"
 #include "Weapon.h"
 #include "MyMath.h"
 #include <irrKlang.h>
@@ -55,9 +54,6 @@ public:
     //Pause Menu
     bool renderPause;
 
-	//return ship
-	bool renderReturn;
-
     //Selection Hovered
     bool Menu_Start_Hovered;
     bool Menu_Exit_Hovered;
@@ -77,10 +73,6 @@ public:
     bool Pause_Resume_Hovered;
     bool Pause_Menu_Hovered;
     bool Pause_Exit_Hovered;
-
-	//returnship
-	bool Leaveplanet_Hovered;
-	bool Fightboss_Hovered;
 
     //Weapon
     Weapon* Equipped;
@@ -148,23 +140,64 @@ public:
 
     //Monster Hitbox
     Vector3 GreenSlimeHitbox;
+    Vector3 RobotHitbox;
+    Vector3 SwordHitbox;
 
     bool MonsterCollision = false;
 
+    //Character
+    double DamageCooldown;
+
     //Abilities
     Vector3 TurretPosition;
-    double AbilityActiveTime;
+    Vector3 TurretView;
+    Vector3 TurretProjectilePosition;
+    Vector3 ClosestEnemyPosition;
+    float TurretDegree;
+    float ClosestEnemyMagnitude;
+    double TurretActiveTime = .0004;
+    double SnareActiveTime = .0002;
+    bool TurretDeployed = false;
+    bool boss1Damaged = false;
+    bool boss2Damaged = false;
     bool Bombard;
-    bool rocketdamage;
+
+    bool rocketdamage = false;
+    bool rocketdamage_Slime = false;
+    bool rocketdamage_Robot = false;
+    bool rocketdamage_Sword = false;
+
+    bool explode = false;
+
+    bool SnareMonsters = false;
 
     float rocketdown;
+    float expandExplosion = 10.f;
+
+    bool abilityAvailable = false;
+
+    //Enemies
+    int EnemyAttack;
 
     //Boss1 Position
     Vector3 Boss1Position;
     Vector3 Boss1Hitbox;
     float Boss1Degree;
 
-    int BOSS1_Splits;
+    bool renderBoss1;
+
+    //Boss2 Position
+    Vector3 Boss2Position;
+    Vector3 Boss2Hitbox;
+    float Boss2Degree;
+
+    bool renderBoss2;
+
+    //Boss3 Position
+    Vector3 Boss3Position;
+    Vector3 Boss3Hitbox;
+
+    bool renderBoss3;
 
     double MousePos_X;
     double MousePos_Y;
@@ -178,11 +211,14 @@ public:
 	Vector3 SetCratePosition;
 	Vector3 CrateHitboxsize;
 
-	int enemydefeated ;
-	int flyingdown;
-	bool returnship_UI;
-	bool flydown;
-	bool flyup;
+    int accumulatedCoins;
+
+    //Resets
+    bool resetScene = false;
+    bool resetEnemies = false;
+    bool resetBoss1 = false;
+    bool resetBoss2 = false;
+    bool resetBoss3 = false;
 
 private:
     SharedData(){};

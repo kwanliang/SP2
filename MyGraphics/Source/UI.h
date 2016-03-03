@@ -2,6 +2,9 @@
 #define UI_H
 
 #include "Vector3.h"
+#include "Boss1.h"
+#include "Boss2.h"
+#include "Boss3.h"
 
 class UI {
 private:
@@ -32,8 +35,6 @@ public:
     static int ShopGunUI_ID;
     static int ShopItemUI_ID;
 
-	static int ReturnshipUI_ID;
-
     static bool MenuUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int MenuUI_ID);
     static bool RaceSelectionUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int RaceSelectionUI_ID);
     static bool NameInputHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int NameInput_ID);
@@ -43,8 +44,6 @@ public:
     static bool ShopUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ShopUI_ID);
     static bool ShopGunUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ShopGunUI_ID);
     static bool ShopItemUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ShopItemUI_ID);
-
-	static bool ReturnshipUIHitbox(double& MousePositionX, double& MousePositionY, int MinX, int MaxX, int MinY, int MaxY, int ReturnshipUI_ID);
 
     virtual void Update(double dt);
 };

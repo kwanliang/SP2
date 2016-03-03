@@ -1,63 +1,25 @@
-/******************************************************************************/
-/*!
-\file	Camera2.cpp
-\author Chuan Guang Zhe
-\author Kwan Liang
-\author Glence Low
-\par	email: 152104G@mymail.nyp.edu.sg
-\brief
-Class to define Camera2
-*/
-/******************************************************************************/
 #include "Camera2.h"
 #include "Application.h"
 #include "Mtx44.h"
 #include "Mouse.h"
 #include "Collision.h"
 
-/******************************************************************************/
-/*!
-\brief
-Camera2 default constructor
-*/
-/******************************************************************************/
 Camera2::Camera2()
 {
-	
+
 }
 
-/******************************************************************************/
-/*!
-\brief
-Camera2 default constructor
-*/
-/******************************************************************************/
 Camera2::~Camera2()
 {
 }
 
-/******************************************************************************/
-/*!
-\brief
-Camera2 Init
-
-\param &pos
-initialize position
-
-\param &target
-initialize target
-
-\param &up
-initialize direction
-*/
-/******************************************************************************/
 void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
 {
     Vector3 ControlPanel(-350, 0, 0);
-    Vector3 ControlPanelSize(100, 600, 200);
+    Vector3 ControlPanelSize(100, 860, 200);
 
 	Vector3 table(1750, 0, 0);
-	Vector3 tableSize(200, 800, 800);
+	Vector3 tableSize(300, 1000, 800);
 
 	Vector3 boss2Hitbox(0, 0, 1000);
 	Vector3 boss2Hitboxsize(0, 0, 0);
@@ -85,16 +47,6 @@ void Camera2::Init(const Vector3& pos, const Vector3& target, const Vector3& up)
     Test.SetRace(2);
 }
 
-/******************************************************************************/
-/*!
-\brief
-Camera2 Update
-
-\param dt
-update camera
-
-*/
-/******************************************************************************/
 void Camera2::Update(double dt)
 {
     static const float CAMERA_SPEED = 50.f;
@@ -103,7 +55,7 @@ void Camera2::Update(double dt)
 	if(SharedData::GetInstance()->UI_Human_Selected == true)
 	{
 		Test.SetRace(0);
-		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999) && (Boss2.isDead() == false))
+		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999))
 		{
 			SharedData::GetInstance()->Move_Speed = 100.f;
 		}
@@ -111,7 +63,7 @@ void Camera2::Update(double dt)
 	else if (SharedData::GetInstance()->UI_Robot_Selected == true)
 	{
 		Test.SetRace(1);
-		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999) && (Boss2.isDead() == false))
+		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999))
 		{
 			SharedData::GetInstance()->Move_Speed = 200.f;
 		}
@@ -119,14 +71,14 @@ void Camera2::Update(double dt)
 	else if (SharedData::GetInstance()->UI_Infested_Selected == true)
 	{
 		Test.SetRace(2);
-		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999) && (Boss2.isDead() == false))
-		{
-			SharedData::GetInstance()->Move_Speed = 100.f;
-		}
 	}
 	else
 	{
 		Test.SetRace(2);
+		if (SharedData::GetInstance()->renderPlanet2 == true && (SharedData::GetInstance()->Phase == 9 || SharedData::GetInstance()->Phase == 999))
+		{
+			SharedData::GetInstance()->Move_Speed = 100.f;
+		}
 
 	}
 
@@ -424,9 +376,10 @@ void Camera2::Update(double dt)
         SharedData::GetInstance()->To_Last = false;
     }
 
-    if (Application::IsKeyPressed('Q'))
+    if (Application::IsKeyPressed('L') || SharedData::GetInstance()->resetScene == true)
     {
         Reset();
+        SharedData::GetInstance()->resetScene = false;
     }
 
     SharedData::GetInstance()->PlayerPosition = position;
@@ -437,14 +390,6 @@ void Camera2::Update(double dt)
     SharedData::GetInstance()->PlayerView = view;
 }
 
-/******************************************************************************/
-/*!
-\brief
-Camera2 Reset
-
-reset camera postion to normal
-*/
-/******************************************************************************/
 void Camera2::Reset()
 {
     position = defaultPosition;

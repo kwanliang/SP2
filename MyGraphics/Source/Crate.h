@@ -1,12 +1,3 @@
-/******************************************************************************/
-/*!
-\file	Crate.h
-\author Glence low
-\par	email: glencelow@Hotmail.com
-\brief
-Class to define Crate
-*/
-/******************************************************************************/
 #ifndef CRATE_H
 #define CRATE_H
 
@@ -14,13 +5,6 @@ Class to define Crate
 #include "Vector3.h"
 #include "Collision.h"
 
-/******************************************************************************/
-/*!
-Class Crate:
-\brief
-Defines the crate and its methods
-*/
-/******************************************************************************/
 class Crate
 {
 public:
@@ -31,6 +15,7 @@ public:
 	static std::vector<Crate> Crates;
 
 	virtual void Init();
+	virtual void crateUpdate(double dt);
 	void takeDamage(int Damage);
 	void RandomPos(void);
 	bool isBroken(void);

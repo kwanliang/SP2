@@ -36,7 +36,7 @@ public:
 	Character();
 	~Character();
 	void SetRace(int i);
-	void recieveDamage(int Damage);
+	void receiveDamage(int Damage);
 	void useHealth_kit(void);
 	void useLarge_Health_kit(void);
 	bool isDead(void);

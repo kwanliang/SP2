@@ -1,76 +1,41 @@
-/******************************************************************************/
-/*!
-\file	Boss1.cpp
-\author Kwan Liang
-\par	email: 152104G@mymail.nyp.edu.sg
-\brief
-Class to define boss1 framework.
-*/
-/******************************************************************************/
 #include "Boss1.h"
 #include "Application.h"
 
-/******************************************************************************/
-/*!
-\brief
-Boss1 default constructor
-*/
-/******************************************************************************/
 Boss1::Boss1()
 {
-    SharedData::GetInstance()->BOSS1_Splits = 1;
-    BOSS1_MAX_HP = 300;
-    BOSS1_HP = 300;
+    BOSS1_MAX_HP = 100;
+    BOSS1_HP = 100;
     BOSS1_Attack = 4;
     BOSS1_MoveSpd = 200.0f;
 }
 
-/******************************************************************************/
-/*!
-\brief
-Boss1 default constructor
-*/
-/******************************************************************************/
 Boss1::~Boss1()
 {
 }
 
-/******************************************************************************/
-/*!
-\brief
-initialize value of boss1
-*/
-/******************************************************************************/
 void Boss1::Init()
 {
-    Vector3 Boss1HitboxSize(150, 150, 150);
+    SharedData::GetInstance()->Boss1Position = Vector3(-300, -50, 100);
 
-    Vector3 SetBossPosition(-300, -50, 100);
-
-    SharedData::GetInstance()->Boss1Position = SetBossPosition;
-
-    SharedData::GetInstance()->Boss1Hitbox = Boss1HitboxSize;
+    SharedData::GetInstance()->Boss1Hitbox = Vector3(150, 150, 150);
 }
 
-/******************************************************************************/
-/*!
-\brief
-Boss1 Update
-
-\param dt
-update boss1 
-*/
-/******************************************************************************/
 void Boss1::Update(double dt)
 {
-    if (Boss1::isDead() == false) {
-        if (Collision::MonsterHitbox(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->Boss1Position, SharedData::GetInstance()->Boss1Hitbox) == true
-            && SharedData::GetInstance()->BOSS1_Splits == 1)
+    if (Boss1::isDead() == false && SharedData::GetInstance()->renderBoss1 == true && SharedData::GetInstance()->renderPause == false) {
+        if (Collision::MonsterHitbox(SharedData::GetInstance()->ProjectilePosition, SharedData::GetInstance()->Boss1Position, SharedData::GetInstance()->Boss1Hitbox) == true)
         {
             receiveDamage(SharedData::GetInstance()->Equipped->Attack_Value);
         }
         FacePlayer(SharedData::GetInstance()->PlayerPosition);
-        ChasePlayer(dt, SharedData::GetInstance()->PlayerPosition);
+        if (SharedData::GetInstance()->SnareMonsters == false) {
+            ChasePlayer(dt, SharedData::GetInstance()->PlayerPosition);
+        }
+    }
+
+    if (SharedData::GetInstance()->boss1Damaged == true) {
+        receiveDamage(1);
+        SharedData::GetInstance()->boss1Damaged = false;
     }
 
     if (SharedData::GetInstance()->rocketdamage == true) {
@@ -80,52 +45,28 @@ void Boss1::Update(double dt)
 
     Boss1::isDead();
 
-    if (Application::IsKeyPressed('L')) 
+    if (Application::IsKeyPressed('L') || SharedData::GetInstance()->resetBoss1 == true)
     {
         Boss1::Reset();
+        SharedData::GetInstance()->resetBoss1 = false;
     }
 }
 
-/******************************************************************************/
-/*!
-\brief
-Boss1 Reset
-
-respwan boss
-*/
-/******************************************************************************/
 void Boss1::Reset()
 {
-    SharedData::GetInstance()->BOSS1_Splits = 1;
-    BOSS1_MAX_HP = 300;
-    BOSS1_HP = 300;
+    SharedData::GetInstance()->Boss1Position = Vector3(-300, -50, 100);
+    SharedData::GetInstance()->Boss1Hitbox = Vector3(150, 150, 150);
+    BOSS1_MAX_HP = 100;
+    BOSS1_HP = 100;
     BOSS1_Attack = 4;
     BOSS1_MoveSpd = 200.0f;
 }
 
-/******************************************************************************/
-/*!
-\brief
-Boss1 receiveDamage
-
-\param Damage
-boss1 minus hp with damage is taken
-*/
-/******************************************************************************/
 void Boss1::receiveDamage(int Damage)
 {
     BOSS1_HP -= Damage;
 }
 
-/******************************************************************************/
-/*!
-\brief
-Boss1 FacePlayer
-
-\param player
-boss1 store in player position to face them
-*/
-/******************************************************************************/
 void Boss1::FacePlayer(Vector3 Player)
 {
     Vector3 initView(0, 0, -1);
@@ -145,47 +86,25 @@ void Boss1::FacePlayer(Vector3 Player)
     }
 }
 
-/******************************************************************************/
-/*!
-\brief
-Boss1 ChasePlayer
-
-\param dt
-how fast the boss chase you
-
-\param Player
-store player position
-*/
-/******************************************************************************/
 void Boss1::ChasePlayer(double dt, Vector3 Player)
 {
-    if (SharedData::GetInstance()->Boss1Position.x >= Player.x + 150)
+    Vector3 EPos(
+        SharedData::GetInstance()->Boss1Position.x,
+        SharedData::GetInstance()->Boss1Position.y,
+        SharedData::GetInstance()->Boss1Position.z
+        );
+    Vector3 DirVec = Player - EPos;
+    if (Player != EPos)
     {
-        SharedData::GetInstance()->Boss1Position.x -= (float)(30 * dt);
-    }
-    else if (SharedData::GetInstance()->Boss1Position.x <= Player.x - 150)
-    {
-        SharedData::GetInstance()->Boss1Position.x += (float)(30 * dt);
+        DirVec.Normalize();
     }
 
-    if (SharedData::GetInstance()->Boss1Position.z >= Player.z + 150)
-    {
-        SharedData::GetInstance()->Boss1Position.z -= (float)(30 * dt);
-    }
-    else if (SharedData::GetInstance()->Boss1Position.z <= Player.z - 150)
-    {
-        SharedData::GetInstance()->Boss1Position.z += (float)(30 * dt);
+    if ((sqrt((pow(SharedData::GetInstance()->Boss1Position.x - Player.x, 2)) + (pow(SharedData::GetInstance()->Boss1Position.z - Player.z, 2)))) > 50) {
+        SharedData::GetInstance()->Boss1Position.x += DirVec.x * 100.f * dt;
+        SharedData::GetInstance()->Boss1Position.z += DirVec.z * 100.f * dt;
     }
 }
 
-/******************************************************************************/
-/*!
-\brief
-Boss1 isDead
-
-check wherethe boss1 is dead
-*/
-/******************************************************************************/
 bool Boss1::isDead()
 {
     if (BOSS1_HP <= 0) {
